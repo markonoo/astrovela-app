@@ -100,12 +100,16 @@ export async function checkAstrologyApiCredentials(): Promise<{ valid: boolean; 
       }
     }
 
-    // Check for authentication error
-    if (data.status === false && data.msg && (data.msg.includes("invalid") || data.msg.includes("User ID"))) {
-      console.error("Debug - Authentication failed:", data.msg)
+    // Check for authentication error or rate limit
+    if (data.status === false || data.error) {
+      const isRateLimit = data.error === "TRIAL_REQUEST_LIMIT_EXCEEDED";
+      const message = data.msg || data.error;
+      
+      console.error(`Debug - API ${isRateLimit ? "rate limit reached" : "authentication failed"}:`, message);
+      
       return {
-        valid: false,
-        message: `Authentication failed: ${data.msg}`,
+        valid: !isRateLimit, // Still valid if just rate limited
+        message: isRateLimit ? "Daily API limit reached, using fallback data" : `Authentication failed: ${message}`,
         details: data,
       }
     }
