@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"contexts/quiz-context.tsx -> @/services/astrology-service\":{\"id\":\"contexts/quiz-context.tsx -> @/services/astrology-service\",\"files\":[\"static/chunks/_app-pages-browser_services_astrology-service_ts.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST="{}"
