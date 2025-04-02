@@ -1,0 +1,22 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model QuizResponse {
+  id          String   @id @default(cuid())
+  email       String
+  answers     Json
+  birthDate   Json
+  birthPlace  String?
+  birthTime   String?
+  firstName   String?
+  lastName    String?
+  gender      String?
+  createdAt   DateTime @default(now())
+}
