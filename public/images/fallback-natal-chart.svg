@@ -1,0 +1,44 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle representing the chart -->
+  <circle cx="150" cy="150" r="145" fill="none" stroke="currentColor" stroke-width="1" />
+  
+  <!-- Zodiac divisions (12 sections) -->
+  <line x1="150" y1="5" x2="150" y2="295" stroke="currentColor" stroke-width="0.5" />
+  <line x1="5" y1="150" x2="295" y2="150" stroke="currentColor" stroke-width="0.5" />
+  <line x1="26" y1="26" x2="274" y2="274" stroke="currentColor" stroke-width="0.5" />
+  <line x1="26" y1="274" x2="274" y2="26" stroke="currentColor" stroke-width="0.5" />
+  
+  <!-- Additional division lines -->
+  <line x1="77.5" y1="5.5" x2="222.5" y2="294.5" stroke="currentColor" stroke-width="0.5" />
+  <line x1="222.5" y1="5.5" x2="77.5" y2="294.5" stroke="currentColor" stroke-width="0.5" />
+  <line x1="5.5" y1="77.5" x2="294.5" y2="222.5" stroke="currentColor" stroke-width="0.5" />
+  <line x1="5.5" y1="222.5" x2="294.5" y2="77.5" stroke="currentColor" stroke-width="0.5" />
+  
+  <!-- Inner circle -->
+  <circle cx="150" cy="150" r="120" fill="none" stroke="currentColor" stroke-width="0.5" />
+  <circle cx="150" cy="150" r="90" fill="none" stroke="currentColor" stroke-width="0.5" />
+  
+  <!-- Zodiac symbols (simplified) -->
+  <text x="150" y="25" text-anchor="middle" fill="currentColor" font-size="12">♈</text>
+  <text x="225" y="60" text-anchor="middle" fill="currentColor" font-size="12">♉</text>
+  <text x="270" y="150" text-anchor="middle" fill="currentColor" font-size="12">♊</text>
+  <text x="225" y="240" text-anchor="middle" fill="currentColor" font-size="12">♋</text>
+  <text x="150" y="275" text-anchor="middle" fill="currentColor" font-size="12">♌</text>
+  <text x="75" y="240" text-anchor="middle" fill="currentColor" font-size="12">♍</text>
+  <text x="30" y="150" text-anchor="middle" fill="currentColor" font-size="12">♎</text>
+  <text x="75" y="60" text-anchor="middle" fill="currentColor" font-size="12">♏</text>
+  
+  <!-- Planetary symbols (simplified) -->
+  <circle cx="150" cy="50" r="5" fill="currentColor" />
+  <circle cx="200" cy="100" r="5" fill="currentColor" />
+  <circle cx="100" cy="200" r="5" fill="currentColor" />
+  <circle cx="220" cy="180" r="5" fill="currentColor" />
+  <circle cx="80" cy="120" r="5" fill="currentColor" />
+  
+  <!-- Aspect lines -->
+  <line x1="150" y1="50" x2="200" y2="100" stroke="currentColor" stroke-width="0.5" />
+  <line x1="150" y1="50" x2="100" y2="200" stroke="currentColor" stroke-width="0.5" />
+  <line x1="200" y1="100" x2="220" y2="180" stroke="currentColor" stroke-width="0.5" />
+  <line x1="100" y1="200" x2="80" y2="120" stroke="currentColor" stroke-width="0.5" />
+</svg>
+
