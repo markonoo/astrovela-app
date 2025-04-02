@@ -32,50 +32,19 @@ export function useNatalChart() {
   const getNatalChart = async (birthDate: string, birthTime: string, latitude: number, longitude: number) => {
     setIsLoading(true)
     setError(null)
-    
-    // Create birth details object for API call
-    const birthDetails = { 
-      birthDate, 
-      birthTime, 
-      latitude, 
-      longitude 
-    };
-    
-    console.log("Fetching natal chart with details:", birthDetails);
+    const birthDetails = { birthDate, birthTime, latitude, longitude }; // Created birthDetails object
 
     try {
-      // Call the API to get chart data
-      const response = await fetch('/api/astrology', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(birthDetails)
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
-
-      const chart = await response.json();
-      console.log("Received chart data:", chart);
-      
-      // Process and format the chart data
-      const formattedChart = {
-        ...chart,
-        planets: Array.isArray(chart.planets) ? chart.planets : [],
-        houses: Array.isArray(chart.houses) ? chart.houses : [],
-        aspects: Array.isArray(chart.aspects) ? chart.aspects : [],
-        birthDetails: birthDetails
-      };
-      
-      setNatalChart(formattedChart);
-      return formattedChart;
+      const chart = await fetchNatalWheelChart(birthDetails); // Calling the new function
+      setNatalChart(chart)
+      return chart
     } catch (err) {
-      console.error("Error fetching natal chart:", err);
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-      throw error;
+      console.error("Error fetching natal chart:", err)
+      const error = err instanceof Error ? err : new Error(String(err))
+      setError(error)
+      throw error
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 

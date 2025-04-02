@@ -124,18 +124,13 @@ export function NatalChart({
       // Update center and radius calculations
       centerX = canvas.width / 2
       centerY = canvas.height / 2
-      radius = Math.min(centerX, centerY) - 20 * pixelRatio
+      radius = Math.min(centerX, centerY) - 20
 
-      // Clear the canvas before drawing
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Set better background for visibility
-      ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       // Set line styles
       ctx.strokeStyle = color
-      ctx.lineWidth = 1.5 * pixelRatio
+      ctx.lineWidth = 1 * pixelRatio
 
       // Draw outer circle (zodiac wheel)
       ctx.beginPath()
@@ -145,7 +140,7 @@ export function NatalChart({
       // Draw inner circles with improved styling
       const innerRadii = detailed
         ? [radius * 0.85, radius * 0.75, radius * 0.65, radius * 0.4]
-        : [radius * 0.8, radius * 0.6, radius * 0.4, radius * 0.2]
+        : [radius * 0.8, radius * 0.1]
 
       for (const innerRadius of innerRadii) {
         ctx.beginPath()
@@ -156,12 +151,10 @@ export function NatalChart({
       }
 
       // If we have real chart data, use it
-      if (state.natalChart && state.natalChart.planets && state.natalChart.planets.length > 0) {
-        console.log("Drawing natal chart with data:", state.natalChart.planets.length + " planets");
+      if (state.natalChart) {
         drawRealChart(state.natalChart, ctx, centerX, centerY, radius, color, detailed)
       } else {
         // Otherwise draw a placeholder chart
-        console.log("Drawing placeholder chart");
         drawPlaceholderChart(ctx, centerX, centerY, radius, color, detailed)
       }
     }
@@ -170,7 +163,6 @@ export function NatalChart({
     const handleResize = () => {
       const parent = canvas.parentElement
       if (parent) {
-        // Get the parent container size
         const displaySize = Math.min(parent.clientWidth, parent.clientHeight)
 
         // Set display size (css pixels)
@@ -186,16 +178,11 @@ export function NatalChart({
       }
     }
 
-    // Set initial canvas dimensions and draw
+    // Set initial canvas dimensions
     handleResize()
 
     // Add resize event listener
     window.addEventListener("resize", handleResize)
-
-    // Force redraw chart after a short delay to ensure container is properly sized
-    const redrawTimeout = setTimeout(() => {
-      handleResize();
-    }, 200);
 
     // Handle mouse interactions if interactive
     if (interactive && canvas) {
@@ -205,7 +192,7 @@ export function NatalChart({
         const y = (e.clientY - rect.top) * pixelRatio
 
         // Check if mouse is over a planet
-        if (state.natalChart && state.natalChart.planets) {
+        if (state.natalChart) {
           for (const planet of state.natalChart.planets) {
             const angle = (planet.degree * Math.PI) / 180
             const distance = radius * 0.5 // Adjust based on your planet positioning
@@ -218,7 +205,7 @@ export function NatalChart({
             const dy = y - planetY
             const distance2 = Math.sqrt(dx * dx + dy * dy)
 
-            if (distance2 < 15 * pixelRatio) {
+            if (distance2 < 10 * pixelRatio) {
               setHoveredPlanet(planet.name)
               setTooltipPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
               return
@@ -234,13 +221,11 @@ export function NatalChart({
       return () => {
         window.removeEventListener("resize", handleResize)
         canvas.removeEventListener("mousemove", handleMouseMove)
-        clearTimeout(redrawTimeout);
       }
     }
 
     return () => {
       window.removeEventListener("resize", handleResize)
-      clearTimeout(redrawTimeout);
     }
   }, [color, state.natalChart, interactive, detailed, highResolution])
 
