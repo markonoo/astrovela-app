@@ -28,11 +28,33 @@ export function EmailCollection() {
     setError(null)
     setEmail(emailInput)
 
-    // Mark the quiz as completed and save data
-    completeQuiz()
+    try {
+      // Submit quiz data to backend
+      const response = await fetch('/api/quiz/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...state,
+          email: emailInput,
+          submittedAt: new Date().toISOString()
+        })
+      })
 
-    // Move to the next step (personalized landing)
-    nextStep()
+      if (!response.ok) {
+        throw new Error('Failed to submit quiz')
+      }
+
+      // Mark the quiz as completed and save data
+      completeQuiz()
+
+      // Move to the next step (personalized landing)
+      nextStep()
+    } catch (error) {
+      console.error('Error submitting quiz:', error)
+      setError('Failed to submit quiz. Please try again.')
+    }
   }
 
   return (
