@@ -7,7 +7,7 @@ import { Footer } from "@/components/shared/footer"
 import { Star, ChevronRight, Quote } from "lucide-react"
 import { StarRating } from "@/components/ui/star-rating"
 import { Button } from "@/components/ui/button"
-import SimpleBookCover from "@/components/SimpleBookCover"
+import PremiumBookCover from "@/components/PremiumBookCover" // Assumed component name
 import { COLOR_SCHEMES } from "@/utils/constants"
 
 export default function ExampleBookPage() {
@@ -91,7 +91,7 @@ export default function ExampleBookPage() {
                 boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
               }}
             >
-              <SimpleBookCover
+              <PremiumBookCover // Changed to PremiumBookCover
                 name="Olivia"
                 birthDate="December 6, 2021"
                 birthPlace="Hamburg, Germany"
@@ -220,4 +220,3 @@ export default function ExampleBookPage() {
     </div>
   )
 }
-
