@@ -28,11 +28,23 @@ export default function NatalChartPage() {
 
         try {
           await fetchNatalChart()
+          console.log("Natal chart loaded successfully");
         } catch (err) {
+          console.error("Error loading natal chart:", err);
           setError(err instanceof Error ? err.message : "Failed to generate natal chart")
         } finally {
           setIsLoading(false)
         }
+      } else if (state.natalChart) {
+        console.log("Using existing natal chart data");
+      } else {
+        console.log("Missing required data for natal chart:", {
+          month: state.birthDate.month,
+          day: state.birthDate.day, 
+          year: state.birthDate.year,
+          time: state.birthTime,
+          place: state.birthPlace
+        });
       }
     }
 
