@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { saveQuizData, getQuizData, isQuizCompleted } from "@/utils/storage"
+import { saveQuizData, getQuizData, isQuizCompleted, clearQuizData } from "@/utils/storage"
 import type { NatalChart, ChartInterpretation } from "@/types/astrology"
 
 type Gender = "male" | "female" | "non-binary" | null
@@ -62,7 +62,7 @@ interface QuizContextType {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 35,
+  totalSteps: 33,
   gender: null,
   astrologyLevel: null,
   firstName: null,
@@ -108,9 +108,8 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
   // Save state to storage whenever it changes
   useEffect(() => {
-    if (state.quizCompleted) {
-      saveQuizData(state)
-    }
+    // Save state on every change, not just when completed
+    saveQuizData(state)
   }, [state])
 
   const setCurrentStep = (step: number) => {
@@ -192,7 +191,28 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   }
 
   const resetQuiz = () => {
+    // Clear all storage first
+    if (typeof window !== "undefined") {
+      // First clear our own storage
+      clearQuizData()
+      
+      // For a more aggressive approach, clear all local storage completely
+      try {
+        localStorage.clear()
+        sessionStorage.clear()
+        console.log("Complete storage wipe performed")
+      } catch (e) {
+        console.error("Error during complete storage wipe:", e)
+      }
+    }
+    
+    // Reset the state
     setState(initialState)
+    
+    // Force reload the page to ensure a completely fresh state
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
   }
 
   const setNatalChart = (natalChart: NatalChart) => {

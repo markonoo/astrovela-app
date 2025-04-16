@@ -5,6 +5,8 @@ import { ArrowLeft, Star } from "lucide-react"
 import { useQuiz } from "@/contexts/quiz-context"
 import { DrawerMenu } from "@/components/drawer-menu"
 import { HamburgerButton } from "@/components/hamburger-button"
+import { ProgressBar } from "./progress-bar"
+import { ResetButton } from "./reset-button"
 import type { ReactNode } from "react"
 
 interface QuizLayoutProps {
@@ -38,17 +40,13 @@ export default function QuizLayout({ children, showBackButton = true }: QuizLayo
             <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
           </div>
 
-          <div className="flex items-center">
-            <div className="text-sm text-[#8f90a6] mr-4">
-              {currentStep} / {totalSteps}
-            </div>
+          <div className="flex items-center gap-4">
+            <ResetButton />
             <HamburgerButton onClick={openDrawer} className="p-1" />
           </div>
         </div>
 
-        <div className="w-full h-1 bg-[#f3f3f8]">
-          <div className="h-full bg-[#f7c800]" style={{ width: `${(currentStep / totalSteps) * 100}%` }}></div>
-        </div>
+        <ProgressBar />
       </header>
 
       {/* Drawer Menu */}

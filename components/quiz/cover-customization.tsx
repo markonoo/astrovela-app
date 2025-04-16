@@ -2,8 +2,9 @@
 
 import { useQuiz } from "@/contexts/quiz-context"
 import { useState, useEffect } from "react"
-import { PremiumBookCover } from "../example-book/premium-book-cover"
-import { Loader2, AlertTriangle, Lock } from "lucide-react"
+import { PremiumBookCover } from "../book-cover/premium-book-cover"
+import { LayeredBookCover } from "../book-cover/layered-book-cover"
+import { Loader2, AlertTriangle, Lock, Crown } from "lucide-react"
 import { useChartImage } from "@/hooks/use-chart-image"
 import { preloadFallbackNatalChart } from "@/utils/fallback-chart"
 
@@ -16,8 +17,18 @@ interface ColorOption {
   chartColor: string
 }
 
-export function CoverCustomization() {
-  const { state, setCoverColorScheme, nextStep, prevStep, fetchNatalChart } = useQuiz()
+interface CoverCustomizationProps {
+  showPremiumOption?: boolean;
+  showLayeredOption?: boolean;
+  showDesignerOption?: boolean;
+}
+
+export function CoverCustomization({ 
+  showPremiumOption = false, 
+  showLayeredOption = false,
+  showDesignerOption = false 
+}: CoverCustomizationProps) {
+  const { state, setCoverColorScheme, nextStep, prevStep, fetchNatalChart, setCurrentStep } = useQuiz()
   const [selectedColor, setSelectedColor] = useState<ColorScheme>("green")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -197,106 +208,212 @@ export function CoverCustomization() {
     nextStep()
   }
 
-  return (
-    <div className="space-y-6 text-center">
-      <h1 className="text-2xl font-semibold text-gray-900">Personalize your book cover:</h1>
+  const handlePremiumSelect = () => {
+    // Skip to the premium cover step (step 36)
+    setCurrentStep(36)
+  }
+  
+  const handleLayeredSelect = () => {
+    // Skip to the layered cover step (step 37)
+    setCurrentStep(37)
+  }
 
-      <div className="flex justify-center mb-6">
-        <div className="w-72 h-96 relative">
-          {isLoading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg">
-              <Loader2 className="h-12 w-12 text-yellow-500 animate-spin mb-4" />
-              <p className="text-gray-600">Loading your cosmic data...</p>
+  const handleDesignerSelect = () => {
+    // Skip to the designer step (step 38)
+    setCurrentStep(38)
+  }
+
+  // Display options for different cover types if requested
+  if (showPremiumOption || showLayeredOption || showDesignerOption) {
+  return (
+      <div className="space-y-8">
+        <h2 className="text-2xl font-bold text-center">Choose Your Book Cover Style</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Standard Cover Option */}
+          <div className="border rounded-lg p-6 space-y-4 hover:shadow-lg transition-shadow">
+            <h3 className="text-xl font-semibold">Standard Cover</h3>
+            <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
+              {/* Preview of standard cover */}
+              <PremiumBookCover 
+                name={state.firstName || "Your Name"}
+                birthDate={state.birthDate?.month && state.birthDate?.day && state.birthDate?.year 
+                  ? `${state.birthDate.month}/${state.birthDate.day}/${state.birthDate.year}` 
+                  : "01/01/2000"}
+                birthPlace={state.birthLocation?.name || state.birthPlace || "Unknown Location"}
+                colorScheme={selectedColor}
+              />
             </div>
-          ) : error ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg p-4">
-              {authError ? (
-                <>
-                  <Lock className="h-12 w-12 text-amber-500 mb-4" />
-                  <p className="text-gray-700 mb-2">API authentication required</p>
-                </>
-              ) : (
-                <>
-                  <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-                  <p className="text-gray-700 mb-2">We couldn't load your complete data</p>
-                </>
-              )}
-              <p className="text-sm text-gray-500">Your cover will still be created with available information</p>
+            <div className="flex justify-center mt-4">
+              <button 
+                onClick={handleContinue}
+                className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+              >
+                Select Standard
+              </button>
             </div>
-          ) : isChartLoading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg">
-              <div className="relative w-32 h-32">
-                {/* Circular progress indicator */}
-                <svg className="w-full h-full" viewBox="0 0 100 100">
-                  <circle
-                    className="text-gray-300"
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  <circle
-                    className="text-yellow-500"
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray="283"
-                    strokeDashoffset={283 - (loadingProgress / 100) * 283}
-                    transform="rotate(-90 50 50)"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 text-yellow-500 animate-spin" />
+          </div>
+          
+          {/* Premium Cover Option */}
+          {showPremiumOption && (
+            <div className="border-2 border-yellow-400 rounded-lg p-6 space-y-4 hover:shadow-lg transition-shadow relative">
+              <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full font-bold flex items-center">
+                <Crown className="w-4 h-4 mr-1" />
+                PREMIUM
+              </div>
+              <h3 className="text-xl font-semibold">Premium Cover</h3>
+              <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
+                {/* Preview of premium cover */}
+                <div className="relative w-full h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white">
+                    <div className="text-center mb-4">
+                      <h2 className="text-2xl font-serif tracking-wide">Premium</h2>
+                      <h3 className="text-xl font-serif italic">Astrology Book</h3>
+                    </div>
+                    
+                    <div className="w-3/4 aspect-square border-2 border-yellow-400 rounded-full flex items-center justify-center my-4">
+                      <div className="text-center">
+                        <div className="text-sm opacity-80">Enhanced Details</div>
+                        <div className="text-lg font-bold mt-1">Zodiac Wheel</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center mt-auto">
+                      <div className="text-sm">Curved Text & Deluxe Design</div>
+                      <div className="font-serif italic mt-1">Elegant Presentation</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-600 mt-4">Generating your chart...</p>
-              <p className="text-gray-500 text-sm">{Math.round(loadingProgress)}%</p>
+              <div className="flex justify-center mt-4">
+                <button 
+                  onClick={handlePremiumSelect}
+                  className="px-6 py-2 bg-yellow-500 text-gray-900 rounded-full hover:bg-yellow-600 transition-colors font-medium"
+                >
+                  Select Premium
+                </button>
+              </div>
             </div>
-          ) : (
-            <PremiumBookCover
-              colorScheme={selectedColor}
-              cachedWheelChartSVG={wheelChartSVG}
-              cachedChartUrl={chartUrl}
-            />
+          )}
+          
+          {/* Layered Cover Option */}
+          {showLayeredOption && (
+            <div className="border-2 border-purple-400 rounded-lg p-6 space-y-4 hover:shadow-lg transition-shadow relative">
+              <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/2 bg-purple-400 text-gray-900 px-4 py-1 rounded-full font-bold flex items-center">
+                <Crown className="w-4 h-4 mr-1" />
+                LAYERED
+              </div>
+              <h3 className="text-xl font-semibold">Layered Cover</h3>
+              <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
+                {/* Preview of layered cover */}
+                <LayeredBookCover
+                  name={state.firstName || "Your Name"}
+                  birthDate={state.birthDate?.month && state.birthDate?.day && state.birthDate?.year 
+                    ? `${state.birthDate.month}/${state.birthDate.day}/${state.birthDate.year}` 
+                    : "01/01/2000"}
+                  birthPlace={state.birthLocation?.name || state.birthPlace || "Unknown Location"}
+                  colorScheme="cosmic-blue"
+                />
+              </div>
+              <div className="flex justify-center mt-4">
+                <button 
+                  onClick={handleLayeredSelect}
+                  className="px-6 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors font-medium"
+                >
+                  Select Layered
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Designer Option */}
+          {showDesignerOption && (
+            <div className="border-2 border-pink-400 rounded-lg p-6 space-y-4 hover:shadow-lg transition-shadow relative">
+              <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/2 bg-pink-400 text-gray-900 px-4 py-1 rounded-full font-bold flex items-center">
+                <Crown className="w-4 h-4 mr-1" />
+                DESIGNER
+              </div>
+              <h3 className="text-xl font-semibold">Designer</h3>
+              <div className="aspect-[3/4] bg-gray-100 rounded-md overflow-hidden">
+                {/* Preview of designer cover */}
+                <div className="relative w-full h-full bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white">
+                    <div className="text-center mb-4">
+                      <h2 className="text-2xl font-serif tracking-wide">Designer</h2>
+                      <h3 className="text-xl font-serif italic">Custom Design</h3>
+                    </div>
+                    
+                    <div className="w-3/4 aspect-square border-2 border-pink-400 rounded-full flex items-center justify-center my-4">
+                      <div className="text-center">
+                        <div className="text-sm opacity-80">Custom Design</div>
+                        <div className="text-lg font-bold mt-1">Unique Artwork</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center mt-auto">
+                      <div className="text-sm">Customized Artwork</div>
+                      <div className="font-serif italic mt-1">Personalized Touch</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center mt-4">
+                <button 
+                  onClick={handleDesignerSelect}
+                  className="px-6 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors font-medium"
+                >
+                  Select Designer
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>
+    )
+  }
+  
+  // Original return for standard cover customization
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-center">Customize Your Book Cover</h2>
 
-      {/* Color options */}
-      <div>
-        <p className="text-sm text-gray-600 mb-3">Choose the color:</p>
-        <div className="flex justify-center space-x-3">
-          {colorOptions.map((option) => (
+      {/* Color selection */}
+      <div className="flex flex-wrap gap-3 justify-center mb-4">
+        {colorOptions.map((color) => (
             <button
-              key={option.name}
-              onClick={() => handleColorSelect(option.name)}
-              className={`w-8 h-8 rounded-full ${selectedColor === option.name ? "ring-2 ring-offset-2 ring-yellow-400" : ""}`}
-              style={{ backgroundColor: option.bgColor }}
-              aria-label={`Select ${option.name} color scheme`}
+            key={color.name}
+            type="button"
+            className={`w-12 h-12 rounded-full ${
+              selectedColor === color.name ? "ring-2 ring-offset-2 ring-blue-500" : ""
+            } transition-all`}
+            style={{ backgroundColor: color.bgColor }}
+            onClick={() => handleColorSelect(color.name)}
+            aria-label={`Select ${color.name} color`}
             />
           ))}
         </div>
+
+      {/* Book preview */}
+      <div className="max-w-sm mx-auto aspect-[3/4] relative overflow-hidden rounded-md">
+        <PremiumBookCover
+          name={state.firstName || "Your Name"}
+          birthDate={
+            state.birthDate?.month && state.birthDate?.day && state.birthDate?.year
+              ? `${state.birthDate.month}/${state.birthDate.day}/${state.birthDate.year}`
+              : "01/01/2000"
+          }
+          birthPlace={state.birthLocation?.name || state.birthPlace || "Unknown Location"}
+          colorScheme={selectedColor}
+        />
       </div>
 
-      <div className="flex flex-col space-y-3 pt-4">
+      {/* Continue button */}
+      <div className="flex justify-center mt-8">
         <button
           onClick={handleContinue}
-          className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
+          className="px-8 py-3 bg-yellow-400 rounded-full text-gray-900 font-medium hover:bg-yellow-500 transition-colors"
         >
           Continue
-        </button>
-
-        <button
-          onClick={prevStep}
-          className="w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-        >
-          Previous Question
         </button>
       </div>
     </div>

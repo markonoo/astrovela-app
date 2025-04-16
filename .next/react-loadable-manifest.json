@@ -1,8 +1,14 @@
 {
+  "components/quiz/combined-birth-details.tsx -> @/services/astrology-service": {
+    "id": "components/quiz/combined-birth-details.tsx -> @/services/astrology-service",
+    "files": [
+      "static/chunks/_app-pages-browser_services_astrology-service_ts-_36181.js"
+    ]
+  },
   "contexts/quiz-context.tsx -> @/services/astrology-service": {
     "id": "contexts/quiz-context.tsx -> @/services/astrology-service",
     "files": [
-      "static/chunks/_app-pages-browser_services_astrology-service_ts.js"
+      "static/chunks/_app-pages-browser_services_astrology-service_ts-_36180.js"
     ]
   }
 }

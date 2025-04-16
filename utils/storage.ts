@@ -45,8 +45,35 @@ export function isQuizCompleted(): boolean {
  */
 export function clearQuizData(): void {
   try {
+    // Clear specific quiz keys
     localStorage.removeItem(QUIZ_DATA_KEY)
     localStorage.removeItem(QUIZ_COMPLETED_KEY)
+    
+    // Clear all localStorage items with nordastro prefix
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('nordastro')) {
+        localStorage.removeItem(key)
+      }
+    })
+    
+    // Clear all sessionStorage items with nordastro prefix
+    if (typeof sessionStorage !== 'undefined') {
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('nordastro')) {
+          sessionStorage.removeItem(key)
+        }
+      })
+    }
+    
+    // Clear cookies with nordastro prefix
+    document.cookie.split(';').forEach(cookie => {
+      const cookieName = cookie.split('=')[0].trim()
+      if (cookieName.startsWith('nordastro')) {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+      }
+    })
+    
+    console.log('All quiz data completely cleared from browser storage')
   } catch (error) {
     console.error("Failed to clear quiz data:", error)
   }

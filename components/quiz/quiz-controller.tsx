@@ -5,9 +5,7 @@ import { GenderSelection } from "./gender-selection"
 import { AstrologyLevel } from "./astrology-level"
 import { NameCollection } from "./name-collection"
 import { LastNameCollection } from "./last-name-collection"
-import { BirthDate } from "./birth-date"
-import { BirthPlace } from "./birth-place"
-import { BirthTime } from "./birth-time"
+import { CombinedBirthDetails } from "./combined-birth-details"
 import { ZodiacDisplay } from "./zodiac-display"
 import { CoverCustomization } from "./cover-customization"
 import { EmailQuestion } from "./email-question"
@@ -15,10 +13,105 @@ import { BookCoverConfirmation } from "./book-cover-confirmation"
 import { PersonalizedLanding } from "./personalized-landing"
 import { GenericQuestion } from "./generic-question"
 import { RelationshipStatusQuestion } from "./relationship-status-question"
+import { PremiumCoverCustomization } from "@/components/book-cover/premium-cover-customization"
 import QuizLayout from "./quiz-layout"
 import { useEffect } from "react"
 import { isQuizCompleted } from "@/utils/storage"
 import { getQuestionByNumber } from "@/utils/quiz-questions"
+
+// Create a component for the layered cover customization step
+import { LayeredBookCover } from "@/components/book-cover/layered-book-cover"
+import { BookCoverDesigner } from "@/components/book-cover-designer"
+
+function LayeredCoverCustomization() {
+  const { state, setCoverColorScheme, nextStep } = useQuiz()
+  
+  // Format the birth date and place
+  const formattedDate = state.birthDate?.year && state.birthDate?.month && state.birthDate?.day 
+    ? `${state.birthDate.month}/${state.birthDate.day}/${state.birthDate.year}` 
+    : "01/01/2000"
+  
+  const birthPlace = state.birthLocation?.name || "Unknown Location"
+  
+  const handleContinue = () => {
+    nextStep()
+  }
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center">Layered Book Cover Preview</h2>
+
+      {/* Book cover preview */}
+      <div className="mb-8">
+        <div className="w-full aspect-[3/4] max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
+          <LayeredBookCover
+            name={state.firstName || "Your Name"}
+            birthDate={formattedDate}
+            birthPlace={birthPlace}
+            colorScheme="cosmic-blue"
+          />
+        </div>
+      </div>
+
+      {/* Explanation */}
+      <div className="bg-gray-50 p-6 rounded-lg mb-8">
+        <h3 className="text-lg font-medium mb-2">Layered Book Cover Design</h3>
+        <p className="text-gray-700 mb-4">
+          Your personalized book features a layered design with your information elegantly 
+          displayed over a cosmic background. The natal chart at the center represents your 
+          unique astrological profile.
+        </p>
+        <ul className="space-y-2 text-sm text-gray-600">
+          <li>• Decorative astrological elements</li>
+          <li>• Precisely placed natal chart</li>
+          <li>• Your name and birth details</li>
+          <li>• Premium design elements</li>
+        </ul>
+      </div>
+
+      {/* Continue button */}
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={handleContinue}
+          className="px-8 py-3 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors font-medium"
+        >
+          Continue with Layered Cover
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// New component for BookCoverDesigner in the quiz flow
+function BookCoverDesignerStep() {
+  const { state, nextStep } = useQuiz()
+  
+  // Handle continuing to the next step
+  const handleContinue = () => {
+    nextStep()
+  }
+
+  return (
+    <div className="w-full max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center">Design Your Custom Book Cover</h2>
+      
+      {/* Book cover designer */}
+      <div className="mb-8">
+        <BookCoverDesigner />
+      </div>
+      
+      {/* Continue button */}
+      <div className="flex justify-center mt-12">
+        <button
+          onClick={handleContinue}
+          className="px-8 py-3 bg-yellow-400 text-gray-900 rounded-full hover:bg-yellow-500 transition-colors font-semibold shadow-md"
+        >
+          Continue with Custom Cover
+        </button>
+      </div>
+    </div>
+  )
+}
 
 export function QuizController() {
   const { state, nextStep, prevStep } = useQuiz()
@@ -90,16 +183,22 @@ export function QuizController() {
       case 4:
         return <LastNameCollection />
       case 7:
-        return <BirthDate />
+        return <CombinedBirthDetails />
       case 8:
         // Special case - render the zodiac display directly without the quiz layout
         return <ZodiacDisplay />
-      case 9:
-        return <BirthTime />
-      case 10:
-        return <BirthPlace />
       case 33:
-        return <CoverCustomization />
+        // Allow user to choose between standard, premium, and layered cover
+        return <CoverCustomization showPremiumOption={true} showLayeredOption={true} showDesignerOption={true} />
+      case 36:
+        // Premium cover customization (after email collection)
+        return <PremiumCoverCustomization />
+      case 37:
+        // Layered cover customization
+        return <LayeredCoverCustomization />
+      case 38:
+        // Advanced book cover designer
+        return <BookCoverDesignerStep />
       default:
         // For steps that don't have specific components or CSV questions,
         // show a placeholder with navigation buttons

@@ -13,6 +13,12 @@ import { PaymentMethods } from "@/components/ui/payment-methods"
 import { AccordionItem } from "@/components/ui/accordion-item"
 import { EnhancedBookCover } from "@/components/quiz/enhanced-book-cover"
 
+interface SelectedOptions {
+  app: boolean
+  paperback: boolean
+  ebook: boolean
+}
+
 export default function PricingPage() {
   const { state } = useQuiz()
   const router = useRouter()
@@ -20,14 +26,71 @@ export default function PricingPage() {
   const [zodiacSign, setZodiacSign] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showTermsWarning, setShowTermsWarning] = useState(false)
-  // Use a single countdown state for both timers
   const [countdown, setCountdown] = useState({ minutes: 14, seconds: 54 })
-  const [selectedOption, setSelectedOption] = useState<"app" | "paperback" | "ebook">("paperback")
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
+    app: true,
+    paperback: true,
+    ebook: true
+  })
   const [isProcessingOrder, setIsProcessingOrder] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [orderSuccess, setOrderSuccess] = useState(false)
 
   const optionsSectionRef = useRef<HTMLDivElement>(null)
+
+  // Calculate total price based on selected options
+  const calculateTotalPrice = () => {
+    if (selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook) {
+      return 79.99 // All options selected
+    } else if (selectedOptions.paperback) {
+      // Any combination with paperback costs at least the paperback price
+      return 55.99
+    } else if (selectedOptions.app && selectedOptions.ebook) {
+      // App + eBook without paperback
+      return 30.99
+    } else if (selectedOptions.app) {
+      // Just app
+      return 30.99
+    } else if (selectedOptions.ebook) {
+      // Just eBook
+      return 30.99
+    }
+    return 0 // Nothing selected
+  }
+
+  const totalPrice = calculateTotalPrice()
+
+  // Handle option selection
+  const handleOptionSelect = (option: keyof SelectedOptions) => {
+    // Special handling for certain combinations
+    if (option === "paperback") {
+      // If turning paperback off, don't affect other options
+      if (selectedOptions.paperback) {
+        setSelectedOptions(prev => ({
+          ...prev,
+          paperback: false
+        }));
+      } else {
+        // If turning paperback on, keep others as they are
+        setSelectedOptions(prev => ({
+          ...prev,
+          paperback: true
+        }));
+      }
+    } else if (option === "ebook") {
+      // Handle ebook toggling
+      setSelectedOptions(prev => ({
+        ...prev,
+        ebook: !prev.ebook
+      }));
+    } else if (option === "app") {
+      // Handle app toggling
+      setSelectedOptions(prev => ({
+        ...prev,
+        app: !prev.app
+      }));
+    }
+  }
 
   useEffect(() => {
     // Check if we have any quiz data
@@ -213,7 +276,7 @@ export default function PricingPage() {
           <p className="text-sm font-medium">This offer ends in {formatCountdown(countdown)}</p>
         </div>
 
-        {/* Product Options - Enhanced to be clickable */}
+        {/* Product Options */}
         <ProductOption
           type="app"
           title="Nordastro app"
@@ -222,12 +285,12 @@ export default function PricingPage() {
             "New daily horoscopes & astrology content",
             "FREE 1-month trial with ebook or paperback",
           ]}
-          price="FREE"
+          price={selectedOptions.paperback ? "FREE" : "$30.99"}
           originalPrice="$30.99"
-          priceUnit="/month"
+          priceUnit={!selectedOptions.paperback ? "/month" : ""}
           imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOption === "app"}
-          onSelect={() => setSelectedOption("app")}
+          isSelected={selectedOptions.app}
+          onSelect={() => handleOptionSelect("app")}
         />
 
         <ProductOption
@@ -237,8 +300,8 @@ export default function PricingPage() {
           price="$55.99"
           originalPrice="$159.97"
           imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOption === "paperback"}
-          onSelect={() => setSelectedOption("paperback")}
+          isSelected={selectedOptions.paperback}
+          onSelect={() => handleOptionSelect("paperback")}
           saleTag="SALE 65% OFF"
         />
 
@@ -246,12 +309,25 @@ export default function PricingPage() {
           type="ebook"
           title="Nordastro ebook"
           features={["Digital copy delivered to your email", "FREE app included", "FREE with the paperback"]}
-          price="FREE"
+          price={selectedOptions.paperback ? "FREE" : "$30.99"}
           originalPrice="$49.99"
           imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOption === "ebook"}
-          onSelect={() => setSelectedOption("ebook")}
+          isSelected={selectedOptions.ebook}
+          onSelect={() => handleOptionSelect("ebook")}
         />
+
+        {/* Total Price Display */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Total Price:</span>
+            <span className="text-xl font-bold">${totalPrice.toFixed(2)}</span>
+          </div>
+          <p className="text-sm text-gray-500 mt-2">
+            {selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook 
+              ? "All-inclusive package with best value!" 
+              : "Customize your package by selecting options above"}
+          </p>
+        </div>
 
         {checkoutError && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

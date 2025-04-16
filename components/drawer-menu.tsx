@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
-import { X, Star, Facebook, Instagram, BookCopy } from "lucide-react"
+import { X, Star, Facebook, Instagram, BookCopy, Palette, RefreshCw } from "lucide-react"
 
 // Import the shared navigation links
 import { navigationLinks } from "@/utils/navigation"
@@ -77,15 +77,27 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-[#8f90a6] uppercase tracking-wider">Navigation</h3>
               <ul className="space-y-3">
-                {/* Add Get Your Book link */}
+                {/* Add Book Designer link */}
                 <li>
                   <Link
-                    href="/example-book"
+                    href="/book-designer"
                     className="flex items-center py-2 text-[#28293d] hover:text-[#f7c800] transition-colors"
                     onClick={onClose}
                   >
-                    <BookCopy className="h-5 w-5 mr-3 text-[#f7c800]" />
-                    <span>Get Your Book</span>
+                    <Palette className="h-5 w-5 mr-3 text-[#f7c800]" />
+                    <span>Book Designer</span>
+                  </Link>
+                </li>
+
+                {/* Add Reset Quiz link */}
+                <li>
+                  <Link
+                    href="/reset-quiz"
+                    className="flex items-center py-2 text-[#28293d] hover:text-[#f7c800] transition-colors"
+                    onClick={onClose}
+                  >
+                    <RefreshCw className="h-5 w-5 mr-3 text-[#f7c800]" />
+                    <span>Reset Quiz</span>
                   </Link>
                 </li>
 

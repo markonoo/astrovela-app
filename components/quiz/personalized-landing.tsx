@@ -42,7 +42,14 @@ export function PersonalizedLanding() {
             <span className="text-lg font-medium">nordastro</span>
             <Star size={16} className="ml-1 text-yellow-400" />
           </div>
-          {/* Home button removed as requested */}
+          <div>
+            <a
+              href="/reset-quiz"
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Reset Quiz
+            </a>
+          </div>
         </div>
       </header>
 
