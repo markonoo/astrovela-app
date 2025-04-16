@@ -10,7 +10,11 @@ const QUIZ_COMPLETED_KEY = "nordastro_quiz_completed"
 export function saveQuizData(data: QuizState): void {
   try {
     localStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(data))
-    localStorage.setItem(QUIZ_COMPLETED_KEY, "true")
+    
+    // Only set quiz as completed if the quizCompleted flag in the data is true
+    if (data.quizCompleted) {
+      localStorage.setItem(QUIZ_COMPLETED_KEY, "true")
+    }
   } catch (error) {
     console.error("Failed to save quiz data:", error)
   }
@@ -34,7 +38,17 @@ export function getQuizData(): QuizState | null {
  */
 export function isQuizCompleted(): boolean {
   try {
-    return localStorage.getItem(QUIZ_COMPLETED_KEY) === "true"
+    // Check both the completion flag and the data
+    const completedFlag = localStorage.getItem(QUIZ_COMPLETED_KEY) === "true"
+    
+    // For extra safety, also check the quiz data
+    if (completedFlag) {
+      const quizData = getQuizData()
+      // Only return true if both the flag and the quizCompleted property in the data are true
+      return quizData ? quizData.quizCompleted : completedFlag
+    }
+    
+    return false
   } catch (error) {
     return false
   }

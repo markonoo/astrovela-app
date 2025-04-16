@@ -8,7 +8,7 @@ import { IconSelector } from "./icon-selector"
 import { Button } from "@/components/ui/button"
 
 // Define the available theme colors
-const THEME_COLORS = {
+export const THEME_COLORS = {
   black: {
     bg: "bg-black",
     text: "text-white",

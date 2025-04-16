@@ -68,7 +68,7 @@ export function CombinedBirthDetails() {
     setValidationMessage(null)
     setIsValidated(true)
     if (inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.blur()
     }
   }
 
@@ -195,7 +195,7 @@ export function CombinedBirthDetails() {
             value={birthPlaceInput}
             onChange={handlePlaceInputChange}
             placeholder="City, Country"
-            className={`w-full pl-10 pr-10 py-3 border ${isValidated ? "border-green-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300`}
+            className={`w-full max-w-md min-w-[200px] pl-10 pr-10 py-3 border ${isValidated ? "border-green-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300`}
             disabled={isGeocoding}
           />
           {isValidated && (
@@ -209,7 +209,7 @@ export function CombinedBirthDetails() {
         {showSuggestions && suggestions.length > 0 && (
           <div
             ref={suggestionsRef}
-            className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
+            className="absolute z-10 w-full max-w-md min-w-[200px] mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
           >
             {suggestions.map((suggestion, index) => (
               <div

@@ -6,7 +6,7 @@ import type { NatalChart, ChartInterpretation } from "@/types/astrology"
 
 type Gender = "male" | "female" | "non-binary" | null
 type AstrologyLevel = "beginner" | "intermediate" | "expert" | null
-type ColorScheme = "purple" | "blue" | "green" | "orange" | "red"
+export type ColorScheme = "black" | "navy" | "purple" | "green" | "burgundy" | "cream"
 
 export interface QuizState {
   currentStep: number
@@ -62,7 +62,7 @@ interface QuizContextType {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 33,
+  totalSteps: 35,
   gender: null,
   astrologyLevel: null,
   firstName: null,
@@ -79,7 +79,7 @@ const initialState: QuizState = {
     longitude: null,
     name: null,
   },
-  coverColorScheme: "purple",
+  coverColorScheme: "cream",
   email: null,
   answers: {},
   quizCompleted: false,
@@ -117,9 +117,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   }
 
   const nextStep = () => {
-    if (state.currentStep < state.totalSteps) {
-      setState((prev) => ({ ...prev, currentStep: prev.currentStep + 1 }))
-    }
+    setState((prev) => ({ ...prev, currentStep: prev.currentStep + 1 }))
   }
 
   const prevStep = () => {
@@ -181,6 +179,11 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, email }))
   }
 
+  /**
+   * Mark the quiz as completed.
+   * This function must be explicitly called when the quiz is actually complete.
+   * The quizCompleted flag determines whether to show the results page.
+   */
   const completeQuiz = () => {
     setState((prev) => {
       const newState = { ...prev, quizCompleted: true }

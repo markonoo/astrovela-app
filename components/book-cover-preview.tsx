@@ -22,19 +22,19 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
 
   // Format date if provided
   const formattedDate = dateOfBirth
-    ? new Date(dateOfBirth).toLocaleDateString("en-US", {
-        month: "long",
+    ? new Date(dateOfBirth).toLocaleDateString("en-GB", {
         day: "numeric",
+        month: "long",
         year: "numeric",
       })
     : "Date of Birth"
 
   return (
-    <div className="relative w-full max-w-[350px]">
+    <div className="relative w-[350px] max-w-[350px] h-[525px]">
       {/* Clean book cover container without 3D effects */}
-      <div className="relative shadow-lg">
+      <div className="relative shadow-lg w-full h-full">
         <div
-          className={`${themeColor.bg} ${themeColor.text} aspect-[2/3] p-8 flex flex-col items-center relative overflow-hidden font-montserrat`}
+          className={`${themeColor.bg} ${themeColor.text} aspect-[2/3] w-full h-full p-8 flex flex-col items-center relative overflow-hidden font-montserrat`}
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-10">
@@ -57,14 +57,14 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
               )}
             </div>
 
-            {/* Middle section with chart - fixed height container to ensure consistent spacing */}
+            {/* Middle section with chart - unified large size for all usages */}
             <div className="flex items-center justify-center w-full h-[300px]">
               {selectedIcon === "natal-chart" ? (
-                <div className="relative w-[300px] h-[280px] flex items-center justify-center">
+                <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                   <Image src="/images/natal-chart.png" alt="Natal Chart" fill className="object-contain" priority />
                 </div>
               ) : (
-                <div className="relative w-[300px] h-[280px] flex items-center justify-center">
+                <div className="relative w-[300px] h-[300px] flex items-center justify-center">
                   <Image
                     src="/images/zodiac-chart-icon.png"
                     alt="Zodiac Chart"
@@ -76,8 +76,8 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
               )}
             </div>
 
-            {/* Bottom section with place and date - fixed position from bottom */}
-            <div className="text-center w-full absolute bottom-8">
+            {/* Date and place of birth - directly below the chart, not absolutely positioned */}
+            <div className="text-center w-full mt-2 mb-4">
               <p className="text-sm tracking-wider">{formattedDate}</p>
               <p className="text-sm tracking-wider mt-1">{placeOfBirth || "Place of Birth"}</p>
             </div>

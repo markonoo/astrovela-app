@@ -11,7 +11,8 @@ import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { ProductOption } from "@/components/ui/product-option"
 import { PaymentMethods } from "@/components/ui/payment-methods"
 import { AccordionItem } from "@/components/ui/accordion-item"
-import { EnhancedBookCover } from "@/components/quiz/enhanced-book-cover"
+import { BookCoverPreview } from "@/components/book-cover-preview"
+import { THEME_COLORS } from "@/components/book-cover-designer"
 
 interface SelectedOptions {
   app: boolean
@@ -211,7 +212,7 @@ export default function PricingPage() {
   return (
     <>
       {/* Header with back button */}
-      <header className="bg-white py-4 px-4 sticky top-0 z-10 shadow-sm">
+      <header className="bg-white py-4 px-4 sticky top-0 z-50 shadow-sm">
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <button onClick={handleBackClick} className="flex items-center text-gray-600 hover:text-gray-900">
             <ChevronLeft size={24} />
@@ -256,9 +257,20 @@ export default function PricingPage() {
           </div>
 
           {/* Book Cover - Using the enhanced book cover component */}
-          <div className="flex justify-center mb-4">
-            <div className="w-64 h-auto">
-              <EnhancedBookCover />
+          <div className="flex items-center justify-center mb-4 w-full">
+            <div className="w-[350px] h-[525px] flex items-center justify-center">
+              <BookCoverPreview
+                userInfo={{
+                  firstName: state.firstName || "FIRST",
+                  lastName: state.lastName || "",
+                  placeOfBirth: state.birthPlace || "Place of Birth",
+                  dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                    : "",
+                }}
+                themeColor={THEME_COLORS[state.coverColorScheme]}
+                selectedIcon={"natal-chart"}
+              />
             </div>
           </div>
         </div>

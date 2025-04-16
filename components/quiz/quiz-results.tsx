@@ -4,7 +4,8 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { getZodiacSign, zodiacDescriptions } from "@/utils/zodiac"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import SimpleBookCover from "@/components/SimpleBookCover"
+import { BookCoverPreview } from "@/components/book-cover-preview"
+import { THEME_COLORS } from "@/components/book-cover-designer"
 
 export function QuizResults() {
   const { state, resetQuiz } = useQuiz()
@@ -39,18 +40,26 @@ export function QuizResults() {
   }, [state.birthDate])
 
   return (
-    <div className="text-center space-y-6">
+    <div className="w-full flex flex-col items-center text-center space-y-6">
       <h1 className="text-2xl font-semibold text-gray-900">Your Astrology Profile</h1>
 
       {/* Book Cover Preview - Matching the style from steps 33/34 */}
-      <div className="flex justify-center mb-8">
-        <div className="w-64 h-96 rounded-lg shadow-xl overflow-hidden">
-          <SimpleBookCover
-            name={state.firstName || "YOUR NAME"}
-            birthDate={formattedBirthDate || "Your Birth Date"}
-            birthPlace={state.birthPlace || "Your Birth Place"}
-            colorScheme={state.coverColorScheme}
-          />
+      <div className="flex items-center justify-center w-full mb-8">
+        <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center w-full max-w-[390px] h-auto md:h-[600px] p-2 md:p-4 md:py-8 mb-8">
+          <div className="w-full h-auto max-w-[350px] max-h-[525px] flex items-center justify-center">
+            <BookCoverPreview
+              userInfo={{
+                firstName: state.firstName || "FIRST",
+                lastName: state.lastName || "",
+                placeOfBirth: state.birthPlace || "Place of Birth",
+                dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                  ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                  : "",
+              }}
+              themeColor={THEME_COLORS[state.coverColorScheme]}
+              selectedIcon={"natal-chart"}
+            />
+          </div>
         </div>
       </div>
 

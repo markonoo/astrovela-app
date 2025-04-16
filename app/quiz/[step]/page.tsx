@@ -3,7 +3,8 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import SimpleBookCover from "@/components/SimpleBookCover"
+import { BookCoverPreview } from "@/components/book-cover-preview"
+import { THEME_COLORS } from "@/components/book-cover-designer"
 import { COLOR_SCHEMES, type ColorSchemeKey } from "@/utils/constants"
 
 const QuizStepPage = ({ params }: { params: { step: string } }) => {
@@ -124,33 +125,33 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
             <div className="mb-6 w-full max-w-md">
               <h3 className="text-lg font-medium mb-3 text-center">Choose a Color</h3>
               <div className="flex flex-wrap gap-3 justify-center">
-                {Object.entries(COLOR_SCHEMES).map(([key, scheme]) => (
+                {(Object.keys(THEME_COLORS) as string[]).map((key: string) => (
                   <button
                     key={key}
                     onClick={() => handleColorSelect(key)}
                     className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all ${
                       selectedColor === key ? "ring-2 ring-offset-2 ring-blue-500" : ""
-                    }`}
-                    style={{
-                      backgroundColor: scheme.bgColor,
-                      color: scheme.textColor,
-                    }}
-                    aria-label={`Select ${scheme.name} color`}
+                    } ${THEME_COLORS[key as keyof typeof THEME_COLORS]?.className || ''}`}
+                    aria-label={`Select ${key} color`}
                     aria-pressed={selectedColor === key}
                   >
-                    <span className="sr-only">{scheme.name}</span>
+                    <span className="sr-only">{key}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Book Cover */}
-            <div className="w-64 h-96 rounded-lg shadow-xl overflow-hidden mb-8">
-              <SimpleBookCover
-                name={formData.name || "YOUR NAME"}
-                birthDate={formattedBirthDate || "Your Birth Date"}
-                birthPlace={formData.birthPlace || "Your Birth Place"}
-                colorScheme={selectedColor}
+            <div className="w-[350px] h-[525px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
+              <BookCoverPreview
+                userInfo={{
+                  firstName: formData.name || "YOUR NAME",
+                  lastName: "",
+                  placeOfBirth: formData.birthPlace || "Your Birth Place",
+                  dateOfBirth: formattedBirthDate || "Your Birth Date",
+                }}
+                themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
+                selectedIcon={"natal-chart"}
               />
             </div>
 
@@ -165,12 +166,16 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
             <h2 className="text-2xl font-bold mb-4">Step 34: Confirm Your Book Cover</h2>
 
             {/* Book Cover - Using the same component as step 33 */}
-            <div className="w-64 h-96 rounded-lg shadow-xl overflow-hidden mb-8">
-              <SimpleBookCover
-                name={formData.name || "YOUR NAME"}
-                birthDate={formattedBirthDate || "Your Birth Date"}
-                birthPlace={formData.birthPlace || "Your Birth Place"}
-                colorScheme={formData.colorScheme}
+            <div className="mt-10 w-[350px] h-[525px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
+              <BookCoverPreview
+                userInfo={{
+                  firstName: formData.name || "YOUR NAME",
+                  lastName: "",
+                  placeOfBirth: formData.birthPlace || "Your Birth Place",
+                  dateOfBirth: formattedBirthDate || "Your Birth Date",
+                }}
+                themeColor={THEME_COLORS[formData.colorScheme as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
+                selectedIcon={"natal-chart"}
               />
             </div>
 

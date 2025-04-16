@@ -4,7 +4,8 @@ import { useQuiz } from "@/contexts/quiz-context"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { CheckCircle } from "lucide-react"
-import SimpleBookCover from "@/components/SimpleBookCover"
+import { BookCoverPreview } from "@/components/book-cover-preview"
+import { THEME_COLORS } from "@/components/book-cover-designer"
 
 export default function ThankYouPage() {
   const { state } = useQuiz()
@@ -45,13 +46,19 @@ export default function ThankYouPage() {
       </p>
 
       {/* Book Cover Preview */}
-      <div className="flex justify-center mb-8">
-        <div className="w-64 h-96 rounded-lg shadow-xl overflow-hidden">
-          <SimpleBookCover
-            name={state.firstName || "YOUR NAME"}
-            birthDate={formattedBirthDate || "Your Birth Date"}
-            birthPlace={state.birthPlace || "Your Birth Place"}
-            colorScheme={state.coverColorScheme}
+      <div className="flex justify-center w-full mb-8">
+        <div className="w-full h-auto max-w-[350px] max-h-[525px] flex items-center justify-center">
+          <BookCoverPreview
+            userInfo={{
+              firstName: state.firstName || "FIRST",
+              lastName: state.lastName || "",
+              placeOfBirth: state.birthPlace || "Place of Birth",
+              dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                : "",
+            }}
+            themeColor={THEME_COLORS[state.coverColorScheme]}
+            selectedIcon={"natal-chart"}
           />
         </div>
       </div>

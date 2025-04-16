@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useQuiz } from "@/contexts/quiz-context"
 import { NatalChart } from "./natal-chart"
 import { Loader2 } from "lucide-react"
+import { THEME_COLORS } from "../book-cover-designer"
 
 interface EnhancedBookCoverProps {
   className?: string
@@ -18,45 +19,8 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState("Initializing...")
 
-  // Get color scheme details based on user selection
-  const getColorScheme = () => {
-    const colorSchemes = {
-      purple: {
-        bgColor: "#2d2a4a",
-        name: "Purple",
-        textColor: "#ffffff",
-        accentColor: "#9d8cff",
-      },
-      blue: {
-        bgColor: "#1a2a42",
-        name: "Blue",
-        textColor: "#ffffff",
-        accentColor: "#64b5f6",
-      },
-      green: {
-        bgColor: "#1a3a2a",
-        name: "Green",
-        textColor: "#ffffff",
-        accentColor: "#66bb6a",
-      },
-      orange: {
-        bgColor: "#3a2a1a",
-        name: "Orange",
-        textColor: "#ffffff",
-        accentColor: "#ffa726",
-      },
-      red: {
-        bgColor: "#3a1a1a",
-        name: "Red",
-        textColor: "#ffffff",
-        accentColor: "#ef5350",
-      },
-    }
-
-    return colorSchemes[state.coverColorScheme] || colorSchemes.purple
-  }
-
-  const colorScheme = getColorScheme()
+  // Use the unified color system
+  const colorScheme = THEME_COLORS[state.coverColorScheme]
 
   // Format birth date for book cover
   const formatBirthDate = () => {
@@ -149,12 +113,17 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
     onChartLoaded,
   ])
 
+  // Clamp loadingProgress to 100
+  const clampedProgress = Math.min(loadingProgress, 100)
+
   return (
     <div
       className={`h-full rounded-lg shadow-xl overflow-hidden transform transition-all duration-300 ${className}`}
-      style={{ backgroundColor: colorScheme.bgColor }}
+      style={{ backgroundColor: colorScheme.bg }}
     >
-      <div className="h-full flex flex-col items-center justify-between p-6 text-white relative">
+      <div className="h-full flex flex-col items-center justify-between p-6 relative"
+        style={{ color: colorScheme.text }}
+      >
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,7 +143,7 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
             {state.firstName || "YOUR NAME"}
             {state.lastName ? ` ${state.lastName.charAt(0)}.` : ""}
           </h2>
-          <div className="w-16 h-1 mx-auto mt-2" style={{ backgroundColor: colorScheme.accentColor }}></div>
+          <div className="w-16 h-1 mx-auto mt-2" style={{ backgroundColor: colorScheme.text }}></div>
         </div>
 
         {/* Natal Chart */}
@@ -203,7 +172,7 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
                     fill="none"
                     strokeLinecap="round"
                     strokeDasharray="283"
-                    strokeDashoffset={283 - (loadingProgress / 100) * 283}
+                    strokeDashoffset={283 - (clampedProgress / 100) * 283}
                     transform="rotate(-90 50 50)"
                   />
                 </svg>
@@ -212,7 +181,7 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
                 </div>
               </div>
               <p className="text-xs mt-4 text-center max-w-[180px]">{loadingMessage}</p>
-              <p className="text-xs text-white/70">{loadingProgress.toFixed(0)}%</p>
+              <p className="text-xs text-white/70">{clampedProgress.toFixed(0)}%</p>
             </div>
           ) : error ? (
             <div className="absolute inset-0 flex items-center justify-center">

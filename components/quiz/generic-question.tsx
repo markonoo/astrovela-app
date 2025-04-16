@@ -32,14 +32,23 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
     // Update the quiz context with the answer
     updateAnswer(`question_${questionNumber}`, option)
 
-    // Visual feedback before moving to next question
+    // Visual feedback for selection
     setIsTransitioning(true)
-
-    // Small delay for visual feedback before moving to next question
     setTimeout(() => {
-      nextStep()
       setIsTransitioning(false)
     }, 300)
+  }
+  
+  const handleContinue = () => {
+    // Only proceed if an option is selected
+    if (selectedOption) {
+      // Transition effect
+      setIsTransitioning(true)
+      setTimeout(() => {
+        nextStep()
+        setIsTransitioning(false)
+      }, 300)
+    }
   }
 
   return (
@@ -60,10 +69,23 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
           </OptionCard>
         ))}
       </div>
+      
+      {/* Continue button - only active when an option is selected */}
+      <button
+        onClick={handleContinue}
+        disabled={!selectedOption}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selectedOption 
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400" 
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
 
       <button
         onClick={prevStep}
-        className="mt-6 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+        className="mt-3 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
       >
         Previous Question
       </button>

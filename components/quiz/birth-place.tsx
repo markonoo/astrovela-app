@@ -226,7 +226,7 @@ export function BirthPlace() {
                 setShowSuggestions(true)
               }
               placeholder="City, Country"
-              className={`w-full pl-10 pr-10 py-3 border ${isValidated ? "border-green-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300`}
+              className={`w-full max-w-md min-w-[200px] pl-10 pr-10 py-3 border ${isValidated ? "border-green-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300`}
               aria-autocomplete="list"
               aria-controls="city-suggestions"
               aria-expanded={showSuggestions}
@@ -267,7 +267,7 @@ export function BirthPlace() {
             <div
               ref={suggestionsRef}
               id="city-suggestions"
-              className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+              className="absolute z-10 w-full max-w-md min-w-[200px] max-w-[95vw] mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
               role="listbox"
             >
               {suggestions.map(({ city, country }, index) => (

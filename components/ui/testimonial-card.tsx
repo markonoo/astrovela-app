@@ -11,13 +11,14 @@ interface TestimonialCardProps {
 
 export function TestimonialCard({ quote, name, age, rating = 5, verified = true, imageSrc }: TestimonialCardProps) {
   return (
-    <div className="bg-gray-100 rounded-lg overflow-hidden">
+    <div className="bg-gray-100 rounded-lg overflow-hidden h-full flex flex-col">
       <div className="mb-3">
         <img src={imageSrc || "/placeholder.svg"} alt={`${name}'s testimonial`} className="w-full h-auto" />
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <p className="text-gray-800 mb-3 text-sm">"{quote}"</p>
-        <div className="flex justify-between items-center">
+        <div className="flex-1" />
+        <div className="flex justify-between items-end mt-4">
           <div>
             <p className="font-medium text-sm">
               {name}

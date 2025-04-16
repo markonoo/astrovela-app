@@ -7,7 +7,8 @@ import { useEffect, useState } from "react"
 import { Book, Star, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Footer } from "@/components/shared/footer"
-import { EnhancedBookCover } from "./enhanced-book-cover"
+import { BookCoverPreview } from "../book-cover-preview"
+import { THEME_COLORS } from "../book-cover-designer"
 
 export function PersonalizedLanding() {
   const router = useRouter()
@@ -36,7 +37,7 @@ export function PersonalizedLanding() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm py-4 sticky top-0 z-10">
+      <header className="bg-white shadow-sm py-4 sticky top-0 z-50">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-lg font-medium">nordastro</span>
@@ -56,20 +57,31 @@ export function PersonalizedLanding() {
       {/* Main content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Book cover section - only this section is kept at the top */}
-        <section className="bg-white rounded-lg shadow-sm p-8 mb-8 text-center">
-          <h1 className="text-2xl font-bold mb-2">Your personalized book NORDASTRO</h1>
-          <p className="text-gray-600 mb-6">is almost ready!</p>
+        <section className="bg-white rounded-lg shadow-sm p-8 mb-8 flex flex-col items-center min-h-[700px]">
+          <h1 className="text-2xl font-bold mb-2 text-center">Your personalized book NORDASTRO</h1>
+          <p className="text-gray-600 mb-6 text-center">is almost ready!</p>
 
-          {/* Enhanced book cover display with integrated natal chart */}
-          <div className="flex justify-center mb-10">
-            <div className="w-72 h-96">
-              <EnhancedBookCover onChartLoaded={handleChartLoaded} />
+          {/* Book cover display with user-selected color and info */}
+          <div className="flex justify-center items-center w-full mb-8">
+            <div className="w-[350px] h-[525px] flex items-center justify-center mx-auto">
+              <BookCoverPreview
+                userInfo={{
+                  firstName: state.firstName || "FIRST",
+                  lastName: state.lastName || "",
+                  placeOfBirth: state.birthPlace || "Place of Birth",
+                  dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                    : "",
+                }}
+                themeColor={THEME_COLORS[state.coverColorScheme]}
+                selectedIcon={"natal-chart"}
+              />
             </div>
           </div>
 
           <button
             onClick={handleGetBook}
-            className="w-full sm:w-auto px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
+            className="w-full sm:w-auto px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors mt-2"
           >
             Get the book
           </button>
