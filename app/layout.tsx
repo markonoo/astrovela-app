@@ -5,9 +5,12 @@ import type { Metadata } from "next"
 import { OliviaDataLoader } from "@/components/example-book/olivia-data-loader"
 
 export const metadata: Metadata = {
-  title: "Astrology Quiz",
-  description: "Discover your astrological profile",
-    generator: 'v0.dev'
+  title: "astrovela",
+  description: "astrovela - Personalized astrology for self-discovery, growth, and insight.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -27,7 +30,5 @@ export default function RootLayout({
     </html>
   )
 }
-
-
 
 import './globals.css'
