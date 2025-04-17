@@ -58,7 +58,7 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
         {/* Drawer header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <div className="flex items-center">
-            <span className="text-[#28293d] font-medium">nordastro</span>
+            <span className="text-[#28293d] font-medium">astronova</span>
             <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
           </div>
           <button
@@ -137,7 +137,7 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
 
         {/* Drawer footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 text-center">
-          <p className="text-xs text-[#8f90a6]">© 2025 Nordastro. All rights reserved.</p>
+          <p className="text-xs text-[#8f90a6]">© 2025 astronova. All rights reserved.</p>
         </div>
       </div>
     </>

@@ -62,7 +62,7 @@ export function QuizController() {
     if (typeof window !== "undefined") {
       // If we're starting a fresh quiz, make sure to remove the completed flag
       if (currentStep === 1 && !quizCompleted) {
-        localStorage.removeItem("nordastro_quiz_completed")
+        localStorage.removeItem("astronova_quiz_completed")
       }
       
       const completed = isQuizCompleted()

@@ -35,7 +35,7 @@ export function PageHeader({ transparent = false }: PageHeaderProps) {
     <header className={headerClasses}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
-          <span className="text-lg font-medium text-[#28293d]">nordastro</span>
+          <span className="text-lg font-medium text-[#28293d]">astronova</span>
           <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
         </Link>
 

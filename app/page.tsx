@@ -19,7 +19,7 @@ export default function Home() {
       {/* Header */}
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <div className="flex items-center">
-          <span className="text-[#28293d] font-medium">nordastro</span>
+          <span className="text-[#28293d] font-medium">astronova</span>
           <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
         </div>
         <HamburgerButton onClick={openDrawer} />

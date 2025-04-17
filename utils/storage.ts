@@ -1,8 +1,8 @@
 import type { QuizState } from "@/contexts/quiz-context"
 
 // Keys for storage
-const QUIZ_DATA_KEY = "nordastro_quiz_data"
-const QUIZ_COMPLETED_KEY = "nordastro_quiz_completed"
+const QUIZ_DATA_KEY = "astronova_quiz_data"
+const QUIZ_COMPLETED_KEY = "astronova_quiz_completed"
 
 /**
  * Save quiz data to local storage
@@ -63,26 +63,26 @@ export function clearQuizData(): void {
     localStorage.removeItem(QUIZ_DATA_KEY)
     localStorage.removeItem(QUIZ_COMPLETED_KEY)
     
-    // Clear all localStorage items with nordastro prefix
+    // Clear all localStorage items with astronova prefix
     Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('nordastro')) {
+      if (key.startsWith('astronova')) {
         localStorage.removeItem(key)
       }
     })
     
-    // Clear all sessionStorage items with nordastro prefix
+    // Clear all sessionStorage items with astronova prefix
     if (typeof sessionStorage !== 'undefined') {
       Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('nordastro')) {
+        if (key.startsWith('astronova')) {
           sessionStorage.removeItem(key)
         }
       })
     }
     
-    // Clear cookies with nordastro prefix
+    // Clear cookies with astronova prefix
     document.cookie.split(';').forEach(cookie => {
       const cookieName = cookie.split('=')[0].trim()
-      if (cookieName.startsWith('nordastro')) {
+      if (cookieName.startsWith('astronova')) {
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
       }
     })

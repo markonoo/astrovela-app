@@ -57,7 +57,7 @@ export function Footer() {
                 </div>
               </a>
             </div>
-            <span className="text-xs text-[#8f90a6]">© 2025 Nordastro. All rights reserved.</span>
+            <span className="text-xs text-[#8f90a6]">© 2025 astronova. All rights reserved.</span>
           </div>
         </div>
       </div>

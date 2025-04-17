@@ -36,7 +36,7 @@ export default function QuizLayout({ children, showBackButton = true }: QuizLayo
           )}
 
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-            <span className="text-sm font-medium text-[#28293d]">nordastro</span>
+            <span className="text-sm font-medium text-[#28293d]">astronova</span>
             <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
           </div>
 

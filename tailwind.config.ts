@@ -63,7 +63,7 @@ const config: Config = {
         },
         "astro-dark": "#001736",
         "astro-card": "#041c3c",
-        nordastro: {
+        astronova: {
           background: "#f7f7f7",
           text: "#28293d",
           accent: "#f7c800",
