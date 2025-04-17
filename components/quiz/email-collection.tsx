@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useQuiz } from "@/contexts/quiz-context"
 import { useState } from "react"
 import { Mail } from "lucide-react"
@@ -14,7 +15,7 @@ export function EmailCollection() {
     return regex.test(email)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!emailInput.trim()) {
       setError("Email is required")
       return
@@ -29,16 +30,22 @@ export function EmailCollection() {
     setEmail(emailInput)
 
     try {
-      // Submit quiz data to backend
-      const response = await fetch('/api/quiz/submit', {
+      // Submit quiz data to backend (new endpoint)
+      const response = await fetch('/api/quiz-response', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...state,
           email: emailInput,
-          submittedAt: new Date().toISOString()
+          answers: state.answers,
+          birthDate: state.birthDate,
+          birthPlace: state.birthPlace,
+          birthTime: state.birthTime,
+          firstName: state.firstName,
+          lastName: state.lastName,
+          gender: state.gender,
+          coverDesign: state.coverColorScheme
         })
       })
 

@@ -1,9 +1,11 @@
 "use client"
 
+import * as React from "react"
 import { useEffect } from "react"
 import Link from "next/link"
 import { X, Facebook, Instagram, BookCopy, Palette, RefreshCw } from "lucide-react"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
+import AuthForm from "@/components/AuthForm"
 
 // Import the shared navigation links
 import { navigationLinks } from "@/utils/navigation"
@@ -132,6 +134,11 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
                   </div>
                 </Link>
               </div>
+            </div>
+
+            {/* AuthForm for testing authentication */}
+            <div className="mt-8">
+              <AuthForm />
             </div>
           </nav>
         </div>

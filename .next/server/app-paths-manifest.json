@@ -1,7 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/quiz/page": "app/quiz/page.js",
-  "/help-center/page": "app/help-center/page.js",
-  "/privacy/page": "app/privacy/page.js",
-  "/terms/page": "app/terms/page.js"
-}
+{}

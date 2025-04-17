@@ -1,5 +1,6 @@
 import type React from "react"
 import { QuizProvider } from "@/contexts/quiz-context"
+import { UserProvider } from "@/contexts/UserContext"
 import "./globals.css"
 import type { Metadata } from "next"
 import { OliviaDataLoader } from "@/components/example-book/olivia-data-loader"
@@ -21,11 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#f7f7f7]">
-        <QuizProvider>
-          {/* Pre-load Olivia's data */}
-          <OliviaDataLoader />
-          {children}
-        </QuizProvider>
+        <UserProvider>
+          <QuizProvider>
+            {/* Pre-load Olivia's data */}
+            <OliviaDataLoader />
+            {children}
+          </QuizProvider>
+        </UserProvider>
       </body>
     </html>
   )
