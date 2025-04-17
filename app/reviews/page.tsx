@@ -14,7 +14,7 @@ const reviewsData = [
     date: "October 15, 2023",
     title: "Life-changing guidance!",
     content:
-      "I got astronova book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives. The insights about my career path were spot-on and helped me make a decision I was struggling with for months.",
+      "I got astrovela book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives. The insights about my career path were spot-on and helped me make a decision I was struggling with for months.",
     imageSrc: "/placeholder.svg?height=50&width=50",
   },
   {
@@ -47,7 +47,7 @@ const reviewsData = [
     date: "November 3, 2023",
     title: "Best astrology book I've ever read",
     content:
-      "I've read many astrology books before, but none as personalized and detailed as astronova. The way it breaks down my birth chart and explains the influences of each planet is incredibly insightful. I've been recommending it to all my friends!",
+      "I've read many astrology books before, but none as personalized and detailed as astrovela. The way it breaks down my birth chart and explains the influences of each planet is incredibly insightful. I've been recommending it to all my friends!",
     imageSrc: "/placeholder.svg?height=50&width=50",
   },
   {
@@ -58,7 +58,7 @@ const reviewsData = [
     date: "October 30, 2023",
     title: "Great insights for personal growth",
     content:
-      "As someone focused on personal development, I found the astronova book to be a valuable tool. It highlighted areas for growth I wasn't fully aware of and provided strategies tailored to my astrological profile. The only reason for 4 stars instead of 5 is I wish the digital version had more interactive elements.",
+      "As someone focused on personal development, I found the astrovela book to be a valuable tool. It highlighted areas for growth I wasn't fully aware of and provided strategies tailored to my astrological profile. The only reason for 4 stars instead of 5 is I wish the digital version had more interactive elements.",
     imageSrc: "/placeholder.svg?height=50&width=50",
   },
   {
@@ -96,7 +96,7 @@ export default function ReviewsPage() {
   return (
     <PageLayout
       title="Customer Reviews"
-      description="See what our community has to say about their astronova experience"
+      description="See what our community has to say about their astrovela experience"
     >
       {/* Overall Rating Section */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -184,7 +184,7 @@ export default function ReviewsPage() {
 
       {/* Write a Review CTA */}
       <div className="bg-yellow-50 rounded-lg p-6 my-8 text-center">
-        <h2 className="text-xl font-bold mb-2">Share your experience with astronova</h2>
+        <h2 className="text-xl font-bold mb-2">Share your experience with astrovela</h2>
         <p className="mb-4">Have you used our personalized astrology book? We'd love to hear your thoughts!</p>
         <button className="px-6 py-3 bg-yellow-400 rounded-full text-gray-900 font-medium hover:bg-yellow-500 transition-colors">
           Write a Review

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Star } from "lucide-react"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import { navigationLinks } from "@/utils/navigation"
 
 export function Footer() {
@@ -8,7 +8,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-200 pt-6">
           <div className="flex items-center justify-center mb-4 md:mb-0">
-            <Star size={16} className="mr-2 text-[#f7c800]" fill="#f7c800" />
+            <AstrovelaIcon width={20} height={20} className="mr-2" />
             <div className="flex flex-wrap gap-4 md:gap-6 text-sm text-[#8f90a6]">
               {navigationLinks.map((link) => (
                 <Link key={link.path} href={link.path} className="hover:text-[#28293d]">
@@ -57,7 +57,7 @@ export function Footer() {
                 </div>
               </a>
             </div>
-            <span className="text-xs text-[#8f90a6]">© 2025 astronova. All rights reserved.</span>
+            <span className="text-xs text-[#8f90a6]">© 2025 astrovela. All rights reserved.</span>
           </div>
         </div>
       </div>

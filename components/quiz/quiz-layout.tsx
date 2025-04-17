@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Star } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import { useQuiz } from "@/contexts/quiz-context"
 import { DrawerMenu } from "@/components/drawer-menu"
 import { HamburgerButton } from "@/components/hamburger-button"
@@ -36,8 +37,8 @@ export default function QuizLayout({ children, showBackButton = true }: QuizLayo
           )}
 
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-            <span className="text-sm font-medium text-[#28293d]">astronova</span>
-            <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
+            <span className="text-sm font-medium text-[#28293d]">astrovela</span>
+            <AstrovelaIcon width={16} height={16} className="ml-1 text-[#f7c800]" />
           </div>
 
           <div className="flex items-center gap-4">

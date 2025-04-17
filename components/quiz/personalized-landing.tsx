@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { Footer } from "@/components/shared/footer"
 import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 
 export function PersonalizedLanding() {
   const router = useRouter()
@@ -40,7 +41,7 @@ export function PersonalizedLanding() {
       <header className="bg-white shadow-sm py-4 sticky top-0 z-50">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-lg font-medium">astronova</span>
+            <span className="text-lg font-medium">astrovela</span>
             <Star size={16} className="ml-1 text-yellow-400" />
           </div>
           <div>
@@ -58,7 +59,7 @@ export function PersonalizedLanding() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Book cover section - only this section is kept at the top */}
         <section className="bg-white rounded-lg shadow-sm p-8 mb-8 flex flex-col items-center min-h-[700px]">
-          <h1 className="text-2xl font-bold mb-2 text-center">Your personalized book ASTRONOVA</h1>
+          <h1 className="text-2xl font-bold mb-2 text-center">Your personalized book ASTROVELA</h1>
           <p className="text-gray-600 mb-6 text-center">is almost ready!</p>
 
           {/* Book cover display with user-selected color and info */}
@@ -168,7 +169,7 @@ export function PersonalizedLanding() {
 
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                <Star size={20} className="text-yellow-600" />
+                <AstrovelaIcon width={20} height={20} className="text-yellow-600" />
               </div>
               <div>
                 <h3 className="font-medium mb-1">Personality & life path profile</h3>

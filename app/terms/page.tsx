@@ -6,15 +6,15 @@ export default function TermsPage() {
       <div className="bg-white rounded-lg shadow-sm p-6 prose prose-slate max-w-none">
         <h2>1. Introduction</h2>
         <p>
-          Welcome to astronova. These Terms and Conditions govern your use of our website, products, and services. By
-          accessing or using astronova, you agree to be bound by these Terms. If you disagree with any part of the
+          Welcome to astrovela. These Terms and Conditions govern your use of our website, products, and services. By
+          accessing or using astrovela, you agree to be bound by these Terms. If you disagree with any part of the
           terms, you may not access our services.
         </p>
 
         <h2>2. Definitions</h2>
-        <p>"Service" refers to the astronova website, mobile application, and personalized astrology products.</p>
+        <p>"Service" refers to the astrovela website, mobile application, and personalized astrology products.</p>
         <p>"User," "You," and "Your" refers to the individual accessing or using the Service.</p>
-        <p>"Company," "We," "Us," and "Our" refers to astronova.</p>
+        <p>"Company," "We," "Us," and "Our" refers to astrovela.</p>
         <p>"Content" refers to text, images, audio, video, and other material provided through the Service.</p>
 
         <h2>3. Account Registration</h2>
@@ -62,7 +62,7 @@ export default function TermsPage() {
 
         <h2>8. Intellectual Property</h2>
         <p>
-          All content included on the Service, such as text, graphics, logos, and software, is the property of astronova
+          All content included on the Service, such as text, graphics, logos, and software, is the property of astrovela
           or its content suppliers and protected by copyright and other laws. Our trademarks and trade dress may not be
           used in connection with any product or service without prior written consent.
         </p>
@@ -84,21 +84,21 @@ export default function TermsPage() {
 
         <h2>11. Limitation of Liability</h2>
         <p>
-          In no event shall astronova be liable for any indirect, incidental, special, consequential or punitive
+          In no event shall astrovela be liable for any indirect, incidental, special, consequential or punitive
           damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses,
           resulting from your use of or inability to use the Service.
         </p>
 
         <h2>12. Indemnification</h2>
         <p>
-          You agree to defend, indemnify, and hold harmless astronova from and against any claims, liabilities, damages,
+          You agree to defend, indemnify, and hold harmless astrovela from and against any claims, liabilities, damages,
           judgments, awards, losses, costs, expenses, or fees arising out of or relating to your violation of these
           Terms or your use of the Service.
         </p>
 
         <h2>13. Governing Law</h2>
         <p>
-          These Terms shall be governed by the laws of the jurisdiction in which astronova is established, without
+          These Terms shall be governed by the laws of the jurisdiction in which astrovela is established, without
           regard to its conflict of law provisions.
         </p>
 
@@ -112,7 +112,7 @@ export default function TermsPage() {
         <h2>15. Contact Us</h2>
         <p>
           If you have any questions about these Terms, please contact us at{" "}
-          <a href="mailto:legal@astronova.com">legal@astronova.com</a>.
+          <a href="mailto:legal@astrovela.com">legal@astrovela.com</a>.
         </p>
 
         <p className="text-sm text-gray-500 mt-8">Last updated: December 1, 2023</p>

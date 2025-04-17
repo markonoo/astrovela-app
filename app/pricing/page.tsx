@@ -201,7 +201,7 @@ export default function PricingPage() {
     },
     {
       quote:
-        "I got astronova book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives.",
+        "I got astrovela book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives.",
       name: "Sarah J.",
       age: 29,
       rating: 5,
@@ -291,7 +291,7 @@ export default function PricingPage() {
         {/* Product Options */}
         <ProductOption
           type="app"
-          title="astronova app"
+          title="astrovela app"
           features={[
             "Unlimited compatibility reports",
             "New daily horoscopes & astrology content",
@@ -307,7 +307,7 @@ export default function PricingPage() {
 
         <ProductOption
           type="paperback"
-          title="astronova paperback"
+          title="astrovela paperback"
           features={["Uniquely created just for you", "FREE shipping", "FREE app & ebook included"]}
           price="$55.99"
           originalPrice="$159.97"
@@ -319,7 +319,7 @@ export default function PricingPage() {
 
         <ProductOption
           type="ebook"
-          title="astronova ebook"
+          title="astrovela ebook"
           features={["Digital copy delivered to your email", "FREE app included", "FREE with the paperback"]}
           price={selectedOptions.paperback ? "FREE" : "$30.99"}
           originalPrice="$49.99"
@@ -417,8 +417,8 @@ export default function PricingPage() {
         {/* Subscription Notice */}
         <p className="text-xs text-gray-500 text-center mb-8">
           By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1
-          month trial, astronova will automatically charge my payment method the regular price of $30.99 every 1 month
-          thereafter until I cancel by contacting us at help@astronova.com
+          month trial, astrovela will automatically charge my payment method the regular price of $30.99 every 1 month
+          thereafter until I cancel by contacting us at help@astrovela.com
         </p>
 
         {/* Benefits Section */}
@@ -561,9 +561,9 @@ export default function PricingPage() {
           <h2 className="text-2xl font-bold mb-6 text-center">Frequently asked questions</h2>
 
           <div className="bg-gray-100 rounded-lg overflow-hidden">
-            <AccordionItem title="How is astronova personalized?">
+            <AccordionItem title="How is astrovela personalized?">
               <p className="text-gray-600">
-                astronova is personalized based on your birth details (date, time, and location) which create a unique
+                astrovela is personalized based on your birth details (date, time, and location) which create a unique
                 astrological blueprint. Our advanced algorithms analyze your specific planetary positions and aspects to
                 generate insights tailored specifically to you.
               </p>
@@ -587,7 +587,7 @@ export default function PricingPage() {
 
             <AccordionItem title="I'm new to astrology. Is this book right for me?">
               <p className="text-gray-600">
-                astronova is designed to be accessible for beginners while also providing depth for those more familiar
+                astrovela is designed to be accessible for beginners while also providing depth for those more familiar
                 with astrology. The book includes explanations of key concepts and terms, making it easy to understand
                 regardless of your prior knowledge.
               </p>

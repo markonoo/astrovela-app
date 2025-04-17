@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Star } from "lucide-react"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import { HamburgerButton } from "@/components/hamburger-button"
 import { DrawerMenu } from "@/components/drawer-menu"
 
@@ -35,8 +35,8 @@ export function PageHeader({ transparent = false }: PageHeaderProps) {
     <header className={headerClasses}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
-          <span className="text-lg font-medium text-[#28293d]">astronova</span>
-          <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
+          <span className="text-lg font-medium text-[#28293d]">astrovela</span>
+          <AstrovelaIcon width={20} height={20} className="ml-1" />
         </Link>
 
         <div className="flex items-center space-x-4">

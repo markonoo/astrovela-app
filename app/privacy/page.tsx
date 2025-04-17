@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
       <div className="bg-white rounded-lg shadow-sm p-6 prose prose-slate max-w-none">
         <h2>1. Introduction</h2>
         <p>
-          At astronova, we respect your privacy and are committed to protecting your personal data. This Privacy Policy
+          At astrovela, we respect your privacy and are committed to protecting your personal data. This Privacy Policy
           explains how we collect, use, disclose, and safeguard your information when you visit our website, use our
           mobile application, or purchase our products.
         </p>
@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
 
         <h3>4.3 Business Transfers</h3>
         <p>
-          If astronova is involved in a merger, acquisition, or sale of all or a portion of its assets, your information
+          If astrovela is involved in a merger, acquisition, or sale of all or a portion of its assets, your information
           may be transferred as part of that transaction. We will notify you via email and/or a prominent notice on our
           website of any change in ownership or uses of your personal information.
         </p>
@@ -154,9 +154,9 @@ export default function PrivacyPolicyPage() {
         <p>If you have any questions about this Privacy Policy, please contact us:</p>
         <ul>
           <li>
-            By email: <a href="mailto:privacy@astronova.com">privacy@astronova.com</a>
+            By email: <a href="mailto:privacy@astrovela.com">privacy@astrovela.com</a>
           </li>
-          <li>By mail: astronova Privacy Office, 123 Astrology Lane, Starfield, CA 12345, USA</li>
+          <li>By mail: astrovela Privacy Office, 123 Astrology Lane, Starfield, CA 12345, USA</li>
         </ul>
 
         <p className="text-sm text-gray-500 mt-8">Last updated: December 1, 2023</p>

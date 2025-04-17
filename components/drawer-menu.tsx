@@ -2,7 +2,8 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
-import { X, Star, Facebook, Instagram, BookCopy, Palette, RefreshCw } from "lucide-react"
+import { X, Facebook, Instagram, BookCopy, Palette, RefreshCw } from "lucide-react"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 
 // Import the shared navigation links
 import { navigationLinks } from "@/utils/navigation"
@@ -58,8 +59,8 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
         {/* Drawer header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
           <div className="flex items-center">
-            <span className="text-[#28293d] font-medium">astronova</span>
-            <Star size={16} className="ml-1 text-[#f7c800]" fill="#f7c800" />
+            <span className="text-[#28293d] font-medium">astrovela</span>
+            <AstrovelaIcon width={20} height={20} className="ml-1" />
           </div>
           <button
             onClick={onClose}
@@ -137,7 +138,7 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
 
         {/* Drawer footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 text-center">
-          <p className="text-xs text-[#8f90a6]">© 2025 astronova. All rights reserved.</p>
+          <p className="text-xs text-[#8f90a6]">© 2025 astrovela. All rights reserved.</p>
         </div>
       </div>
     </>

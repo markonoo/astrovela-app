@@ -205,12 +205,12 @@ export default function ContactUsPage() {
                 <div>
                   <h3 className="font-medium">Email Us</h3>
                   <p className="text-gray-600 mb-1">For general inquiries:</p>
-                  <a href="mailto:info@astronova.com" className="text-yellow-600 hover:underline">
-                    info@astronova.com
+                  <a href="mailto:info@astrovela.com" className="text-yellow-600 hover:underline">
+                    info@astrovela.com
                   </a>
                   <p className="text-gray-600 mt-2 mb-1">For support:</p>
-                  <a href="mailto:support@astronova.com" className="text-yellow-600 hover:underline">
-                    support@astronova.com
+                  <a href="mailto:support@astrovela.com" className="text-yellow-600 hover:underline">
+                    support@astrovela.com
                   </a>
                 </div>
               </div>
