@@ -192,32 +192,43 @@ export function AstrologicalProfile() {
 
   return (
     <section className="bg-gray-50 rounded-lg p-8 mb-8">
-      <h2 className="text-2xl font-bold mb-10 text-center">Your astrologic profile</h2>
+      <h2 className="text-2xl font-bold mb-10 text-center">Your astrological profile</h2>
 
-      {/* Circular profile display - Yellow circle removed */}
-      <div className="relative flex justify-center mb-12">
-        {/* Center circle with zodiac illustration removed */}
-        {/* We're keeping the empty space to maintain the layout */}
-        <div className="w-40 h-40 opacity-0"></div>
+      {/* Circular profile display with central zodiac illustration and info bubbles */}
+      <div className="relative flex justify-center items-center mb-12" style={{ minHeight: 340 }}>
+        {/* Concentric circles */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="rounded-full border-4 border-yellow-200 w-64 h-64 flex items-center justify-center">
+            <div className="rounded-full border-2 border-yellow-100 w-48 h-48 flex items-center justify-center bg-yellow-50">
+              {/* Central zodiac illustration (placeholder SVG) */}
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="38" stroke="#f7c800" strokeWidth="2" fill="#fffbe6" />
+                <text x="50%" y="54%" textAnchor="middle" fill="#f7c800" fontSize="48" fontWeight="bold" dominantBaseline="middle">
+                  ♍
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
 
         {/* Date of birth */}
-        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/4 flex flex-col items-end">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-end">
           <span className="text-sm text-gray-500 mb-1">Date of birth</span>
           <div className="flex items-center">
-            <span className="font-medium mr-2">{formatBirthDate()}</span>
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Calendar size={18} className="text-yellow-800" />
+            <span className="font-bold text-lg mr-2">{formatBirthDate()}</span>
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+              <Calendar size={22} className="text-yellow-800" />
             </div>
           </div>
         </div>
 
         {/* Element */}
-        <div className="absolute left-1/4 bottom-0 transform translate-y-1/2 flex flex-col items-end">
+        <div className="absolute left-1/4 bottom-0 translate-y-1/2 flex flex-col items-end">
           <span className="text-sm text-gray-500 mb-1">Element</span>
           <div className="flex items-center">
-            <span className="font-medium mr-2">{element}</span>
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" width="18" height="18" className="text-yellow-800">
+            <span className="font-bold text-lg mr-2">{element}</span>
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+              <svg viewBox="0 0 24 24" width="22" height="22" className="text-yellow-800">
                 <path fill="currentColor" d="M12 3L6 15h12L12 3zm0 5l2 4h-4l2-4z" />
               </svg>
             </div>
@@ -225,24 +236,24 @@ export function AstrologicalProfile() {
         </div>
 
         {/* Zodiac sign */}
-        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/4 flex flex-col items-start">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-start">
           <span className="text-sm text-gray-500 mb-1">Zodiac sign</span>
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
-              <span className="text-yellow-800 font-bold">♍</span>
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
+              <span className="text-yellow-800 font-bold text-2xl">♍</span>
             </div>
-            <span className="font-medium capitalize">{zodiacSign}</span>
+            <span className="font-bold text-lg capitalize">{zodiacSign}</span>
           </div>
         </div>
 
         {/* Time of birth */}
-        <div className="absolute right-1/4 bottom-0 transform translate-y-1/2 flex flex-col items-start">
+        <div className="absolute right-1/4 bottom-0 translate-y-1/2 flex flex-col items-start">
           <span className="text-sm text-gray-500 mb-1">Time of birth</span>
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
-              <Clock size={18} className="text-yellow-800" />
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
+              <Clock size={22} className="text-yellow-800" />
             </div>
-            <span className="font-medium">{formatBirthTime()}</span>
+            <span className="font-bold text-lg">{formatBirthTime()}</span>
           </div>
         </div>
       </div>
@@ -254,15 +265,8 @@ export function AstrologicalProfile() {
         </div>
         <div>
           <span className="text-sm text-gray-500 mb-1">Birth place</span>
-          <p className="text-gray-700">{state.birthPlace || "Not specified"}</p>
+          <p className="text-gray-700 font-bold text-lg">{state.birthPlace || "Not specified"}</p>
         </div>
-      </div>
-
-      {/* Trait meters */}
-      <div className="mb-8">
-        <TraitMeter name="Intuition" value={intuition.value} description={intuition.description} />
-        <TraitMeter name="Empathy" value={empathy.value} description={empathy.description} />
-        <TraitMeter name="Creativity" value={creativity.value} description={creativity.description} />
       </div>
 
       {/* Get book button */}

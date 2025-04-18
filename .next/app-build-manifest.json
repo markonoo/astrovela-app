@@ -11,6 +11,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
+    "/book-designer/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/book-designer/layout.js"
+    ],
+    "/book-designer/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/book-designer/page.js"
+    ],
     "/quiz/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

@@ -55,7 +55,7 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
     <div
       className={`space-y-6 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
     >
-      <h1 className="text-2xl font-semibold text-gray-900">{questionText}</h1>
+      <h1 className="text-3xl font-bold text-gray-900">{questionText}</h1>
 
       <div className="space-y-3 mt-8">
         {options.map((option, index) => (
@@ -65,7 +65,7 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
             onClick={() => handleSelect(option)}
             className="hover:shadow-md transition-shadow"
           >
-            <span>{option}</span>
+            <span className="text-lg font-semibold flex items-center gap-2">{option}</span>
           </OptionCard>
         ))}
       </div>
