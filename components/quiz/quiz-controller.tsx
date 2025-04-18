@@ -53,128 +53,147 @@ import { getQuestionByNumber } from "@/utils/quiz-questions"
 //   )
 // }
 
+// Define the 3 parts with names, subtitles, and their steps
+const quizParts = [
+  {
+    name: "Setting Your Intentions",
+    subtitle: "Let's get to know you and your goals.",
+    steps: [
+      { type: "gender" },
+      { type: "mainGoals", questionNumber: 1 },
+      { type: "relationshipStatus" },
+      { type: "loading", message: "Calculating your astrological path..." },
+      { type: "testimonial", quote: "This book changed my life!" },
+    ],
+  },
+  {
+    name: "Your Cosmic Blueprint",
+    subtitle: "We'll use your birth details to reveal your unique astrological story.",
+    steps: [
+      { type: "birthDate" },
+      { type: "zodiacResult" },
+      { type: "birthTime" },
+      { type: "birthPlace" },
+      { type: "loading", message: "Personalizing your book for your zodiac sign..." },
+    ],
+  },
+  {
+    name: "Personal Touch & Book Magic",
+    subtitle: "Customize your book and add your personal insights.",
+    steps: [
+      { type: "motivation", questionNumber: 2 },
+      { type: "agreeWorry", questionNumber: 3 },
+      { type: "optimism", questionNumber: 4 },
+      { type: "relationshipQuestion", questionNumber: 5 },
+      { type: "additionalTopics", questionNumber: 6 },
+      { type: "firstName" },
+      { type: "lastName" },
+      { type: "coverDesigner" },
+      { type: "coverConfirmation" },
+      { type: "loading", message: "Finalizing your book..." },
+      { type: "email" },
+    ],
+  },
+]
+
+// Flatten quizParts into quizSteps, keeping track of part indices
+const quizSteps = quizParts.flatMap((part, partIdx) =>
+  part.steps.map((step, stepIdx) => ({ ...step, partIdx }))
+)
+
+function getCurrentPart(currentStep: number) {
+  // currentStep is 1-based
+  let stepCount = 0
+  for (let i = 0; i < quizParts.length; i++) {
+    stepCount += quizParts[i].steps.length
+    if (currentStep <= stepCount) {
+      return quizParts[i]
+    }
+  }
+  return null
+}
+
 export function QuizController() {
   const { state, nextStep, prevStep } = useQuiz()
-  const { currentStep, totalSteps, quizCompleted } = state
+  const { currentStep, quizCompleted } = state
 
-  // Check if quiz is completed from storage on initial load
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // If we're starting a fresh quiz, make sure to remove the completed flag
-      if (currentStep === 1 && !quizCompleted) {
-        localStorage.removeItem("astrovela_quiz_completed")
-      }
-      
-      const completed = isQuizCompleted()
-      if (completed && !quizCompleted) {
-        // If quiz is completed in storage but not in state, show the personalized landing
-        // This ensures we don't reset the quiz state when navigating
-      }
-    }
-  }, [quizCompleted, currentStep])
-
-  // Check if gender is already set and we're on step 1, if so, move to step 2
-  useEffect(() => {
-    if (currentStep === 1 && state.gender) {
-      nextStep()
-    }
-  }, [currentStep, state.gender, nextStep])
-
-  // If quiz is completed, show the personalized landing page
   if (quizCompleted || isQuizCompleted()) {
     return <PersonalizedLanding />
   }
 
-  // Render the appropriate question based on the current step
-  const renderQuestion = () => {
-    // Show results when quiz is completed
-    if (currentStep > totalSteps) {
-      return <PersonalizedLanding />
-    }
+  const stepConfig = quizSteps[currentStep - 1] // currentStep is 1-based
+  const currentPart = getCurrentPart(currentStep)
 
-    // Special cases for specific questions
-    if (currentStep === 5) {
-      return <RelationshipStatusQuestion />
+  // Auto-advance for loading steps
+  // Only run effect if the current step is a loading step
+  // Delay: 1.5 seconds (1500 ms)
+  useEffect(() => {
+    if (stepConfig && stepConfig.type === "loading") {
+      const timer = setTimeout(() => {
+        nextStep()
+      }, 1500)
+      return () => clearTimeout(timer)
     }
+  }, [stepConfig, nextStep])
 
-    // Book cover confirmation at question 34
-    if (currentStep === 34) {
-      return <BookCoverConfirmation />
-    }
-
-    // Email collection moved to question 35
-    if (currentStep === 35) {
-      return <EmailQuestion />
-    }
-
-    // Check if the current step has a question from the CSV (except for special cases)
-    const csvQuestion = getQuestionByNumber(currentStep)
-    if (csvQuestion && currentStep !== 5 && currentStep !== 34 && currentStep !== 35) {
-      return (
-        <GenericQuestion
-          questionNumber={csvQuestion.questionNumber}
-          questionText={csvQuestion.questionText}
-          options={csvQuestion.options}
-        />
-      )
-    }
-
-    // If not in CSV, use the existing questions
-    switch (currentStep) {
-      case 1:
+  // Map step types to components
+  const renderStep = () => {
+    if (!stepConfig) return null
+    switch (stepConfig.type) {
+      case "gender":
         return <GenderSelection />
-      case 2:
-        return <AstrologyLevel />
-      case 3:
-        return <NameCollection />
-      case 4:
-        return <LastNameCollection />
-      case 7:
+      case "mainGoals":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="What are your main goals?" options={["Self-growth", "Love", "Career", "Health", "Other"]} />
+      case "relationshipStatus":
+        return <RelationshipStatusQuestion />
+      case "loading":
+        return <div className="flex flex-col items-center justify-center min-h-[200px] text-lg font-medium animate-pulse">{stepConfig.message}</div>
+      case "testimonial":
+        return <div className="flex flex-col items-center justify-center min-h-[200px] text-lg italic">{stepConfig.quote}</div>
+      case "birthDate":
         return <CombinedBirthDetails />
-      case 8:
+      case "zodiacResult":
         return <ZodiacDisplay />
-      case 33:
-        // Show cover customization step
+      case "birthTime":
+        return null
+      case "birthPlace":
+        return null
+      case "motivation":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="What motivates you?" options={["Achievement", "Connection", "Creativity", "Helping others", "Learning", "Other"]} />
+      case "agreeWorry":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="I often worry whether I made the right decisions in life." options={["Strongly agree", "Agree", "Neutral", "Disagree", "Strongly disagree"]} />
+      case "optimism":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="Are you a pessimist, optimist, or realist?" options={["Pessimist", "Optimist", "Realist"]} />
+      case "relationshipQuestion":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="What do you value most in a relationship?" options={["Trust", "Communication", "Support", "Shared values", "Independence", "Passion"]} />
+      case "additionalTopics":
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="What additional topics would you like to include in your book? (choose all that apply)" options={["Tarot cards", "Palm reading", "Crystals", "Compatibility/partner"]} />
+      case "firstName":
+        return <NameCollection />
+      case "lastName":
+        return <LastNameCollection />
+      case "coverDesigner":
         return <CoverCustomization />
-      case 34:
+      case "coverConfirmation":
         return <BookCoverConfirmation />
-      case 35:
+      case "email":
         return <EmailQuestion />
       default:
-        // For steps that don't have specific components or CSV questions,
-        // show a placeholder with navigation buttons
-        return (
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold mb-4">Question {currentStep}</h2>
-            <p className="text-gray-600 mb-8">This is a placeholder for question {currentStep}.</p>
-
-            <div className="flex flex-col space-y-3">
-              <button
-                onClick={nextStep}
-                className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
-              >
-                Continue
-              </button>
-
-              {currentStep > 1 && (
-                <button
-                  onClick={prevStep}
-                  className="w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Previous Question
-                </button>
-              )}
-            </div>
-          </div>
-        )
+        return <div className="text-center">Unknown step</div>
     }
   }
 
-  // For step 8, we render the zodiac display directly without the quiz layout
-  if (currentStep === 8) {
-    return renderQuestion()
-  }
-
-  return <QuizLayout showBackButton={currentStep > 1 && currentStep <= totalSteps}>{renderQuestion()}</QuizLayout>
+  return (
+    <QuizLayout showBackButton={currentStep > 1 && currentStep <= quizSteps.length}>
+      {/* Part header */}
+      {currentPart && (
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-bold mb-2">{currentPart.name}</h2>
+          <div className="text-lg text-gray-600">{currentPart.subtitle}</div>
+        </div>
+      )}
+      {renderStep()}
+    </QuizLayout>
+  )
 }
 
