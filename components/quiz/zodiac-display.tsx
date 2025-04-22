@@ -4,7 +4,6 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { getZodiacSign, zodiacDescriptions } from "@/utils/zodiac"
 import { ZodiacIcon } from "./zodiac-icons"
 import { useEffect, useState } from "react"
-import { Stars } from "./stars-background"
 import { Loader2 } from "lucide-react"
 
 export function ZodiacDisplay() {
@@ -54,27 +53,23 @@ export function ZodiacDisplay() {
   const { title, description } = zodiacDescriptions[zodiacSign as keyof typeof zodiacDescriptions]
 
   return (
-    <div className="relative min-h-screen bg-[#001736] text-white overflow-hidden">
-      <Stars />
-
+    <div className="relative w-full h-full text-white overflow-hidden">
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
         <div className="w-full max-w-md text-center space-y-6">
-          <div className="bg-[#041c3c]/70 p-8 rounded-lg backdrop-blur-sm border border-[#848d9f]/20">
-            <div className="flex justify-center mb-4">
-              <ZodiacIcon sign={zodiacSign as any} className="w-32 h-32" />
-            </div>
-
-            <h2 className="text-2xl font-bold text-yellow-300 mb-4">{title}</h2>
-
-            <p className="text-gray-200 mb-4">{description}</p>
-
-            {isGeneratingChart && (
-              <div className="flex items-center justify-center mt-6 text-gray-300">
-                <Loader2 className="animate-spin mr-2 h-5 w-5" />
-                <span>Generating your natal chart...</span>
-              </div>
-            )}
+          <div className="flex justify-center mb-4">
+            <ZodiacIcon sign={zodiacSign as any} className="w-32 h-32" />
           </div>
+
+          <h2 className="text-2xl font-bold text-yellow-300 mb-4">{title}</h2>
+
+          <p className="text-gray-200 mb-4">{description}</p>
+
+          {isGeneratingChart && (
+            <div className="flex items-center justify-center mt-6 text-gray-300">
+              <Loader2 className="animate-spin mr-2 h-5 w-5" />
+              <span>Generating your natal chart...</span>
+            </div>
+          )}
 
           <button
             onClick={nextStep}

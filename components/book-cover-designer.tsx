@@ -80,9 +80,9 @@ export function BookCoverDesigner() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-4 items-start justify-center min-h-screen max-h-screen overflow-y-auto">
       {/* Left side - Book cover preview */}
-      <div className="w-full lg:w-1/2 flex justify-center">
+      <div className="w-full lg:w-1/2 flex justify-center items-start">
         <BookCoverPreview
           userInfo={userInfo}
           themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
@@ -91,27 +91,21 @@ export function BookCoverDesigner() {
       </div>
 
       {/* Right side - Customization options */}
-      <div className="w-full lg:w-1/2">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl mb-4 tracking-wider">Customize Your Cover</h2>
-
+      <div className="w-full lg:w-1/2 flex flex-col gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-md flex flex-col gap-3">
+          <h2 className="text-xl mb-2 tracking-wider">Customize Your Cover</h2>
           <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
-
-          <div className="mt-6">
-            <h3 className="text-lg mb-3 tracking-wider">Choose a Chart</h3>
+          <div>
+            <h3 className="text-lg mb-2 tracking-wider">Choose a Chart</h3>
             <IconSelector icons={ICONS} selectedIcon={selectedIcon} setSelectedIcon={setSelectedIcon} />
           </div>
-
-          <div className="mt-6">
-            <h3 className="text-lg mb-3 tracking-wider">Choose the color</h3>
+          <div>
+            <h3 className="text-lg mb-2 tracking-wider">Choose the color</h3>
             <ColorSelector selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
           </div>
-
-          <div className="mt-8">
-            <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider">
-              Continue
-            </Button>
-          </div>
+          <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider mt-2">
+            Continue
+          </Button>
         </div>
       </div>
     </div>

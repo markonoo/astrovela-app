@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { fetchNatalWheelChartSVG } from "@/services/astrology-api-service"
 import { getOliviaFallbackSVG } from "./olivia-fallback-chart"
+import { safeGetSessionItem } from "@/utils/safe-storage"
 
 // Cache for Olivia's natal chart SVG
 let cachedOliviaSvg: string | null = null
@@ -38,18 +39,8 @@ export function useOliviaNatalChart() {
     }
 
     // Check if we have a stored auth error
-    const checkStoredAuthError = () => {
-      try {
-        const hasError = sessionStorage.getItem("astrology_api_auth_error") === "true"
-        console.log("Debug - Stored auth error:", hasError)
-        return hasError
-      } catch (e) {
-        console.warn("Could not access sessionStorage:", e)
-        return false
-      }
-    }
-
-    const storedAuthError = checkStoredAuthError()
+    const storedAuthError = safeGetSessionItem("astrology_api_auth_error") === "true";
+    console.log("Debug - Stored auth error:", storedAuthError);
 
     // If we have a stored auth error, use the fallback SVG
     if (storedAuthError) {

@@ -2,6 +2,9 @@
  * Consolidated utility functions for chart handling and SVG processing
  */
 
+// Add import for safe storage utilities
+import { safeSetSessionItem, safeGetSessionItem } from "@/utils/safe-storage"
+
 // Generate a fallback natal chart SVG
 export function generateFallbackChart(): string {
   // Create a basic natal chart SVG with proper attributes
@@ -199,9 +202,7 @@ export async function loadFallbackChart(): Promise<string> {
 export async function preloadFallbackChart(): Promise<void> {
   try {
     const fallbackSvg = await loadFallbackChart()
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("fallbackNatalChartSVG", fallbackSvg)
-    }
+    safeSetSessionItem("fallbackNatalChartSVG", fallbackSvg);
   } catch (error) {
     console.error("Error preloading fallback chart:", error)
   }
@@ -209,10 +210,11 @@ export async function preloadFallbackChart(): Promise<void> {
 
 // Get the fallback chart from sessionStorage or generate one
 export function getFallbackChart(): string {
-  if (typeof window !== "undefined" && sessionStorage.getItem("fallbackNatalChartSVG")) {
-    return sessionStorage.getItem("fallbackNatalChartSVG") || generateFallbackChart()
+  const cachedChart = safeGetSessionItem("fallbackNatalChartSVG");
+  if (cachedChart) {
+    return cachedChart;
   }
-  return generateFallbackChart()
+  return generateFallbackChart();
 }
 
 // Apply color scheme to SVG content

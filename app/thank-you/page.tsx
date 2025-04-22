@@ -6,10 +6,14 @@ import { useEffect, useState } from "react"
 import { CheckCircle } from "lucide-react"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
+import { useRouter } from "next/navigation"
 
 export default function ThankYouPage() {
   const { state } = useQuiz()
+  const router = useRouter()
   const [formattedBirthDate, setFormattedBirthDate] = useState<string>("")
+  const [firstName, setFirstName] = useState<string | null>(state.firstName)
+  const [lastName, setLastName] = useState<string | null>(state.lastName)
 
   useEffect(() => {
     // Format birth date for display
@@ -33,6 +37,35 @@ export default function ThankYouPage() {
     }
   }, [state.birthDate])
 
+  useEffect(() => {
+    // If firstName is missing, try to rehydrate from localStorage
+    if (!state.firstName) {
+      try {
+        const saved = localStorage.getItem("quizData")
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (parsed.firstName) setFirstName(parsed.firstName)
+          if (parsed.lastName) setLastName(parsed.lastName)
+        }
+      } catch (e) {
+        // ignore
+      }
+    } else {
+      setFirstName(state.firstName)
+      setLastName(state.lastName)
+    }
+  }, [state.firstName, state.lastName])
+
+  useEffect(() => {
+    // If still no firstName, redirect to quiz start
+    if (!firstName) {
+      const timeout = setTimeout(() => {
+        router.push("/")
+      }, 1000)
+      return () => clearTimeout(timeout)
+    }
+  }, [firstName, router])
+
   return (
     <div className="max-w-lg mx-auto px-4 py-12 text-center">
       <div className="flex justify-center mb-6">
@@ -50,8 +83,8 @@ export default function ThankYouPage() {
         <div className="w-full h-auto max-w-[350px] max-h-[525px] flex items-center justify-center">
           <BookCoverPreview
             userInfo={{
-              firstName: state.firstName || "FIRST",
-              lastName: state.lastName || "",
+              firstName: firstName || "",
+              lastName: lastName || "",
               placeOfBirth: state.birthPlace || "Place of Birth",
               dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
                 ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`

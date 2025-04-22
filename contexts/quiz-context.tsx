@@ -62,7 +62,7 @@ interface QuizContextType {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 35,
+  totalSteps: 13,
   gender: null,
   astrologyLevel: null,
   firstName: null,

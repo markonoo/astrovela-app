@@ -122,15 +122,9 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     questionNumber: 19,
-    questionText: "How do you typically react to unexpected changes?",
-    options: [
-      "I embrace change and adapt quickly",
-      "I'm cautious but open to new possibilities",
-      "I prefer stability but can adjust if needed",
-      "I find change difficult and stressful",
-      "It depends on the specific situation",
-    ],
-    type: "multiple-choice",
+    questionText: "What's your last name or nickname?",
+    options: [],
+    type: "text-input",
   },
   {
     questionNumber: 20,

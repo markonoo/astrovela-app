@@ -1,3 +1,5 @@
+import { safeSetSessionItem } from "@/utils/safe-storage"
+
 export const getFallbackChartSVG = () => {
   return `<svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -86,9 +88,7 @@ export async function preloadFallbackNatalChart(): Promise<void> {
       const sanitizedSvg = sanitizeSvg(svgText)
 
       // Store in sessionStorage for quick access
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("fallbackNatalChartSVG", sanitizedSvg)
-      }
+      safeSetSessionItem("fallbackNatalChartSVG", sanitizedSvg);
     } else {
       throw new Error("SVG file not found")
     }
@@ -97,9 +97,7 @@ export async function preloadFallbackNatalChart(): Promise<void> {
     // Generate fallback
     const fallbackSvg = getFallbackChartSVG()
     // Store in sessionStorage
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("fallbackNatalChartSVG", fallbackSvg)
-    }
+    safeSetSessionItem("fallbackNatalChartSVG", fallbackSvg);
   }
 }
 

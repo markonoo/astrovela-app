@@ -8,14 +8,16 @@ import { DrawerMenu } from "@/components/drawer-menu"
 import { HamburgerButton } from "@/components/hamburger-button"
 import { ProgressBar } from "./progress-bar"
 import { ResetButton } from "./reset-button"
+import { Stars } from "./stars-background"
 import type { ReactNode } from "react"
 
 interface QuizLayoutProps {
   children: ReactNode
   showBackButton?: boolean
+  className?: string
 }
 
-export default function QuizLayout({ children, showBackButton = true }: QuizLayoutProps) {
+export default function QuizLayout({ children, showBackButton = true, className = "" }: QuizLayoutProps) {
   const { state, prevStep } = useQuiz()
   const { currentStep, totalSteps } = state
 
@@ -24,8 +26,11 @@ export default function QuizLayout({ children, showBackButton = true }: QuizLayo
   const openDrawer = () => setIsDrawerOpen(true)
   const closeDrawer = () => setIsDrawerOpen(false)
 
+  const isDark = className.includes("astro-theme-bg")
+
   return (
-    <div className="min-h-screen bg-[#f7f7f7] flex flex-col">
+    <div className={`min-h-screen flex flex-col ${className} relative overflow-hidden`}>
+      {isDark && <Stars />}
       <header className="relative py-4 border-b border-[#f7c800]">
         <div className="container mx-auto px-4 flex justify-between items-center">
           {showBackButton ? (
@@ -47,7 +52,7 @@ export default function QuizLayout({ children, showBackButton = true }: QuizLayo
           </div>
         </div>
 
-        <ProgressBar />
+        <ProgressBar dark={isDark} />
       </header>
 
       {/* Drawer Menu */}

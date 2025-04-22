@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useOliviaNatalChart } from "./cached-natal-chart"
 import { checkAstrologyApiCredentials } from "@/utils/api-credentials-checker"
+import { safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
 
 // This component pre-loads Olivia's data when the app starts
 export function OliviaDataLoader() {
@@ -22,11 +23,7 @@ export function OliviaDataLoader() {
         if (!result.valid) {
           console.warn("Astrology API credentials check failed:", result.message)
           // Store the auth error in session storage
-          try {
-            sessionStorage.setItem("astrology_api_auth_error", "true")
-          } catch (e) {
-            console.warn("Could not access sessionStorage:", e)
-          }
+          safeSetSessionItem("astrology_api_auth_error", "true");
 
           // If we haven't reached max attempts, try again
           if (checkAttempts < MAX_ATTEMPTS - 1) {
@@ -36,11 +33,7 @@ export function OliviaDataLoader() {
         } else {
           console.log("Astrology API credentials verified successfully")
           // Clear any stored auth errors
-          try {
-            sessionStorage.removeItem("astrology_api_auth_error")
-          } catch (e) {
-            console.warn("Could not access sessionStorage:", e)
-          }
+          safeRemoveSessionItem("astrology_api_auth_error");
         }
       } catch (e) {
         console.error("Error checking API credentials:", e)

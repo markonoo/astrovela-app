@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { BookCover } from "./book-cover"
 import { getFallbackChart, preloadFallbackChart } from "@/utils/chart-utils"
+import { safeGetSessionItem } from "@/utils/safe-storage"
 
 export function ExampleBook({ colorScheme = "green" }: { colorScheme?: string }) {
   const [fallbackSVG, setFallbackSVG] = useState<string | null>(null)
@@ -14,8 +15,9 @@ export function ExampleBook({ colorScheme = "green" }: { colorScheme?: string })
       try {
         setIsLoading(true)
         // Try to get from sessionStorage first
-        if (typeof window !== "undefined" && sessionStorage.getItem("fallbackNatalChartSVG")) {
-          setFallbackSVG(sessionStorage.getItem("fallbackNatalChartSVG"))
+        const cachedSvg = safeGetSessionItem("fallbackNatalChartSVG");
+        if (cachedSvg) {
+          setFallbackSVG(cachedSvg);
         } else {
           // Otherwise preload and get the fallback chart
           await preloadFallbackChart()

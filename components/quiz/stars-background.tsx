@@ -12,27 +12,31 @@ export function Stars() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // Set canvas dimensions to match window
+    let stars: { x: number; y: number; radius: number; opacity: number; speed: number }[] = []
+
+    // Helper to create stars for the current canvas size
+    const createStars = () => {
+      stars = []
+      for (let i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          opacity: Math.random() * 0.8 + 0.2,
+          speed: Math.random() * 0.05,
+        })
+      }
+    }
+
+    // Set canvas dimensions and regenerate stars
     const resizeCanvas = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
+      createStars()
     }
 
     resizeCanvas()
     window.addEventListener("resize", resizeCanvas)
-
-    // Create stars
-    const stars: { x: number; y: number; radius: number; opacity: number; speed: number }[] = []
-
-    for (let i = 0; i < 200; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5,
-        opacity: Math.random() * 0.8 + 0.2,
-        speed: Math.random() * 0.05,
-      })
-    }
 
     // Animation loop
     const animate = () => {
@@ -65,6 +69,6 @@ export function Stars() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} />
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-screen h-screen" style={{ zIndex: 0, pointerEvents: 'none' }} />
 }
 

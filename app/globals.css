@@ -169,3 +169,25 @@ body {
   }
 }
 
+.astro-dark-bg {
+  background: #06122a;
+  min-height: 100vh;
+  color: #fffbe6;
+  /* Optional: add a starry background image if available */
+  /* background-image: url('/images/stars-bg.png'); */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Astrology full-page dark theme with HD stars and gradient */
+.astro-theme-bg {
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.10) 0%, rgba(6,18,42,0.95) 80%),
+    linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(6,18,42,1) 80%),
+    #06122a;
+  color: #fffbe6;
+  position: relative;
+  overflow: hidden;
+}
+

@@ -150,7 +150,14 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
 
             {/* AuthForm for testing authentication */}
             <div className="mt-8">
-              <AuthForm />
+              <Link
+                href="/login"
+                className="flex items-center py-2 text-[#28293d] hover:text-[#f7c800] transition-colors"
+                onClick={onClose}
+              >
+                <BookCopy className="h-5 w-5 mr-3 text-[#f7c800]" />
+                <span>Login</span>
+              </Link>
             </div>
           </nav>
         </div>

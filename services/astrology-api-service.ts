@@ -6,6 +6,7 @@
 import type { NatalChart, PlanetPosition, ZodiacSign, House, Angle } from "@/types/astrology"
 import { getOliviaFallbackSVG } from "@/components/example-book/olivia-fallback-chart"
 import { getFallbackNatalChart } from "@/utils/fallback-chart"
+import { safeGetSessionItem, safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
 
 // API configuration - using the provided credentials
 const USER_ID = process.env.USER_ID || "639199"
@@ -25,41 +26,28 @@ const hasValidCredentials = () => {
 
 // Store authentication error status in session storage to avoid repeated failed attempts
 const setAuthError = (hasError: boolean) => {
-  try {
-    sessionStorage.setItem("astrology_api_auth_error", hasError ? "true" : "false")
-    console.log("Debug - Set Auth Error:", hasError)
-  } catch (e) {
-    console.warn("Could not access sessionStorage:", e)
-  }
+  safeSetSessionItem("astrology_api_auth_error", hasError ? "true" : "false");
+  console.log("Debug - Set Auth Error:", hasError);
 }
 
 // Check if we've already encountered an authentication error
 const hasAuthError = (): boolean => {
-  try {
-    const hasError = sessionStorage.getItem("astrology_api_auth_error") === "true"
-    console.log("Debug - Has Auth Error:", hasError)
-    return hasError
-  } catch (e) {
-    console.warn("Could not access sessionStorage:", e)
-    return false
-  }
+  const hasError = safeGetSessionItem("astrology_api_auth_error") === "true";
+  console.log("Debug - Has Auth Error:", hasError);
+  return hasError;
 }
 
 // Clear any stored authentication errors
 export const clearAuthErrors = () => {
-  try {
-    sessionStorage.removeItem("astrology_api_auth_error")
-    console.log("Debug - Cleared Auth Errors")
-  } catch (e) {
-    console.warn("Could not access sessionStorage:", e)
-  }
+  safeRemoveSessionItem("astrology_api_auth_error");
+  console.log("Debug - Cleared Auth Errors");
 }
 
 /**
  * Creates Basic Auth headers for API requests
  * Implements the same approach as the successful Python example
  */
-const getAuthHeaders = () => {
+const getAuthHeaders = (): Record<string, string> => {
   try {
     // Create the auth string in the format "userId:apiKey"
     const authString = `${USER_ID}:${API_KEY}`
@@ -89,6 +77,7 @@ const getAuthHeaders = () => {
     console.error("Error creating auth headers:", error)
     return {
       "Content-Type": "application/json",
+      "Authorization": "", // Return empty string instead of undefined
     }
   }
 }

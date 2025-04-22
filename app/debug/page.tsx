@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { loadFallbackNatalChart } from "@/utils/fallback-chart"
 import { clearAuthErrors } from "@/services/astrology-api-service"
+import { safeGetSessionItem } from "@/utils/safe-storage"
 
 export default function DebugPage() {
   const [fallbackSvg, setFallbackSvg] = useState<string | null>(null)
@@ -12,11 +13,7 @@ export default function DebugPage() {
 
   // Check if we have an authentication error
   const checkAuthError = (): boolean => {
-    try {
-      return sessionStorage.getItem("astrology_api_auth_error") === "true"
-    } catch (e) {
-      return false
-    }
+    return safeGetSessionItem("astrology_api_auth_error") === "true";
   }
 
   // Load the fallback SVG

@@ -2,6 +2,8 @@
  * Utility to check if the Astrology API credentials are valid
  */
 
+import { safeRemoveSessionItem } from "@/utils/safe-storage";
+
 // API configuration - using the provided credentials for testing
 const USER_ID = process.env.USER_ID || "639199"
 const API_KEY = process.env.API_KEY || "2159934d3aa35fdb3081aeed8f846cda7e79b99e"
@@ -11,12 +13,8 @@ const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
  * Clears any stored authentication errors
  */
 export function clearAuthErrors() {
-  try {
-    sessionStorage.removeItem("astrology_api_auth_error")
-    console.log("Debug - Cleared Auth Errors")
-  } catch (e) {
-    console.warn("Could not access sessionStorage:", e)
-  }
+  safeRemoveSessionItem("astrology_api_auth_error");
+  console.log("Debug - Cleared Auth Errors");
 }
 
 /**

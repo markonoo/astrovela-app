@@ -133,7 +133,7 @@ const cityDatabase: Record<string, string[]> = {
   reutlingen: ["Germany"],
   koblenz: ["Germany"],
   bremerhaven: ["Germany"],
-  bergisch gladbach: ["Germany"],
+  "bergisch gladbach": ["Germany"],
   jena: ["Germany"],
   remscheid: ["Germany"],
   erlangen: ["Germany"],

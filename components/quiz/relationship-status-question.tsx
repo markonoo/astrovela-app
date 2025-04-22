@@ -9,23 +9,28 @@ export function RelationshipStatusQuestion() {
   const [selectedOption, setSelectedOption] = useState<string | null>(state.answers["question_5"] || null)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const options = ["Single", "In a relationship", "Married", "It's complicated", "Divorced", "Widowed"]
+  const options = [
+    { label: "Single", icon: "🧑‍💼" },
+    { label: "In a relationship", icon: "💑" },
+    { label: "Married", icon: "💍" },
+    { label: "It's complicated", icon: "🤔" },
+    { label: "Divorced", icon: "💔" },
+    { label: "Widowed", icon: "🕊️" },
+  ]
 
   const handleSelect = (option: string) => {
-    // Set the selected option in local state
     setSelectedOption(option)
-
-    // Update the quiz context with the answer
     updateAnswer("question_5", option)
+  }
 
-    // Visual feedback before moving to next question
-    setIsTransitioning(true)
-
-    // Small delay for visual feedback before moving to next question
-    setTimeout(() => {
-      nextStep()
-      setIsTransitioning(false)
-    }, 300)
+  const handleContinue = () => {
+    if (selectedOption) {
+      setIsTransitioning(true)
+      setTimeout(() => {
+        nextStep()
+        setIsTransitioning(false)
+      }, 300)
+    }
   }
 
   return (
@@ -38,14 +43,26 @@ export function RelationshipStatusQuestion() {
         {options.map((option, index) => (
           <OptionCard
             key={index}
-            selected={selectedOption === option}
-            onClick={() => handleSelect(option)}
+            selected={selectedOption === option.label}
+            onClick={() => handleSelect(option.label)}
             className="hover:shadow-md transition-shadow"
           >
-            <span>{option}</span>
+            <span className="text-lg font-normal flex items-center gap-2"><span>{option.icon}</span> {option.label}</span>
           </OptionCard>
         ))}
       </div>
+
+      <button
+        onClick={handleContinue}
+        disabled={!selectedOption}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selectedOption
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
 
       <button
         onClick={prevStep}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { checkAstrologyApiCredentials, clearAuthErrors } from "@/utils/api-credentials-checker"
+import { safeGetSessionItem } from "@/utils/safe-storage"
 
 export function ApiCredentialsDebug() {
   const [isChecking, setIsChecking] = useState(false)
@@ -11,12 +12,8 @@ export function ApiCredentialsDebug() {
 
   // Check for stored auth errors
   useEffect(() => {
-    try {
-      const hasError = sessionStorage.getItem("astrology_api_auth_error") === "true"
-      setHasStoredError(hasError)
-    } catch (e) {
-      console.warn("Could not access sessionStorage:", e)
-    }
+    const hasError = safeGetSessionItem("astrology_api_auth_error") === "true";
+    setHasStoredError(hasError);
   }, [])
 
   const handleCheckCredentials = async () => {

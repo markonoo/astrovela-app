@@ -17,6 +17,9 @@ import QuizLayout from "./quiz-layout"
 import { useEffect } from "react"
 import { isQuizCompleted } from "@/utils/storage"
 import { getQuestionByNumber } from "@/utils/quiz-questions"
+import { BirthDate } from "./birth-date"
+import { BirthTime } from "./birth-time"
+import { BirthPlace } from "./birth-place"
 
 // Create a component for the layered cover customization step
 // import { LayeredBookCover } from "@/components/book-cover/layered-book-cover"
@@ -73,9 +76,9 @@ const quizParts = [
     subtitle: "We'll use your birth details to reveal your unique astrological story.",
     steps: [
       { type: "birthDate" },
-      { type: "zodiacResult" },
       { type: "birthTime" },
       { type: "birthPlace" },
+      { type: "zodiacResult" },
       { type: "loading", message: "Personalizing your book for your zodiac sign..." },
     ],
   },
@@ -83,13 +86,14 @@ const quizParts = [
     name: "Personal Touch & Book Magic",
     subtitle: "Customize your book and add your personal insights.",
     steps: [
-      { type: "motivation", questionNumber: 2 },
+      { type: "motivation", questionNumber: 8 },
       { type: "agreeWorry", questionNumber: 3 },
       { type: "optimism", questionNumber: 4 },
       { type: "relationshipQuestion", questionNumber: 5 },
       { type: "additionalTopics", questionNumber: 6 },
       { type: "firstName" },
       { type: "lastName" },
+      { type: "giftOrSelf" },
       { type: "coverDesigner" },
       { type: "coverConfirmation" },
       { type: "loading", message: "Finalizing your book..." },
@@ -200,8 +204,8 @@ export function QuizController() {
         return <RelationshipStatusQuestion />
       case "loading":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[300px] bg-astro-dark text-white rounded-xl p-8 shadow-lg mx-auto max-w-xl">
-            <div className="w-20 h-20 bg-[#041c3c] rounded-full mb-6 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center min-h-[300px] bg-transparent text-yellow-100 rounded-xl p-8 mx-auto max-w-xl">
+            <div className="w-20 h-20 bg-transparent rounded-full mb-6 flex items-center justify-center">
               {/* Loading spinner or icon */}
               <svg className="animate-spin h-10 w-10 text-yellow-300" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
             </div>
@@ -210,25 +214,37 @@ export function QuizController() {
         )
       case "testimonial":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[300px] bg-astro-dark text-white rounded-xl p-8 shadow-lg mx-auto max-w-xl">
-            {/* Image placeholder */}
-            <div className="w-24 h-24 bg-[#041c3c] rounded-full mb-6 flex items-center justify-center border-4 border-yellow-300">
-              <span className="text-4xl text-yellow-300">★</span>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] py-12 text-yellow-100">
+            {/* Large square photo placeholder */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-40 h-40 rounded-xl border-4 border-yellow-300 bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg">
+                <img
+                  src="/placeholder.svg"
+                  alt="Testimonial placeholder"
+                  className="object-cover w-full h-full"
+                />
+              </div>
             </div>
-            <div className="text-lg italic text-yellow-100 mb-2">{stepConfig.quote}</div>
-            <div className="text-sm text-yellow-200">Astrovela Reader</div>
+            <div className="text-xl italic text-yellow-100 mb-2 font-medium">{stepConfig.quote}</div>
+            <div className="text-base text-yellow-200 mb-8">Astrovela Reader</div>
+            <button
+              onClick={nextStep}
+              className="px-12 py-4 bg-yellow-300 rounded-full text-gray-900 font-medium text-lg hover:bg-yellow-400 transition-colors shadow"
+            >
+              Continue
+            </button>
           </div>
         )
       case "birthDate":
-        return <CombinedBirthDetails />
+        return <BirthDate />
+      case "birthTime":
+        return <BirthTime />
+      case "birthPlace":
+        return <BirthPlace />
       case "zodiacResult":
         return <ZodiacDisplay />
-      case "birthTime":
-        return null
-      case "birthPlace":
-        return null
       case "motivation":
-        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="What motivates you?" options={["🏆 Achievement", "🤝 Connection", "🎨 Creativity", "🫶 Helping others", "📚 Learning", "🔮 Other"]} />
+        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? 8} questionText="What motivates you?" options={["🏆 Achievement", "🤝 Connection", "🎨 Creativity", "🫶 Helping others", "📚 Learning", "🔮 Other"]} />
       case "agreeWorry":
         return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="I often worry whether I made the right decisions in life." options={["Strongly agree", "Agree", "Neutral", "Disagree", "Strongly disagree"]} />
       case "optimism":
@@ -241,6 +257,8 @@ export function QuizController() {
         return <NameCollection />
       case "lastName":
         return <LastNameCollection />
+      case "giftOrSelf":
+        return <GenericQuestion questionNumber={99} questionText="Is this book for yourself or as a gift for someone else?" options={["For myself", "As a gift for someone else"]} />
       case "coverDesigner":
         return <CoverCustomization />
       case "coverConfirmation":
@@ -252,15 +270,14 @@ export function QuizController() {
     }
   }
 
+  const darkSteps = ["testimonial", "loading", "zodiacResult"];
+  const isDarkStep = darkSteps.includes(stepConfig?.type);
+
   return (
-    <QuizLayout showBackButton={currentStep > 1 && currentStep <= quizSteps.length}>
-      {/* Part header */}
-      {currentPart && (
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold mb-2">{currentPart.name}</h2>
-          <div className="text-lg text-gray-600">{currentPart.subtitle}</div>
-        </div>
-      )}
+    <QuizLayout
+      showBackButton={currentStep > 1 && currentStep <= quizSteps.length}
+      className={isDarkStep ? "astro-theme-bg" : "bg-[#f7f7f7]"}
+    >
       {renderStep()}
     </QuizLayout>
   )

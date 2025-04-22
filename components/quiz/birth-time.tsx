@@ -54,7 +54,7 @@ export function BirthTime() {
             onClick={handleSkip}
             className="w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
           >
-            Skip
+            I don't know
           </button>
 
           <button

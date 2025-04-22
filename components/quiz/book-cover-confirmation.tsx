@@ -27,16 +27,16 @@ export function BookCoverConfirmation() {
 
   return (
     <div
-      className={`space-y-6 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
+      className={`space-y-4 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
     >
       <h1 className="text-2xl font-semibold text-gray-900">Your Book Cover</h1>
 
-      <p className="text-sm text-gray-600 mt-2">
+      <p className="text-sm text-gray-600 mt-1">
         Are you satisfied with the generated book cover and ready to proceed, or would you like to return to adjust the
         color?
       </p>
 
-      <div className="flex justify-center mt-6 mb-8">
+      <div className="flex justify-center mt-4 mb-4">
         <div className="w-80 h-[480px] relative flex items-center justify-center">
           <BookCoverPreview
             userInfo={{
@@ -53,7 +53,7 @@ export function BookCoverConfirmation() {
         </div>
       </div>
 
-      <div className="flex flex-col space-y-3 pt-6">
+      <div className="flex flex-col space-y-2 pt-2">
         <button
           onClick={handleConfirm}
           className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors flex items-center justify-center"

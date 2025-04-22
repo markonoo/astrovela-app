@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { fetchNatalWheelChart } from "@/services/astrology-api-service"
 import { getFallbackChartSVG } from "@/utils/fallback-chart"
+import { safeGetSessionItem } from "@/utils/safe-storage"
 
 interface ChartImageResult {
   chartUrl: string | null
@@ -17,8 +18,8 @@ export function useChartImage() {
     console.log("Getting fallback chart")
 
     // Try to get from sessionStorage first for better performance
-    if (typeof window !== "undefined" && sessionStorage.getItem("fallbackNatalChartSVG")) {
-      const cachedSvg = sessionStorage.getItem("fallbackNatalChartSVG")
+    const cachedSvg = safeGetSessionItem("fallbackNatalChartSVG");
+    if (cachedSvg) {
       console.log("Using cached fallback SVG from sessionStorage")
       return {
         chartUrl: null,

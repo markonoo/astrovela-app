@@ -1,4 +1,5 @@
 import type { QuizState } from "@/contexts/quiz-context"
+import { safeGetLocalItem, safeSetLocalItem, safeRemoveLocalItem, safeHasStorageItem } from "@/utils/safe-storage"
 
 // Keys for storage
 const QUIZ_DATA_KEY = "astrovela_quiz_data"
@@ -9,11 +10,11 @@ const QUIZ_COMPLETED_KEY = "astrovela_quiz_completed"
  */
 export function saveQuizData(data: QuizState): void {
   try {
-    localStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(data))
+    safeSetLocalItem(QUIZ_DATA_KEY, JSON.stringify(data))
     
     // Only set quiz as completed if the quizCompleted flag in the data is true
     if (data.quizCompleted) {
-      localStorage.setItem(QUIZ_COMPLETED_KEY, "true")
+      safeSetLocalItem(QUIZ_COMPLETED_KEY, "true")
     }
   } catch (error) {
     console.error("Failed to save quiz data:", error)
@@ -25,7 +26,7 @@ export function saveQuizData(data: QuizState): void {
  */
 export function getQuizData(): QuizState | null {
   try {
-    const data = localStorage.getItem(QUIZ_DATA_KEY)
+    const data = safeGetLocalItem(QUIZ_DATA_KEY)
     return data ? JSON.parse(data) : null
   } catch (error) {
     console.error("Failed to retrieve quiz data:", error)
@@ -39,7 +40,7 @@ export function getQuizData(): QuizState | null {
 export function isQuizCompleted(): boolean {
   try {
     // Check both the completion flag and the data
-    const completedFlag = localStorage.getItem(QUIZ_COMPLETED_KEY) === "true"
+    const completedFlag = safeGetLocalItem(QUIZ_COMPLETED_KEY) === "true"
     
     // For extra safety, also check the quiz data
     if (completedFlag) {
@@ -60,18 +61,18 @@ export function isQuizCompleted(): boolean {
 export function clearQuizData(): void {
   try {
     // Clear specific quiz keys
-    localStorage.removeItem(QUIZ_DATA_KEY)
-    localStorage.removeItem(QUIZ_COMPLETED_KEY)
+    safeRemoveLocalItem(QUIZ_DATA_KEY)
+    safeRemoveLocalItem(QUIZ_COMPLETED_KEY)
     
     // Clear all localStorage items with astrovela prefix
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('astrovela')) {
-        localStorage.removeItem(key)
-      }
-    })
-    
-    // Clear all sessionStorage items with astrovela prefix
-    if (typeof sessionStorage !== 'undefined') {
+    if (typeof window !== "undefined") {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('astrovela')) {
+          safeRemoveLocalItem(key)
+        }
+      })
+      
+      // Clear all sessionStorage items with astrovela prefix
       Object.keys(sessionStorage).forEach(key => {
         if (key.startsWith('astrovela')) {
           sessionStorage.removeItem(key)
@@ -80,12 +81,14 @@ export function clearQuizData(): void {
     }
     
     // Clear cookies with astrovela prefix
-    document.cookie.split(';').forEach(cookie => {
-      const cookieName = cookie.split('=')[0].trim()
-      if (cookieName.startsWith('astrovela')) {
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-      }
-    })
+    if (typeof document !== "undefined") {
+      document.cookie.split(';').forEach(cookie => {
+        const cookieName = cookie.split('=')[0].trim()
+        if (cookieName.startsWith('astrovela')) {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+        }
+      })
+    }
     
     console.log('All quiz data completely cleared from browser storage')
   } catch (error) {
