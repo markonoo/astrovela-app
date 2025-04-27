@@ -32,10 +32,10 @@ export function UserInfoForm({ userInfo, setUserInfo }: UserInfoFormProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="tracking-wider font-normal">
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <Label htmlFor="firstName" className="tracking-wider font-normal text-sm">
             First Name <span className="text-red-500">*</span>
           </Label>
           <Input
@@ -44,13 +44,13 @@ export function UserInfoForm({ userInfo, setUserInfo }: UserInfoFormProps) {
             value={userInfo.firstName}
             onChange={handleChange}
             placeholder="Enter first name"
-            className="tracking-wider"
+            className="tracking-wider text-sm h-8"
             required
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="tracking-wider font-normal">
-            Last Name <span className="text-gray-400 text-sm">(optional)</span>
+        <div className="space-y-1">
+          <Label htmlFor="lastName" className="tracking-wider font-normal text-sm">
+            Last Name <span className="text-gray-400 text-xs">(optional)</span>
           </Label>
           <Input
             id="lastName"
@@ -58,13 +58,13 @@ export function UserInfoForm({ userInfo, setUserInfo }: UserInfoFormProps) {
             value={userInfo.lastName}
             onChange={handleChange}
             placeholder="Enter last name"
-            className="tracking-wider"
+            className="tracking-wider text-sm h-8"
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="placeOfBirth" className="tracking-wider font-normal">
+      <div className="space-y-1">
+        <Label htmlFor="placeOfBirth" className="tracking-wider font-normal text-sm">
           Place of Birth
         </Label>
         <Input
@@ -73,12 +73,12 @@ export function UserInfoForm({ userInfo, setUserInfo }: UserInfoFormProps) {
           value={userInfo.placeOfBirth}
           onChange={handleChange}
           placeholder="Enter place of birth"
-          className="tracking-wider"
+          className="tracking-wider text-sm h-8"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="dateOfBirth" className="tracking-wider font-normal">
+      <div className="space-y-1">
+        <Label htmlFor="dateOfBirth" className="tracking-wider font-normal text-sm">
           Date of Birth
         </Label>
         <Input
@@ -88,7 +88,7 @@ export function UserInfoForm({ userInfo, setUserInfo }: UserInfoFormProps) {
           onChange={handleChange}
           placeholder="MM/DD/YYYY"
           type="date"
-          className="tracking-wider"
+          className="tracking-wider text-sm h-8"
         />
       </div>
     </div>

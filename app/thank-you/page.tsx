@@ -48,7 +48,7 @@ export default function ThankYouPage() {
           if (parsed.lastName) setLastName(parsed.lastName)
         }
       } catch (e) {
-        // ignore
+        console.error("Error loading data from localStorage:", e)
       }
     } else {
       setFirstName(state.firstName)
@@ -56,15 +56,9 @@ export default function ThankYouPage() {
     }
   }, [state.firstName, state.lastName])
 
-  useEffect(() => {
-    // If still no firstName, redirect to quiz start
-    if (!firstName) {
-      const timeout = setTimeout(() => {
-        router.push("/")
-      }, 1000)
-      return () => clearTimeout(timeout)
-    }
-  }, [firstName, router])
+  // Check if the name is actually available
+  const displayName = (firstName || "").trim() ? (firstName || "") : "Your personalized"
+  const displayLastName = lastName || ""
 
   return (
     <div className="max-w-lg mx-auto px-4 py-12 text-center">
@@ -78,13 +72,20 @@ export default function ThankYouPage() {
         Your personalized astrology book is being prepared. You'll receive a confirmation email shortly.
       </p>
 
+      {/* Add personalized book title */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">
+          {displayName !== "Your personalized" ? `${displayName}'s` : "Your"} Personalized Astrology Journey
+        </h2>
+      </div>
+
       {/* Book Cover Preview */}
       <div className="flex justify-center w-full mb-8">
-        <div className="w-full h-auto max-w-[350px] max-h-[525px] flex items-center justify-center">
+        <div className="w-full h-auto max-w-[350px] max-h-[450px] flex items-center justify-center">
           <BookCoverPreview
             userInfo={{
-              firstName: firstName || "",
-              lastName: lastName || "",
+              firstName: displayName,
+              lastName: displayLastName,
               placeOfBirth: state.birthPlace || "Place of Birth",
               dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
                 ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
@@ -108,7 +109,7 @@ export default function ThankYouPage() {
           <div className="flex justify-between">
             <span className="font-medium">Name:</span>
             <span>
-              {state.firstName} {state.lastName}
+              {displayName} {displayLastName}
             </span>
           </div>
 
@@ -129,9 +130,13 @@ export default function ThankYouPage() {
           We've sent a confirmation email to <strong>{state.email}</strong> with all the details.
         </p>
 
+        <p className="text-gray-600 mb-4">
+          Thank you for ordering your personalized astrology book! Your journey with astrovela begins now.
+        </p>
+
         <div className="flex flex-col space-y-3">
           <Link href="/">
-            <button className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors">
+            <button className="w-full py-4 px-4 bg-yellow-400 rounded-full text-gray-900 font-bold text-lg hover:bg-yellow-500 transition-colors shadow">
               Back to Home
             </button>
           </Link>

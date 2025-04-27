@@ -5,14 +5,23 @@ import { useState } from "react"
 import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
 
+// Import the quiz steps data needed for navigation
+interface QuizStep {
+  type: string;
+  questionNumber?: number;
+  message?: string;
+  quote?: string;
+  partIdx?: number;
+}
+
 export function BookCoverConfirmation() {
-  const { state, setCurrentStep, nextStep } = useQuiz()
+  const { state, prevStep, nextStep, setCurrentStep } = useQuiz()
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   const handleConfirm = () => {
     setIsTransitioning(true)
     setTimeout(() => {
-      nextStep() // Go to question 35 (email collection)
+      nextStep() // Go to email collection
       setIsTransitioning(false)
     }, 300)
   }
@@ -20,24 +29,44 @@ export function BookCoverConfirmation() {
   const handleReturn = () => {
     setIsTransitioning(true)
     setTimeout(() => {
-      setCurrentStep(33) // Go back to question 33 (color selection)
+      // Navigate to the firstName step instead of just going back one step
+      // Find the index of the firstName step in the quiz flow
+      let firstNameStepIndex = 0;
+      
+      // In the quiz flow, firstName is in the third part (Personal Touch & Book Magic)
+      // Let's count the steps to reach it
+      let countedSteps = 0;
+      
+      // Steps in Setting Your Intentions (part 1)
+      countedSteps += 7;
+      
+      // Steps in Your Cosmic Blueprint (part 2)
+      countedSteps += 5;
+      
+      // Steps in Personal Touch & Book Magic before firstName
+      // motivation, agreeWorry, optimism, relationshipQuestion, additionalTopics, generic, giftOrSelf
+      countedSteps += 7;
+      
+      // Now we're at the firstName step
+      firstNameStepIndex = countedSteps + 1;
+      
+      setCurrentStep(firstNameStepIndex);
       setIsTransitioning(false)
     }, 300)
   }
 
   return (
     <div
-      className={`space-y-4 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
+      className={`space-y-3 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
     >
       <h1 className="text-2xl font-semibold text-gray-900">Your Book Cover</h1>
 
-      <p className="text-sm text-gray-600 mt-1">
-        Are you satisfied with the generated book cover and ready to proceed, or would you like to return to adjust the
-        color?
+      <p className="text-xs text-gray-600 mt-1 mb-2">
+        Are you satisfied with the generated book cover and ready to proceed, or would you like to go back and personalize it from the beginning?
       </p>
 
-      <div className="flex justify-center mt-4 mb-4">
-        <div className="w-80 h-[480px] relative flex items-center justify-center">
+      <div className="flex justify-center">
+        <div className="w-[350px] h-[450px] relative flex items-center justify-center mb-2">
           <BookCoverPreview
             userInfo={{
               firstName: state.firstName || "FIRST",
@@ -53,19 +82,19 @@ export function BookCoverConfirmation() {
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2 pt-2">
+      <div className="mt-4">
         <button
           onClick={handleConfirm}
-          className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors flex items-center justify-center"
+          className="w-full py-3 px-4 bg-yellow-400 rounded-full text-gray-900 font-medium hover:bg-yellow-500 transition-colors"
         >
           I'm satisfied, proceed to next step
         </button>
 
         <button
           onClick={handleReturn}
-          className="w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
+          className="w-full py-3 px-4 mt-2 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
         >
-          I'd like to adjust the color
+          Go back to personalize my book
         </button>
       </div>
     </div>

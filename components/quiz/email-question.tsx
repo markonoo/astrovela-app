@@ -5,6 +5,7 @@ import type React from "react"
 import { useQuiz } from "@/contexts/quiz-context"
 import { useState, useEffect } from "react"
 import { Mail, Check, AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export function EmailQuestion() {
   const { state, setEmail, updateAnswer, nextStep, prevStep, completeQuiz } = useQuiz()
@@ -13,6 +14,7 @@ export function EmailQuestion() {
   const [isValid, setIsValid] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
 
   // Load any existing email from state
   useEffect(() => {
@@ -72,11 +74,9 @@ export function EmailQuestion() {
     // Mark the quiz as completed
     completeQuiz()
 
-    // Small delay for visual feedback
-    setTimeout(() => {
-      nextStep() // Go to personalized landing
+    // Move to the next step (personalized landing)
+        nextStep()
       setIsSubmitting(false)
-    }, 300)
   }
 
   return (

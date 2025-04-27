@@ -12,8 +12,21 @@ interface GenericQuestionProps {
 
 export function GenericQuestion({ questionNumber, questionText, options }: GenericQuestionProps) {
   const { state, updateAnswer, nextStep, prevStep } = useQuiz()
-  // For question 17, allow multiple selection
-  const isMultiSelect = questionNumber === 17;
+  
+  // Get multiSelect questions based on question number or text content
+  const isMultiSelectQuestion = (num: number, text: string): boolean => {
+    // Multi-select by question number (explicit questions we know should be multi-select)
+    if ([1, 4, 13, 16, 17].includes(num)) return true;
+    
+    // Multi-select by text cues (any question mentioning "choose all", "select all", etc.)
+    if (text.toLowerCase().includes("choose all") || 
+        text.toLowerCase().includes("select all") || 
+        text.toLowerCase().includes("all that apply")) return true;
+        
+    return false;
+  };
+  
+  const isMultiSelect = isMultiSelectQuestion(questionNumber, questionText);
   const initialValue = state.answers[`question_${questionNumber}`] || (isMultiSelect ? [] : null);
   const [selectedOption, setSelectedOption] = useState<any>(initialValue);
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -62,6 +75,19 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
       className={`space-y-3 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
     >
       <h1 className="text-2xl font-semibold text-gray-900">{questionText}</h1>
+      
+      {isMultiSelect && (
+        <div>
+          <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
+            Select all that apply
+          </p>
+          {Array.isArray(selectedOption) && selectedOption.length > 0 && (
+            <p className="text-xs text-green-600 mb-2">
+              You selected: {selectedOption.join(", ")}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="space-y-2 mt-4">
         {options.map((option, index) => (
@@ -70,6 +96,7 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
             selected={isMultiSelect ? (Array.isArray(selectedOption) && selectedOption.includes(option)) : selectedOption === option}
             onClick={() => handleSelect(option)}
             className={`hover:shadow-md transition-shadow ${isMultiSelect ? 'cursor-pointer' : ''}`}
+            isMultiSelect={isMultiSelect}
           >
             <span className="text-lg font-normal flex items-center gap-2">{option}</span>
           </OptionCard>

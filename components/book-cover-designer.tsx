@@ -80,30 +80,32 @@ export function BookCoverDesigner() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 items-start justify-center min-h-screen max-h-screen overflow-y-auto">
+    <div className="flex flex-col lg:flex-row gap-4 items-start justify-center py-4">
       {/* Left side - Book cover preview */}
-      <div className="w-full lg:w-1/2 flex justify-center items-start">
-        <BookCoverPreview
-          userInfo={userInfo}
-          themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
-          selectedIcon={selectedIcon}
-        />
+      <div className="w-full lg:w-1/2 flex justify-center items-center mb-4">
+        <div className="w-[350px] h-[450px]">
+          <BookCoverPreview
+            userInfo={userInfo}
+            themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
+            selectedIcon={selectedIcon}
+          />
+        </div>
       </div>
 
       {/* Right side - Customization options */}
-      <div className="w-full lg:w-1/2 flex flex-col gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-md flex flex-col gap-3">
-          <h2 className="text-xl mb-2 tracking-wider">Customize Your Cover</h2>
+      <div className="w-full lg:w-2/5 flex flex-col">
+        <div className="bg-white p-2 rounded-lg shadow-md flex flex-col gap-1.5">
+          <h2 className="text-base font-medium tracking-wider">Customize Your Cover</h2>
           <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
-          <div>
-            <h3 className="text-lg mb-2 tracking-wider">Choose a Chart</h3>
+          <div className="mt-1">
+            <h3 className="text-sm font-medium tracking-wider">Choose a Chart</h3>
             <IconSelector icons={ICONS} selectedIcon={selectedIcon} setSelectedIcon={setSelectedIcon} />
           </div>
-          <div>
-            <h3 className="text-lg mb-2 tracking-wider">Choose the color</h3>
+          <div className="mt-1">
+            <h3 className="text-sm font-medium tracking-wider">Choose the color</h3>
             <ColorSelector selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
           </div>
-          <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider mt-2">
+          <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider text-sm mt-1 py-1.5">
             Continue
           </Button>
         </div>

@@ -20,7 +20,7 @@ export function LastNameCollection() {
 
   return (
     <div className="space-y-6 text-center">
-      <h1 className="text-2xl font-semibold text-gray-900">What's your last name?</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">What's your last name or nickname?</h1>
 
       <p className="text-sm text-gray-600 mt-2">
         This helps us personalize your astrological profile. You can skip if you prefer.
@@ -32,7 +32,7 @@ export function LastNameCollection() {
             type="text"
             value={lastNameInput}
             onChange={(e) => setLastNameInput(e.target.value)}
-            placeholder="Enter your last name"
+            placeholder="Enter your last name or nickname"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300"
           />
         </div>

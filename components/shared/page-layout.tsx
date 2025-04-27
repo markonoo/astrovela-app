@@ -9,6 +9,7 @@ interface PageLayoutProps {
   description?: string
   showBreadcrumbs?: boolean
   transparent?: boolean
+  fullHeight?: boolean
 }
 
 export function PageLayout({
@@ -17,12 +18,13 @@ export function PageLayout({
   description,
   showBreadcrumbs = true,
   transparent = false,
+  fullHeight = false,
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <PageHeader transparent={transparent} />
 
-      <main className="flex-grow">
+      <main className={`flex-grow ${fullHeight ? "pb-0" : ""}`}>
         {showBreadcrumbs && (
           <div className="bg-white border-b border-gray-200">
             <div className="container mx-auto px-4 py-3">
@@ -37,8 +39,8 @@ export function PageLayout({
           </div>
         )}
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+        <div className={`container mx-auto px-4 ${fullHeight ? "py-4" : "py-8"}`}>
+          <div className={`${fullHeight ? "mx-auto" : "max-w-4xl mx-auto"}`}>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h1>
             {description && <p className="text-lg text-gray-600 mb-8">{description}</p>}
             {children}

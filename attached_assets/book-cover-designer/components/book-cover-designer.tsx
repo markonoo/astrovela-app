@@ -80,9 +80,9 @@ export function BookCoverDesigner() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-4">
       {/* Left side - Book cover preview */}
-      <div className="w-full lg:w-1/2 flex justify-center">
+      <div className="w-full lg:w-3/5 flex justify-center">
         <BookCoverPreview
           userInfo={userInfo}
           themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
@@ -91,24 +91,24 @@ export function BookCoverDesigner() {
       </div>
 
       {/* Right side - Customization options */}
-      <div className="w-full lg:w-1/2">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl mb-4 tracking-wider">Customize Your Cover</h2>
+      <div className="w-full lg:w-2/5">
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <h2 className="text-base mb-2 tracking-wider font-medium">Customize Your Cover</h2>
 
           <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
 
-          <div className="mt-6">
-            <h3 className="text-lg mb-3 tracking-wider">Choose a Chart</h3>
+          <div className="mt-2">
+            <h3 className="text-sm mb-1 tracking-wider font-medium">Choose a Chart</h3>
             <IconSelector icons={ICONS} selectedIcon={selectedIcon} setSelectedIcon={setSelectedIcon} />
           </div>
 
-          <div className="mt-6">
-            <h3 className="text-lg mb-3 tracking-wider">Choose the color</h3>
+          <div className="mt-2">
+            <h3 className="text-sm mb-1 tracking-wider font-medium">Choose the color</h3>
             <ColorSelector selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
           </div>
 
-          <div className="mt-8">
-            <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider">
+          <div className="mt-3">
+            <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider text-sm py-1.5">
               Continue
             </Button>
           </div>

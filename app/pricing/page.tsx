@@ -13,6 +13,7 @@ import { PaymentMethods } from "@/components/ui/payment-methods"
 import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 
 interface SelectedOptions {
   app: boolean
@@ -170,9 +171,9 @@ export default function PricingPage() {
         setOrderSuccess(true)
         setIsProcessingOrder(false)
 
-        // Redirect to thank you page after a delay
+        // Redirect to payment page instead of thank you page
         setTimeout(() => {
-          router.push("/thank-you")
+          router.push(`/payment?min=${countdown.minutes}&sec=${countdown.seconds}`)
         }, 2000)
       } catch (error) {
         console.error("Checkout error:", error)
@@ -211,13 +212,15 @@ export default function PricingPage() {
 
   return (
     <>
-      {/* Header with back button */}
-      <header className="bg-white py-4 px-4 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-lg mx-auto flex justify-between items-center">
+      {/* Header with logo and back button */}
+      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
+        <div className="flex items-center">
+          <span className="text-[#28293d] font-medium text-xl">astrovela</span>
+          <AstrovelaIcon width={28} height={28} className="ml-2" />
+        </div>
           <button onClick={handleBackClick} className="flex items-center text-gray-600 hover:text-gray-900">
             <ChevronLeft size={24} />
           </button>
-        </div>
       </header>
 
       <main className="max-w-lg mx-auto px-4 pb-8">
@@ -258,7 +261,7 @@ export default function PricingPage() {
 
           {/* Book Cover - Using the enhanced book cover component */}
           <div className="flex items-center justify-center mb-4 w-full">
-            <div className="w-[350px] h-[525px] flex items-center justify-center">
+            <div className="w-[350px] h-[450px] flex items-center justify-center">
               <BookCoverPreview
                 userInfo={{
                   firstName: state.firstName || "FIRST",
@@ -349,7 +352,7 @@ export default function PricingPage() {
 
         {orderSuccess && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            <p>Order successful! Redirecting to thank you page...</p>
+            <p>Order successful! Redirecting to payment page...</p>
           </div>
         )}
 

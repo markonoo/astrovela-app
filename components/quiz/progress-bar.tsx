@@ -8,14 +8,17 @@ interface ProgressBarProps {
 
 export function ProgressBar({ dark = false }: ProgressBarProps) {
   const { state } = useQuiz()
-  const { currentStep, totalSteps } = state
+  const { currentStep } = state
+  
+  // Hard-code the total steps to match the actual count in the flow (25 steps)
+  const totalSteps = 25
   const progress = (currentStep / totalSteps) * 100
 
   return (
     <div className="w-full px-4 py-2">
       <div className="flex items-center justify-between mb-2">
         <span className={`text-sm font-medium ${dark ? "text-yellow-100" : "text-gray-700"}`}>
-          Question {currentStep} of {totalSteps}
+          Step {currentStep} of {totalSteps}
         </span>
         <span className={`text-sm font-medium ${dark ? "text-yellow-100" : "text-gray-700"}`}>
           {Math.round(progress)}%

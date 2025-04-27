@@ -5,6 +5,7 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { NatalChart } from "./natal-chart"
 import { Loader2 } from "lucide-react"
 import { THEME_COLORS } from "../book-cover-designer"
+import CurvedText from "../CurvedText"
 
 interface EnhancedBookCoverProps {
   className?: string
@@ -197,15 +198,35 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
               </div>
             </div>
           ) : (
+            <>
             <NatalChart color="#ffffff" detailed={true} />
+              {/* Curved birth details */}
+              <div
+                className="absolute left-1/2 top-1/2 pointer-events-none"
+                style={{
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 20,
+                  width: 192,
+                  height: 192,
+                }}
+              >
+                <CurvedText
+                  text={`${formatBirthDate()} · ${formatBirthPlace()}`}
+                  radius={80}
+                  fontSize={15}
+                  color={colorScheme.text}
+                  width={192}
+                  height={192}
+                  fontFamily="Montserrat, Arial, sans-serif"
+                  fontWeight={600}
+                />
+              </div>
+            </>
           )}
         </div>
 
         {/* Birth details */}
-        <div className="w-full text-center z-10">
-          <p className="text-xs tracking-wider uppercase">{formatBirthDate()}</p>
-          <p className="text-xs tracking-wider uppercase mt-1">{formatBirthPlace()}</p>
-        </div>
+        {/* Removed straight text birth details, now shown as curved text above */}
       </div>
     </div>
   )

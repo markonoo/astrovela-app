@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Loader2 } from "lucide-react"
 import { sanitizeSvg, getFallbackChart, applySvgColorScheme, getColorScheme } from "@/utils/chart-utils"
+import CurvedText from "../CurvedText"
 
 interface BookCoverProps {
   colorScheme?: string
@@ -213,7 +214,7 @@ export function BookCover({
         </div>
 
         {/* Natal Chart */}
-        <div className="w-full flex-grow flex items-center justify-center my-4 relative">
+        <div className="w-full flex-grow flex items-center justify-center my-4 relative" style={{ minHeight: 320 }}>
           {isLoadingChart ? (
             <div className="flex flex-col items-center justify-center h-full">
               <div className="relative w-32 h-32">
@@ -224,6 +225,8 @@ export function BookCover({
               </p>
             </div>
           ) : (
+            <>
+              {/* Natal chart SVG/image */}
             <div
               ref={svgContainerRef}
               className="w-full h-full flex items-center justify-center"
@@ -238,29 +241,29 @@ export function BookCover({
                 zIndex: 10,
               }}
             />
+              {/* Curved birth details */}
+              <div
+                className="absolute left-1/2 top-1/2 pointer-events-none"
+                style={{
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 20,
+                  width: 320,
+                  height: 320,
+                }}
+              >
+                <CurvedText
+                  text={`${birthDate} · ${birthPlace}`}
+                  radius={145}
+                  fontSize={20}
+                  color={colors.textColor}
+                  width={320}
+                  height={320}
+                  fontFamily="Montserrat, Arial, sans-serif"
+                  fontWeight={600}
+                />
+              </div>
+            </>
           )}
-        </div>
-
-        {/* Birth details */}
-        <div className="w-full text-center mt-4">
-          <p
-            className="text-xl uppercase tracking-widest mb-2"
-            style={{
-              color: colors.textColor,
-              textShadow: `0 1px 2px rgba(0,0,0,0.3)`,
-            }}
-          >
-            {birthDate}
-          </p>
-          <p
-            className="text-xl uppercase tracking-widest"
-            style={{
-              color: colors.textColor,
-              textShadow: `0 1px 2px rgba(0,0,0,0.3)`,
-            }}
-          >
-            {birthPlace}
-          </p>
         </div>
 
         {/* Sun and Moon sign indicators */}

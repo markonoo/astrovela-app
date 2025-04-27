@@ -1,4 +1,5 @@
 import Image from "next/image"
+import CurvedText from "../../../components/CurvedText"
 
 interface BookCoverPreviewProps {
   userInfo: {
@@ -58,10 +59,31 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
             </div>
 
             {/* Middle section with chart - fixed height container to ensure consistent spacing */}
-            <div className="flex items-center justify-center w-full h-[300px]">
+            <div className="flex items-center justify-center w-full h-[300px] relative">
               {selectedIcon === "natal-chart" ? (
                 <div className="relative w-[300px] h-[280px] flex items-center justify-center">
                   <Image src="/images/natal-chart.png" alt="Natal Chart" fill className="object-contain" priority />
+                  {/* Curved birth details */}
+                  <div
+                    className="absolute left-1/2 top-1/2 pointer-events-none"
+                    style={{
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 20,
+                      width: 280,
+                      height: 280,
+                    }}
+                  >
+                    <CurvedText
+                      text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
+                      radius={115}
+                      fontSize={15}
+                      color={themeColor.text}
+                      width={280}
+                      height={280}
+                      fontFamily="Montserrat, Arial, sans-serif"
+                      fontWeight={600}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="relative w-[300px] h-[280px] flex items-center justify-center">
@@ -77,10 +99,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
             </div>
 
             {/* Bottom section with place and date - fixed position from bottom */}
-            <div className="text-center w-full absolute bottom-8">
-              <p className="text-sm tracking-wider">{formattedDate}</p>
-              <p className="text-sm tracking-wider mt-1">{placeOfBirth || "Place of Birth"}</p>
-            </div>
+            {/* Removed straight text birth details, now shown as curved text above */}
           </div>
         </div>
 

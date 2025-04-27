@@ -46,7 +46,7 @@ export function QuizResults() {
       {/* Book Cover Preview - Matching the style from steps 33/34 */}
       <div className="flex items-center justify-center w-full mb-8">
         <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center w-full max-w-[390px] h-auto md:h-[600px] p-2 md:p-4 md:py-8 mb-8">
-          <div className="w-full h-auto max-w-[350px] max-h-[525px] flex items-center justify-center">
+          <div className="w-full h-auto max-w-[350px] max-h-[450px] flex items-center justify-center">
             <BookCoverPreview
               userInfo={{
                 firstName: state.firstName || "FIRST",

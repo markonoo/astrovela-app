@@ -16,12 +16,12 @@ export function ColorSelector({ selectedColor, setSelectedColor }: ColorSelector
   ]
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {colors.map((color) => (
         <button
           key={color.id}
-          className={`w-10 h-10 rounded-full ${color.bg} border-2 ${
-            selectedColor === color.id ? "border-amber-400 ring-2 ring-amber-400" : "border-gray-300"
+          className={`w-7 h-7 rounded-full ${color.bg} border ${
+            selectedColor === color.id ? "border-amber-400 ring-1 ring-amber-400" : "border-gray-300"
           }`}
           onClick={() => setSelectedColor(color.id)}
           aria-label={`Select ${color.id} color`}

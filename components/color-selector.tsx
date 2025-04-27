@@ -19,13 +19,13 @@ export function ColorSelector({ selectedColor, setSelectedColor }: ColorSelector
   ]
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-2">
       {colorOptions.map((color) => (
         <button
           key={color.id}
           type="button"
-          className={`w-12 h-12 rounded-full border-2 ${color.bgColor} ${
-            selectedColor === color.id ? "ring-2 ring-blue-500 ring-offset-2" : ""
+          className={`w-8 h-8 rounded-full border ${color.bgColor} ${
+            selectedColor === color.id ? "ring-2 ring-blue-500 ring-offset-1" : ""
           } transition-all`}
           onClick={() => setSelectedColor(color.id)}
           aria-label={`Select ${color.id} color`}

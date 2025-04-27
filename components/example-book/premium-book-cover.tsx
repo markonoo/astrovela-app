@@ -9,6 +9,7 @@ import { useChartImage } from "@/hooks/use-chart-image"
 import { getFallbackChartSVG } from "@/utils/fallback-chart"
 import { COLOR_SCHEMES } from "@/utils/constants"
 import Image from "next/image"
+import CurvedText from "../CurvedText"
 
 // Define valid color schemes
 type ColorScheme = "green" | "black" | "light-pastel" | "rose" | "pink"
@@ -513,7 +514,7 @@ export function PremiumBookCover({
         </div>
 
         {/* Center zodiac wheel */}
-        <div className="w-3/4 aspect-square relative">
+        <div className="w-3/4 aspect-square relative flex items-center justify-center">
           <Image
             src="/images/zodiac-wheel.png" // Add this zodiac wheel image
             alt="Zodiac wheel"
@@ -521,18 +522,31 @@ export function PremiumBookCover({
             className="object-contain"
             style={{ filter: `drop-shadow(0 0 10px ${colors.textColor}30)` }}
           />
+          {/* Curved birth details */}
+        <div 
+            className="absolute left-1/2 top-1/2 pointer-events-none"
+            style={{
+              transform: "translate(-50%, -50%)",
+              zIndex: 20,
+              width: 420,
+              height: 420,
+          }}
+        >
+            <CurvedText
+              text={`${displayBirthDate} · ${displayBirthPlace}`}
+              radius={185}
+              fontSize={22}
+              color={colors.textColor}
+              width={420}
+              height={420}
+              fontFamily="Montserrat, Arial, sans-serif"
+              fontWeight={700}
+            />
+          </div>
         </div>
 
         {/* Bottom birth details */}
-        <div 
-          className="text-xl font-serif text-center"
-            style={{
-              color: colors.textColor,
-            textShadow: `0 0 10px ${colors.textColor}30`
-          }}
-        >
-          {displayBirthDate} — {displayBirthPlace}
-        </div>
+        {/* Removed straight text birth details, now shown as curved text above */}
       </div>
     </div>
   )

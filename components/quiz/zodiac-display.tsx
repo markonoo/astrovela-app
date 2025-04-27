@@ -54,18 +54,18 @@ export function ZodiacDisplay() {
 
   return (
     <div className="relative w-full h-full text-white overflow-hidden">
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
-        <div className="w-full max-w-md text-center space-y-6">
-          <div className="flex justify-center mb-4">
-            <ZodiacIcon sign={zodiacSign as any} className="w-32 h-32" />
+      <div className="relative z-10 flex flex-col items-center justify-start min-h-[auto] px-4 pt-0 pb-8">
+        <div className="w-full max-w-md text-center space-y-3 mt-6">
+          <div className="flex justify-center">
+            <ZodiacIcon sign={zodiacSign as any} className="w-36 h-36" />
           </div>
 
           <h2 className="text-2xl font-bold text-yellow-300 mb-4">{title}</h2>
 
-          <p className="text-gray-200 mb-4">{description}</p>
+          <p className="text-gray-200 mb-6">{description}</p>
 
           {isGeneratingChart && (
-            <div className="flex items-center justify-center mt-6 text-gray-300">
+            <div className="flex items-center justify-center mt-8 mb-8 text-gray-300">
               <Loader2 className="animate-spin mr-2 h-5 w-5" />
               <span>Generating your natal chart...</span>
             </div>
@@ -73,14 +73,14 @@ export function ZodiacDisplay() {
 
           <button
             onClick={nextStep}
-            className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
+            className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors mt-8"
           >
             Continue
           </button>
 
           <button
             onClick={prevStep}
-            className="w-full py-3 px-4 bg-transparent border border-white/30 rounded-full text-white font-medium hover:bg-white/10 transition-colors"
+            className="w-full py-3 px-4 bg-transparent border border-white/30 rounded-full text-white font-medium hover:bg-white/10 transition-colors mt-4"
           >
             Previous
           </button>

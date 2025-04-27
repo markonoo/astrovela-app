@@ -1,7 +1,7 @@
 {
-  "/thank-you/page": "app/thank-you/page.js",
-  "/contact-us/page": "app/contact-us/page.js",
-  "/terms/page": "app/terms/page.js",
+  "/page": "app/page.js",
+  "/reviews/page": "app/reviews/page.js",
   "/quiz/page": "app/quiz/page.js",
+  "/payment/page": "app/payment/page.js",
   "/pricing/page": "app/pricing/page.js"
 }

@@ -64,7 +64,7 @@ export function PersonalizedLanding() {
 
           {/* Book cover display with user-selected color and info */}
           <div className="flex justify-center items-center w-full mb-8">
-            <div className="w-[350px] h-[525px] flex items-center justify-center mx-auto">
+            <div className="w-[350px] h-[450px] flex items-center justify-center mx-auto">
               <BookCoverPreview
                 userInfo={{
                   firstName: state.firstName || "FIRST",

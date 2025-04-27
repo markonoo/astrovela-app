@@ -13,16 +13,16 @@ export function IconSelector({ icons, selectedIcon, setSelectedIcon }: IconSelec
   const renderIcon = (iconName: string) => {
     if (iconName === "natal-chart") {
       return (
-        <div className="relative w-8 h-8">
-          <Image src="/images/natal-chart.png" alt="Natal Chart" fill className="object-contain" />
+        <div className="relative w-4 h-4">
+          <Image src="/images/natal-chart.png" alt="Natal Chart" fill className="object-contain scale-50" />
         </div>
       )
     }
 
     if (iconName === "zodiac-chart") {
       return (
-        <div className="relative w-8 h-8">
-          <Image src="/images/zodiac-chart-icon.png" alt="Zodiac Chart" fill className="object-contain" />
+        <div className="relative w-4 h-4">
+          <Image src="/images/zodiac-chart-icon.png" alt="Zodiac Chart" fill className="object-contain scale-50" />
         </div>
       )
     }
@@ -43,18 +43,18 @@ export function IconSelector({ icons, selectedIcon, setSelectedIcon }: IconSelec
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-2">
       {icons.map((icon) => (
         <button
           key={icon}
-          className={`flex flex-col items-center justify-center p-4 rounded-md border ${
+          className={`flex flex-col items-center justify-center p-1 rounded-md border ${
             selectedIcon === icon ? "border-amber-400 bg-amber-50" : "border-gray-200 hover:bg-gray-50"
           }`}
           onClick={() => setSelectedIcon(icon)}
           aria-label={`Select ${getIconLabel(icon)}`}
         >
-          <div className="h-12 flex items-center justify-center mb-2">{renderIcon(icon)}</div>
-          <span className="text-sm tracking-wider">{getIconLabel(icon)}</span>
+          <div className="h-6 flex items-center justify-center mb-1">{renderIcon(icon)}</div>
+          <span className="text-xs tracking-wider">{getIconLabel(icon)}</span>
         </button>
       ))}
     </div>

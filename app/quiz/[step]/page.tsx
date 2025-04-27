@@ -142,7 +142,7 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
             </div>
 
             {/* Book Cover */}
-            <div className="w-[350px] h-[525px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
+            <div className="w-[350px] h-[450px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
               <BookCoverPreview
                 userInfo={{
                   firstName: formData.name || "YOUR NAME",
@@ -166,7 +166,7 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
             <h2 className="text-2xl font-bold mb-4">Step 34: Confirm Your Book Cover</h2>
 
             {/* Book Cover - Using the same component as step 33 */}
-            <div className="mt-10 w-[350px] h-[525px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
+            <div className="mt-10 w-[350px] h-[450px] rounded-lg shadow-xl overflow-visible mb-8 flex items-center justify-center">
               <BookCoverPreview
                 userInfo={{
                   firstName: formData.name || "YOUR NAME",

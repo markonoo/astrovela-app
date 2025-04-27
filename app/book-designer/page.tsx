@@ -8,6 +8,7 @@ export default function BookDesignerPage() {
     <PageLayout 
       title="Book Cover Designer"
       description="Design a custom cover for your astrology book with our interactive designer."
+      fullHeight={true}
     >
       <BookCoverDesigner />
     </PageLayout>

@@ -16,7 +16,7 @@ export function IconSelector({ icons, selectedIcon, setSelectedIcon }: IconSelec
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-1">
       {icons.map((icon) => {
         const isSelected = selectedIcon === icon
         return (
@@ -24,24 +24,24 @@ export function IconSelector({ icons, selectedIcon, setSelectedIcon }: IconSelec
             key={icon}
             type="button"
             onClick={() => setSelectedIcon(icon)}
-            className={`relative flex flex-col items-center p-3 border rounded-lg transition-all ${
+            className={`relative flex flex-col items-center p-1 border rounded-lg transition-all ${
               isSelected
                 ? "bg-amber-50 border-amber-400 shadow-sm"
                 : "bg-white border-gray-200 hover:border-amber-300"
             }`}
             aria-pressed={isSelected}
           >
-            <div className="relative w-full aspect-square mb-2 overflow-hidden">
+            <div className="relative w-1/3 aspect-square mb-1 overflow-hidden mx-auto">
               <Image
                 src={iconPaths[icon]}
                 alt={icon}
                 fill
-                className="object-contain"
+                className="object-contain scale-50"
                 sizes="(max-width: 768px) 100vw, 200px"
               />
             </div>
             <span
-              className={`text-sm font-medium tracking-wider capitalize ${
+              className={`text-xs font-medium tracking-wider capitalize ${
                 isSelected ? "text-amber-800" : "text-gray-700"
               }`}
             >
