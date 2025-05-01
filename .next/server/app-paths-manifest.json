@@ -1,7 +1,5 @@
 {
+  "/api/chart-image/route": "app/api/chart-image/route.js",
   "/page": "app/page.js",
-  "/reviews/page": "app/reviews/page.js",
-  "/quiz/page": "app/quiz/page.js",
-  "/payment/page": "app/payment/page.js",
-  "/pricing/page": "app/pricing/page.js"
+  "/book-designer/page": "app/book-designer/page.js"
 }

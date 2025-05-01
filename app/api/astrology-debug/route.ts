@@ -5,7 +5,7 @@ const USER_ID = process.env.USER_ID || "640177"
 const API_KEY = process.env.API_KEY || "47d917ee06a32e6cc1f7bbb0c7a51f944ee12bee"
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Create auth string and encode to base64
     const authString = `${USER_ID}:${API_KEY}`

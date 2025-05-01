@@ -4,13 +4,12 @@
  */
 
 import type { NatalChart, PlanetPosition, ZodiacSign, House, Angle } from "@/types/astrology"
-import { getOliviaFallbackSVG } from "@/components/example-book/olivia-fallback-chart"
 import { getFallbackNatalChart } from "@/utils/fallback-chart"
 import { safeGetSessionItem, safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
 
 // API configuration - using the provided credentials
-const USER_ID = process.env.USER_ID || "639199"
-const API_KEY = process.env.API_KEY || "2159934d3aa35fdb3081aeed8f846cda7e79b99e"
+const USER_ID = process.env.USER_ID || "640177"
+const API_KEY = process.env.API_KEY || "47d917ee06a32e6cc1f7bbb0c7a51f944ee12bee"
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
 // Check if API credentials are properly configured
@@ -205,6 +204,11 @@ export async function fetchNatalWheelChart(
   latitude: number,
   longitude: number,
   timezone = 5.5, // Default to IST
+  sign_icon_color: string = "WHITE",
+  sign_background: string[] = [
+    "clear", "clear", "clear", "clear", "clear", "clear",
+    "clear", "clear", "clear", "clear", "clear", "clear"
+  ]
 ): Promise<{ chartUrl: string; svgContent?: string }> {
   try {
     console.log("Debug - fetchNatalWheelChart called with:", { birthDate, birthTime, latitude, longitude, timezone })
@@ -212,15 +216,6 @@ export async function fetchNatalWheelChart(
     // Check for previous auth errors to avoid repeated failed API calls
     if (hasAuthError()) {
       console.warn("Skipping API call due to previous authentication error")
-
-      // For Olivia's chart, use the fallback SVG
-      if (birthDate === "2021-12-06" && birthTime === "12:00") {
-        console.log("Debug - Using fallback SVG for Olivia due to auth error")
-        return {
-          chartUrl: "",
-          svgContent: getOliviaFallbackSVG(),
-        }
-      }
 
       // Use the general fallback SVG for other charts
       return {
@@ -250,6 +245,8 @@ export async function fetchNatalWheelChart(
       lat: latitude,
       lon: longitude,
       tzone: timezone,
+      sign_icon_color,
+      sign_background,
     }
 
     console.log("Debug - Request Body:", requestBody)
@@ -294,21 +291,6 @@ export async function fetchNatalWheelChart(
       // Check if it's an authentication error
       if (data.msg.includes("invalid") || data.msg.includes("User ID")) {
         setAuthError(true)
-
-        // For Olivia's chart, use the fallback SVG
-        if (birthDate === "2021-12-06" && birthTime === "12:00") {
-          console.log("Debug - Using fallback SVG for Olivia due to auth error in response")
-          return {
-            chartUrl: "",
-            svgContent: getOliviaFallbackSVG(),
-          }
-        }
-
-        // Use the general fallback SVG for other charts
-        return {
-          chartUrl: "",
-          svgContent: getFallbackNatalChart(),
-        }
       }
 
       throw new Error(data.msg)
@@ -344,15 +326,6 @@ export async function fetchNatalWheelChart(
     }
   } catch (error) {
     console.error("Error fetching natal wheel chart:", error)
-
-    // For Olivia's chart, use the fallback SVG
-    if (birthDate === "2021-12-06" && birthTime === "12:00") {
-      console.log("Debug - Using fallback SVG for Olivia due to error")
-      return {
-        chartUrl: "",
-        svgContent: getOliviaFallbackSVG(),
-      }
-    }
 
     // Use the general fallback SVG for other charts
     return {
@@ -404,11 +377,6 @@ export async function fetchNatalWheelChartSVG(
     return getFallbackNatalChart()
   } catch (error) {
     console.error("Error in fetchNatalWheelChartSVG:", error)
-
-    // For Olivia's chart, use the fallback SVG
-    if (birthDate === "2021-12-06" && birthTime === "12:00") {
-      return getOliviaFallbackSVG()
-    }
 
     // Return fallback SVG for other charts
     return getFallbackNatalChart()

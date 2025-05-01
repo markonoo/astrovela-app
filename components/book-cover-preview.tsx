@@ -1,5 +1,7 @@
 import Image from "next/image"
 import CurvedText from "./CurvedText"
+import { Progress } from "./ui/progress"
+import React from "react"
 
 interface BookCoverPreviewProps {
   userInfo: {
@@ -15,9 +17,11 @@ interface BookCoverPreviewProps {
     className: string
   }
   selectedIcon: string
+  customChartUrl?: string | null
+  isLoading?: boolean
 }
 
-export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCoverPreviewProps) {
+export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading }: BookCoverPreviewProps) {
   const { firstName, lastName, placeOfBirth, dateOfBirth } = userInfo
   const hasLastName = lastName && lastName.trim() !== ""
 
@@ -32,6 +36,28 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
     
   // Determine text color based on background
   const textColorValue = themeColor.bg === "bg-amber-50" ? "#000000" : "#ffffff"
+
+  const [progress, setProgress] = React.useState(0)
+  React.useEffect(() => {
+    let start: number | null = null
+    let frame: number
+    function animate(ts: number) {
+      if (!start) start = ts
+      const elapsed = ts - start
+      const percent = Math.min((elapsed / 4000) * 100, 100)
+      setProgress(percent)
+      if (percent < 100) {
+        frame = requestAnimationFrame(animate)
+      }
+    }
+    if (isLoading && selectedIcon === "custom-natal-chart") {
+      setProgress(0)
+      frame = requestAnimationFrame(animate)
+      return () => cancelAnimationFrame(frame)
+    } else if (!isLoading) {
+      setProgress(0)
+    }
+  }, [isLoading, selectedIcon])
 
   return (
     <div className="relative w-[350px] max-w-[350px] h-[450px]">
@@ -64,15 +90,70 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
             {/* Chart container */}
             <div className="relative w-full h-[300px] flex justify-center">
               {/* Chart Image based on selection */}
-              <div className="relative w-[280px] h-[280px]">
+              <div className="relative w-[280px] h-[280px] flex items-center justify-center">
+                {selectedIcon === "custom-natal-chart" ? (
+                  isLoading ? (
+                    <div className="flex flex-col items-center justify-center w-full h-full">
+                      <div className="w-52 h-52 relative flex items-center justify-center">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle
+                            className="text-gray-300 opacity-30"
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="none"
+                          />
+                          <circle
+                            className="text-yellow-400"
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeDasharray="283"
+                            strokeDashoffset={283 - (progress / 100) * 283}
+                            transform="rotate(-90 50 50)"
+                          />
+                          <text
+                            x="50"
+                            y="54"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="#f7c800"
+                            fontSize="20"
+                            fontWeight="bold"
+                          >
+                            {Math.round(progress)}%
+                          </text>
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-400 mt-2">Generating chart...</span>
+                    </div>
+                  ) : customChartUrl ? (
+                    <img
+                      src={customChartUrl}
+                      alt="Custom Natal Chart"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-full border border-dashed border-gray-300 opacity-60">
+                      <span className="text-gray-400">No Chart</span>
+                    </div>
+                  )
+                ) : (
                   <Image
-                  src={selectedIcon === "natal-chart" ? "/images/natal-chart.png" : "/images/zodiac-chart-icon.png"} 
-                  alt={selectedIcon === "natal-chart" ? "Natal Chart" : "Zodiac Chart"} 
+                    src={selectedIcon === "natal-chart" ? "/images/natal-chart.png" : "/images/zodiac-chart-icon.png"}
+                    alt={selectedIcon === "natal-chart" ? "Natal Chart" : "Zodiac Chart"}
                     fill
                     className="object-contain"
                     priority
                   />
-                </div>
+                )}
+              </div>
               
               {/* Text positioned to curve around the bottom of the chart - shown for both chart types */}
               <div 

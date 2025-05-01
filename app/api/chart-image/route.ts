@@ -6,12 +6,23 @@ export async function POST(request: Request) {
   try {
     const { chartUrl, userId, birthData, chartType } = await request.json()
     if (!chartUrl || !userId || !birthData) {
+      console.error('Missing required fields', { chartUrl, userId, birthData });
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // Debug log for chartUrl
+    console.log('chartUrl:', chartUrl)
+
     // Download the image from the provided URL
-    const imageRes = await fetch(chartUrl)
+    let imageRes;
+    try {
+      imageRes = await fetch(chartUrl)
+    } catch (err) {
+      console.error('Error fetching SVG from S3:', err)
+      throw err
+    }
     if (!imageRes.ok) {
+      console.error('Failed to download chart image', imageRes.status, imageRes.statusText)
       return NextResponse.json({ error: 'Failed to download chart image' }, { status: 500 })
     }
     const arrayBuffer = await imageRes.arrayBuffer()
@@ -22,11 +33,12 @@ export async function POST(request: Request) {
     const fileName = `chart_${userId}_${Date.now()}.${fileExt}`
 
     // Upload to Supabase storage (bucket: 'charts')
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('charts')
       .upload(fileName, buffer, { contentType: imageRes.headers.get('content-type') || 'image/png' })
 
     if (uploadError) {
+      console.error('Failed to upload image to storage', uploadError)
       return NextResponse.json({ error: 'Failed to upload image to storage', details: uploadError.message }, { status: 500 })
     }
 
@@ -34,18 +46,25 @@ export async function POST(request: Request) {
     const { data: publicUrlData } = supabase.storage.from('charts').getPublicUrl(fileName)
     const imageUrl = publicUrlData?.publicUrl
     if (!imageUrl) {
+      console.error('Failed to get public URL for image')
       return NextResponse.json({ error: 'Failed to get public URL for image' }, { status: 500 })
     }
 
     // Save metadata in the ChartImage table
-    const chartImage = await prisma.chartImage.create({
-      data: {
-        userId: Number(userId),
-        imageUrl,
-        birthData,
-        chartType: chartType || 'natal',
-      },
-    })
+    let chartImage;
+    try {
+      chartImage = await prisma.chartImage.create({
+        data: {
+          userId: Number(userId),
+          imageUrl,
+          birthData,
+          chartType: chartType || 'natal',
+        },
+      })
+    } catch (err) {
+      console.error('Error saving chart metadata to database:', err)
+      throw err
+    }
 
     return NextResponse.json({ success: true, imageUrl, chartImageId: chartImage.id })
   } catch (error) {

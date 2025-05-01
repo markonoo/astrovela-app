@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BookCoverPreview } from "./book-cover-preview"
 import { UserInfoForm } from "./user-info-form"
 import { ColorSelector } from "./color-selector"
 import { IconSelector } from "./icon-selector"
 import { Button } from "@/components/ui/button"
+import { geocodeLocation } from "@/services/astrology-service"
+import { fetchNatalWheelChart } from "@/services/astrology-api-service"
 
 // Define the available theme colors
 export const THEME_COLORS = {
@@ -47,29 +49,102 @@ export const THEME_COLORS = {
   },
 }
 
-// Define the available icons - reduced to just the two chart options
-const ICONS = ["natal-chart", "zodiac-chart"]
+// Define the available icons - now three chart options
+const ICONS = ["natal-chart", "zodiac-chart", "custom-natal-chart"]
 
 export function BookCoverDesigner() {
   // State for user information
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<{
+    firstName: string
+    lastName: string
+    placeOfBirth: string
+    dateOfBirth: string
+    gender: "" | "male" | "female" | "non-binary"
+    timeOfBirth?: string
+  }>({
     firstName: "",
     lastName: "",
     placeOfBirth: "",
     dateOfBirth: "",
+    gender: "",
   })
 
   // State for design choices
   const [selectedColor, setSelectedColor] = useState("cream")
   const [selectedIcon, setSelectedIcon] = useState("natal-chart")
+  const [isLoading, setIsLoading] = useState(false)
+  const [svgContent, setSvgContent] = useState<string | null>(null)
+  const [supabaseChartUrl, setSupabaseChartUrl] = useState<string | null>(null)
+
+  // Validation for enabling custom natal chart icon
+  const isCustomChartEnabled =
+    !!userInfo.firstName.trim() &&
+    !!userInfo.gender &&
+    !!userInfo.dateOfBirth &&
+    !!userInfo.placeOfBirth
+
+  // Clear SVG when user changes form or chart selection
+  useEffect(() => {
+    setSvgContent(null)
+  }, [userInfo.firstName, userInfo.lastName, userInfo.placeOfBirth, userInfo.dateOfBirth, userInfo.gender, userInfo.timeOfBirth, selectedIcon])
+
+  // Custom IconSelector handler to prevent selecting custom-natal-chart unless enabled
+  const handleIconSelect = (icon: string) => {
+    if (icon === "custom-natal-chart" && !isCustomChartEnabled) return
+    setSelectedIcon(icon)
+  }
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!userInfo.firstName.trim()) {
       alert("Please enter a first name.")
       return
     }
-
+    // Custom Natal Chart API workflow
+    if (selectedIcon === "custom-natal-chart") {
+      setIsLoading(true)
+      setSupabaseChartUrl(null)
+      try {
+        // Geocode place of birth
+        const geo = await geocodeLocation(userInfo.placeOfBirth)
+        // Fetch S3 URL from astrology API
+        const chartApiResult = await fetchNatalWheelChart(
+          userInfo.dateOfBirth,
+          userInfo.timeOfBirth || "12:00",
+          geo.latitude,
+          geo.longitude,
+          1.0, // UTC offset for Germany, adjust as needed
+          "WHITE", // sign_icon_color
+          [
+            "clear", "clear", "clear", "clear", "clear", "clear",
+            "clear", "clear", "clear", "clear", "clear", "clear"
+          ] // sign_background
+        )
+        const s3Url = chartApiResult.chartUrl
+        // Upload S3 URL to Supabase via API route
+        const response = await fetch("/api/chart-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chartUrl: s3Url, // send the S3 URL directly
+            userId: 1, // TODO: replace with real user ID
+            birthData: { ...userInfo, geo },
+            chartType: "natal"
+          })
+        })
+        const data = await response.json()
+        setIsLoading(false)
+        if (data.imageUrl) {
+          setSupabaseChartUrl(data.imageUrl)
+        } else {
+          alert("Failed to upload chart to Supabase.")
+        }
+      } catch (err) {
+        setIsLoading(false)
+        alert("Failed to fetch or upload natal chart. Please check your details and try again.")
+      }
+      return
+    }
     // In a real app, this could trigger a download or save functionality
     console.log("Book cover design submitted:", {
       userInfo,
@@ -88,6 +163,8 @@ export function BookCoverDesigner() {
             userInfo={userInfo}
             themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
             selectedIcon={selectedIcon}
+            customChartUrl={supabaseChartUrl}
+            isLoading={isLoading}
           />
         </div>
       </div>
@@ -99,7 +176,15 @@ export function BookCoverDesigner() {
           <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
           <div className="mt-1">
             <h3 className="text-sm font-medium tracking-wider">Choose a Chart</h3>
-            <IconSelector icons={ICONS} selectedIcon={selectedIcon} setSelectedIcon={setSelectedIcon} />
+            <IconSelector
+              icons={ICONS}
+              selectedIcon={selectedIcon}
+              setSelectedIcon={handleIconSelect}
+              disabledIcons={!isCustomChartEnabled ? ["custom-natal-chart"] : []}
+            />
+            {!isCustomChartEnabled && (
+              <div className="text-xs text-red-500 mt-1">Fill all required fields to enable the custom natal chart.</div>
+            )}
           </div>
           <div className="mt-1">
             <h3 className="text-sm font-medium tracking-wider">Choose the color</h3>
@@ -108,6 +193,11 @@ export function BookCoverDesigner() {
           <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider text-sm mt-1 py-1.5">
             Continue
           </Button>
+          {isLoading && (
+            <div className="flex justify-center items-center mt-2">
+              <span className="loader mr-2" /> Loading chart data...
+            </div>
+          )}
         </div>
       </div>
     </div>

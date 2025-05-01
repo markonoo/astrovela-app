@@ -3,7 +3,6 @@ import { QuizProvider } from "@/contexts/quiz-context"
 import { UserProvider } from "@/contexts/UserContext"
 import "./globals.css"
 import type { Metadata } from "next"
-import { OliviaDataLoader } from "@/components/example-book/olivia-data-loader"
 
 export const metadata: Metadata = {
   title: "astrovela",
@@ -24,8 +23,6 @@ export default function RootLayout({
       <body className="bg-[#f7f7f7]">
         <UserProvider>
           <QuizProvider>
-            {/* Pre-load Olivia's data */}
-            <OliviaDataLoader />
             {children}
           </QuizProvider>
         </UserProvider>
