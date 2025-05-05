@@ -68,7 +68,13 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-[1]">
-            <Image src="/images/design-layer.svg" alt="Design Layer" fill className="object-cover" priority />
+            <Image
+              src={themeColor.bg === "bg-amber-50" ? "/images/design-layer.svg" : "/images/design-layer-light.svg"}
+              alt="Design Layer"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           {/* Content container - ensure it's above the design layer */}

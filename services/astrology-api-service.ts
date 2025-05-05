@@ -245,8 +245,16 @@ export async function fetchNatalWheelChart(
       lat: latitude,
       lon: longitude,
       tzone: timezone,
-      sign_icon_color,
-      sign_background,
+      planet_icon_color: "Black",
+      sign_icon_color: "Black",
+      sign_background: [
+        "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC",
+        "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC", "#F4FAFC"
+      ],
+      inner_circle_background: "#F4FAFC",
+      outer_circle_background: "#F4FAFC",
+      chart_size: 1000,
+      image_type: "svg"
     }
 
     console.log("Debug - Request Body:", requestBody)

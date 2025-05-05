@@ -35,6 +35,7 @@ export interface QuizState {
   chartInterpretation: ChartInterpretation | null
   isLoadingChart: boolean
   chartError: string | null
+  customChartUrl: string | null
 }
 
 interface QuizContextType {
@@ -58,6 +59,7 @@ interface QuizContextType {
   fetchNatalChart: () => Promise<void>
   setNatalChart: (chart: NatalChart) => void
   setChartInterpretation: (interpretation: ChartInterpretation) => void
+  setCustomChartUrl: (customChartUrl: string | null) => void
 }
 
 const initialState: QuizState = {
@@ -87,6 +89,7 @@ const initialState: QuizState = {
   chartInterpretation: null,
   isLoadingChart: false,
   chartError: null,
+  customChartUrl: null,
 }
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined)
@@ -226,15 +229,18 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, chartInterpretation }))
   }
 
+  const setCustomChartUrl = (customChartUrl: string | null) => {
+    setState((prev) => ({ ...prev, customChartUrl }))
+  }
+
   // Function to fetch natal chart data from the API
   const fetchNatalChart = async () => {
     // Import the service dynamically to avoid server-side issues
     const { fetchNatalChart, geocodeLocation, getNatalChartInterpretation } = await import(
       "@/services/astrology-service"
     )
-
+    const { fetchNatalWheelChart } = await import("@/services/astrology-api-service")
     setState((prev) => ({ ...prev, isLoadingChart: true, chartError: null }))
-
     try {
       // Check if we have all required data
       if (!state.birthDate.year || !state.birthDate.month || !state.birthDate.day) {
@@ -286,6 +292,45 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       // Save the natal chart
       setNatalChart(natalChart)
 
+      // Fetch the custom natal wheel chart SVG (Supabase URL)
+      try {
+        const chartApiResult = await fetchNatalWheelChart(
+          formattedDate,
+          state.birthTime,
+          latitude,
+          longitude,
+          1.0, // UTC offset for Germany, adjust as needed
+          "Black", // sign_icon_color
+          [
+            "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1",
+            "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1"
+          ]
+        )
+        const s3Url = chartApiResult.chartUrl
+        if (s3Url) {
+          const response = await fetch("/api/chart-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chartUrl: s3Url,
+              userId: 1, // TODO: replace with real user ID
+              birthData: { ...state, latitude, longitude },
+              chartType: "natal"
+            })
+          })
+          const data = await response.json()
+          if (data.imageUrl) {
+            setCustomChartUrl(data.imageUrl)
+          } else {
+            setCustomChartUrl(null)
+          }
+        } else {
+          setCustomChartUrl(null)
+        }
+      } catch (err) {
+        setCustomChartUrl(null)
+      }
+
       try {
         // Get interpretations
         const interpretation = await getNatalChartInterpretation(natalChart)
@@ -329,6 +374,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         fetchNatalChart,
         setNatalChart,
         setChartInterpretation,
+        setCustomChartUrl,
       }}
     >
       {children}

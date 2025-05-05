@@ -1,4 +1,10 @@
 {
+  "contexts/quiz-context.tsx -> @/services/astrology-api-service": {
+    "id": "contexts/quiz-context.tsx -> @/services/astrology-api-service",
+    "files": [
+      "static/chunks/_app-pages-browser_services_astrology-api-service_ts.js"
+    ]
+  },
   "contexts/quiz-context.tsx -> @/services/astrology-service": {
     "id": "contexts/quiz-context.tsx -> @/services/astrology-service",
     "files": [

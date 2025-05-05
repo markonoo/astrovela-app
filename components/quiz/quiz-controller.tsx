@@ -14,7 +14,7 @@ import { PersonalizedLanding } from "./personalized-landing"
 import { GenericQuestion } from "./generic-question"
 import { RelationshipStatusQuestion } from "./relationship-status-question"
 import QuizLayout from "./quiz-layout"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { isQuizCompleted } from "@/utils/storage"
 import { getQuestionByNumber } from "@/utils/quiz-questions"
 import { BirthDate } from "./birth-date"
@@ -172,8 +172,27 @@ function isQuestionStep(type: string) {
 }
 
 export function QuizController() {
-  const { state, nextStep, prevStep } = useQuiz()
+  const { state, nextStep, prevStep, fetchNatalChart } = useQuiz()
   const { currentStep, quizCompleted } = state
+
+  // Track previous step to detect transitions
+  const prevStepRef = useRef<number>(currentStep)
+  useEffect(() => {
+    prevStepRef.current = currentStep
+  }, [currentStep])
+
+  // Trigger fetchNatalChart after birthPlace step (step 10) is completed
+  useEffect(() => {
+    // Step 10 is birthPlace, step 11 is zodiacResult
+    if (
+      prevStepRef.current === 10 && currentStep === 11 &&
+      state.birthDate.year && state.birthDate.month && state.birthDate.day &&
+      state.birthTime && state.birthPlace &&
+      !state.isLoadingChart && !state.customChartUrl
+    ) {
+      fetchNatalChart()
+    }
+  }, [currentStep, state.birthDate, state.birthTime, state.birthPlace, state.isLoadingChart, state.customChartUrl, fetchNatalChart])
 
   if (quizCompleted || isQuizCompleted()) {
     return <PersonalizedLanding />

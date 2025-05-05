@@ -42,7 +42,9 @@ export function CoverCustomization() {
                 : "",
             }}
             themeColor={THEME_COLORS[selectedColor]}
-            selectedIcon={"natal-chart"}
+            selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
+            customChartUrl={state.customChartUrl || undefined}
+            isLoading={state.isLoadingChart}
           />
         </div>
       </div>
