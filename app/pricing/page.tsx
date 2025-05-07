@@ -14,6 +14,8 @@ import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
+import { createShopifyCheckout, getShopifyProducts, ShopifyProduct } from "@/services/shopify-service"
+import { ShopifyError } from "@/utils/shopify-error-handler"
 
 interface SelectedOptions {
   app: boolean
@@ -37,8 +39,33 @@ export default function PricingPage() {
   const [isProcessingOrder, setIsProcessingOrder] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [orderSuccess, setOrderSuccess] = useState(false)
+  const [shopifyProducts, setShopifyProducts] = useState<ShopifyProduct[] | null>(null)
+  const [productLoading, setProductLoading] = useState(false)
+  const [productError, setProductError] = useState<string | null>(null)
 
   const optionsSectionRef = useRef<HTMLDivElement>(null)
+
+  // Fetch Shopify products on mount
+  useEffect(() => {
+    setProductLoading(true)
+    getShopifyProducts()
+      .then(products => {
+        setShopifyProducts(products)
+        setProductLoading(false)
+      })
+      .catch(error => {
+        setProductError(error.message || "Failed to load product data.")
+        setProductLoading(false)
+      })
+  }, [])
+
+  // Helper to get product price by handle
+  const getProductPrice = (handle: string) => {
+    if (!shopifyProducts) return null
+    const product = shopifyProducts.find(p => p.handle === handle)
+    if (!product) return null
+    return product.priceRange.minVariantPrice.amount
+  }
 
   // Calculate total price based on selected options
   const calculateTotalPrice = () => {
@@ -159,27 +186,40 @@ export default function PricingPage() {
         // Show loading state
         setIsProcessingOrder(true)
 
-        // Validate required data
-        if (!state.email) {
-          throw new Error("Email is required to complete your order")
-        }
+        // Create Shopify checkout
+        const checkoutUrl = await createShopifyCheckout({
+          selectedOptions,
+          quizState: state,
+        })
 
-        // Simulate order processing
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-
-        // Show success state
-        setOrderSuccess(true)
-        setIsProcessingOrder(false)
-
-        // Redirect to payment page instead of thank you page
-        setTimeout(() => {
-          router.push(`/payment?min=${countdown.minutes}&sec=${countdown.seconds}`)
-        }, 2000)
+        // Redirect to Shopify checkout
+        window.location.href = checkoutUrl
       } catch (error) {
         console.error("Checkout error:", error)
-        setCheckoutError(
-          error instanceof Error ? error.message : "There was an error processing your order. Please try again.",
-        )
+        
+        // Handle specific error types
+        if (error instanceof ShopifyError) {
+          switch (error.code) {
+            case 'VALIDATION_ERROR':
+              setCheckoutError(error.message)
+              break
+            case 'NETWORK_ERROR':
+              setCheckoutError('Network error. Please check your internet connection and try again.')
+              break
+            case 'PRODUCT_NOT_FOUND':
+            case 'VARIANT_NOT_FOUND':
+              setCheckoutError('Product configuration error. Please try again later.')
+              break
+            case 'CHECKOUT_CREATION_FAILED':
+              setCheckoutError('Unable to create checkout. Please try again.')
+              break
+            default:
+              setCheckoutError('An unexpected error occurred. Please try again.')
+          }
+        } else {
+          setCheckoutError('An unexpected error occurred. Please try again.')
+        }
+        
         setIsProcessingOrder(false)
       }
     }
@@ -300,7 +340,7 @@ export default function PricingPage() {
             "New daily horoscopes & astrology content",
             "FREE 1-month trial with ebook or paperback",
           ]}
-          price={selectedOptions.paperback ? "FREE" : "$30.99"}
+          price={selectedOptions.paperback ? "FREE" : getProductPrice("app-subscription") ? `$${getProductPrice("app-subscription")}` : "$30.99"}
           originalPrice="$30.99"
           priceUnit={!selectedOptions.paperback ? "/month" : ""}
           imageSrc="/placeholder.svg?height=80&width=60"
@@ -312,7 +352,7 @@ export default function PricingPage() {
           type="paperback"
           title="astrovela paperback"
           features={["Uniquely created just for you", "FREE shipping", "FREE app & ebook included"]}
-          price="$55.99"
+          price={getProductPrice("paperback-book") ? `$${getProductPrice("paperback-book")}` : "$55.99"}
           originalPrice="$159.97"
           imageSrc="/placeholder.svg?height=80&width=60"
           isSelected={selectedOptions.paperback}
@@ -324,7 +364,7 @@ export default function PricingPage() {
           type="ebook"
           title="astrovela ebook"
           features={["Digital copy delivered to your email", "FREE app included", "FREE with the paperback"]}
-          price={selectedOptions.paperback ? "FREE" : "$30.99"}
+          price={selectedOptions.paperback ? "FREE" : getProductPrice("ebook") ? `$${getProductPrice("ebook")}` : "$30.99"}
           originalPrice="$49.99"
           imageSrc="/placeholder.svg?height=80&width=60"
           isSelected={selectedOptions.ebook}
