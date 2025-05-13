@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { saveQuizData, getQuizData, isQuizCompleted, clearQuizData } from "@/utils/storage"
 import type { NatalChart, ChartInterpretation } from "@/types/astrology"
+import { supabase } from "@/lib/supabaseClient"
 
 type Gender = "male" | "female" | "non-binary" | null
 type AstrologyLevel = "beginner" | "intermediate" | "expert" | null
@@ -308,6 +309,12 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         )
         const s3Url = chartApiResult.chartUrl
         if (s3Url) {
+          // Get the current session
+          const { data: { session } } = await supabase.auth.getSession()
+          if (!session) {
+            throw new Error('No active session')
+          }
+
           const response = await fetch("/api/chart-image", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -315,7 +322,8 @@ export function QuizProvider({ children }: { children: ReactNode }) {
               chartUrl: s3Url,
               userId: 1, // TODO: replace with real user ID
               birthData: { ...state, latitude, longitude },
-              chartType: "natal"
+              chartType: "natal",
+              authToken: session.access_token
             })
           })
           const data = await response.json()

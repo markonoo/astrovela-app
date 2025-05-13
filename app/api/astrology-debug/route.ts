@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 // API configuration - using the provided credentials for testing
-const USER_ID = process.env.USER_ID || "640177"
-const API_KEY = process.env.API_KEY || "47d917ee06a32e6cc1f7bbb0c7a51f944ee12bee"
+const USER_ID = process.env.USER_ID || "640668"
+const API_KEY = process.env.API_KEY || "f54e96a1b5d0607f65433e754ae9a4f94fa5a9f8"
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
 export async function GET() {

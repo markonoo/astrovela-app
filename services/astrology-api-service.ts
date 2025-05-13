@@ -8,8 +8,8 @@ import { getFallbackNatalChart } from "@/utils/fallback-chart"
 import { safeGetSessionItem, safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
 
 // API configuration - using the provided credentials
-const USER_ID = process.env.USER_ID || "640177"
-const API_KEY = process.env.API_KEY || "47d917ee06a32e6cc1f7bbb0c7a51f944ee12bee"
+const USER_ID = process.env.USER_ID || "640668"
+const API_KEY = process.env.API_KEY || "f54e96a1b5d0607f65433e754ae9a4f94fa5a9f8"
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
 // Check if API credentials are properly configured
@@ -394,87 +394,51 @@ export async function fetchNatalWheelChartSVG(
 /**
  * Geocodes a location string to get latitude and longitude using AstrologyAPI
  */
-export async function geocodeLocation(
-  locationString: string,
-): Promise<{ latitude: number; longitude: number; name: string }> {
+export async function geocodeLocation(location: string): Promise<{ latitude: number; longitude: number; name: string }> {
   try {
-    // Check for previous auth errors to avoid repeated failed API calls
-    if (hasAuthError()) {
-      console.warn("Skipping geocoding API call due to previous authentication error")
-      throw new Error("API authentication error - using fallback coordinates")
-    }
+    console.log("Geocoding location:", location);
 
-    // Check credentials first
     if (!hasValidCredentials()) {
-      console.warn("Missing API credentials for AstrologyAPI")
-      setAuthError(true)
-      throw new Error("API credentials not configured")
+      console.warn("Missing API credentials for AstrologyAPI");
+      setAuthError(true);
+      throw new Error("API credentials not configured");
     }
 
-    // Prepare the request body
-    const requestBody = {
-      place: locationString,
-    }
+    const headers = getAuthHeaders();
+    console.log("Using auth headers:", headers);
 
-    console.log("Geocoding location:", locationString)
-    console.log("Using auth headers:", getAuthHeaders())
-
-    // Make the API request
-    const response = await fetch(`${ASTROLOGY_API_BASE_URL}/geo_details`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(requestBody),
-    })
-
-    const data = await response.json()
-
-    // Check for error in response
-    if (data.status === false && data.msg) {
-      console.error("API error:", data.msg)
-
-      // Check if it's an authentication error
-      if (data.msg.includes("invalid") || data.msg.includes("User ID")) {
-        setAuthError(true)
-      }
-
-      throw new Error(data.msg)
-    }
+    // Use GET, not POST
+    const url = `${ASTROLOGY_API_BASE_URL}/geo_details?place=${encodeURIComponent(location)}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
 
     if (!response.ok) {
-      throw new Error(`Geocoding API error: ${response.status} ${response.statusText}`)
+      console.error("Geocoding API error:", response.status);
+      throw new Error(`Geocoding API error: ${response.status}`);
     }
 
-    console.log("Geocoding API response:", data)
+    const data = await response.json();
 
-    // Validate the response
-    if (!data || typeof data !== "object") {
-      throw new Error("Invalid response format from geocoding service")
-    }
-
-    // Check if we have the expected data structure
-    if (
-      !data.place ||
-      typeof data.place !== "object" ||
-      data.place.latitude === undefined ||
-      data.place.longitude === undefined
-    ) {
-      throw new Error("Invalid response structure from geocoding service")
+    if (!data || !data.latitude || !data.longitude) {
+      console.error("Invalid geocoding response:", data);
+      throw new Error("Invalid geocoding response");
     }
 
     return {
-      latitude: Number.parseFloat(data.place.latitude),
-      longitude: Number.parseFloat(data.place.longitude),
-      name: data.place.name || locationString,
-    }
+      latitude: data.latitude,
+      longitude: data.longitude,
+      name: data.name || location,
+    };
   } catch (error) {
-    console.error("Error geocoding location:", error)
-
-    // Return fallback coordinates
+    console.error("Error geocoding location:", error);
+    // Fallback: Las Vegas
     return {
-      latitude: 0,
-      longitude: 0,
-      name: locationString,
-    }
+      latitude: 36.1699,
+      longitude: -115.1398,
+      name: location,
+    };
   }
 }
 

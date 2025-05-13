@@ -55,8 +55,6 @@ export async function fetchNatalWheelChartSVG(
   }
 }
 
-// Update the geocodeLocation function to handle errors better
-
 /**
  * Geocodes a location string to get latitude and longitude
  */
@@ -65,34 +63,49 @@ export async function geocodeLocation(
 ): Promise<{ latitude: number; longitude: number; name: string }> {
   try {
     // Try to use a simple geocoding approach first
-    // This is a fallback in case the API fails
     const simpleGeocode = getSimpleGeocoding(locationString)
     if (simpleGeocode) {
       console.log("Using simple geocoding for:", locationString)
       return simpleGeocode
     }
 
-    // If simple geocoding doesn't work, try the API
-    console.log("Attempting API geocoding for:", locationString)
-
-    // Use the AstrologyAPI geocoding service
-    const result = await geocodeLocationFromAPI(locationString)
-
-    // Validate the result
-    if (result.latitude === 0 && result.longitude === 0) {
-      console.log("API geocoding returned default coordinates, trying fallback")
-      // If API returned default coordinates, try our fallback
-      const fallback = getSimpleGeocoding(locationString, true)
-      if (fallback) {
-        return fallback
+    // Try the direct API call first
+    try {
+      const result = await geocodeLocationFromAPI(locationString)
+      if (result.latitude !== 0 || result.longitude !== 0) {
+        return result
       }
+    } catch (error) {
+      console.warn("Direct API geocoding failed, trying /api/geocode", error)
     }
 
-    return result
+    // Fallback: use the custom /api/geocode endpoint with POST
+    try {
+      const response = await fetch("/api/geocode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location: locationString })
+      })
+      if (response.ok) {
+        const data = await response.json()
+        return {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          name: data.name || locationString,
+        }
+      }
+    } catch (error) {
+      console.error("Error using /api/geocode fallback:", error)
+    }
+
+    // Final fallback
+    return {
+      latitude: 0,
+      longitude: 0,
+      name: locationString,
+    }
   } catch (error) {
     console.error("Error in geocoding service:", error)
-
-    // Return fallback data instead of throwing
     return {
       latitude: 0,
       longitude: 0,

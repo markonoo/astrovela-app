@@ -8,6 +8,9 @@ import { IconSelector } from "./icon-selector"
 import { Button } from "@/components/ui/button"
 import { geocodeLocation } from "@/services/astrology-service"
 import { fetchNatalWheelChart } from "@/services/astrology-api-service"
+import { supabase } from "@/lib/supabaseClient"
+import { v4 as uuidv4 } from 'uuid';
+import { safeGetSessionItem, safeSetSessionItem } from '@/utils/safe-storage';
 
 // Define the available theme colors
 export const THEME_COLORS = {
@@ -52,6 +55,16 @@ export const THEME_COLORS = {
 // Define the available icons - now three chart options
 const ICONS = ["natal-chart", "zodiac-chart", "custom-natal-chart"]
 
+// Helper to get or create a session ID
+function getOrCreateSessionId() {
+  let sessionId = safeGetSessionItem('astrovela_session_id');
+  if (!sessionId) {
+    sessionId = uuidv4();
+    safeSetSessionItem('astrovela_session_id', sessionId);
+  }
+  return sessionId;
+}
+
 export function BookCoverDesigner() {
   // State for user information
   const [userInfo, setUserInfo] = useState<{
@@ -61,6 +74,7 @@ export function BookCoverDesigner() {
     dateOfBirth: string
     gender: "" | "male" | "female" | "non-binary"
     timeOfBirth?: string
+    email?: string
   }>({
     firstName: "",
     lastName: "",
@@ -122,24 +136,36 @@ export function BookCoverDesigner() {
         )
         const s3Url = chartApiResult.chartUrl
         // Upload S3 URL to Supabase via API route
+        // Debug log before upload
+        console.log("Preparing to upload to /api/chart-image", s3Url, userInfo);
+
+        const sessionId = getOrCreateSessionId();
+
         const response = await fetch("/api/chart-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chartUrl: s3Url, // send the S3 URL directly
-            userId: 1, // TODO: replace with real user ID
+            userId: null, // anonymous
+            email: userInfo.email || null,
+            session_id: sessionId,
             birthData: { ...userInfo, geo },
-            chartType: "natal"
+            chartType: "natal",
           })
         })
         const data = await response.json()
+
+        // Debug log after upload
+        console.log("Upload response", data);
+
         setIsLoading(false)
         if (data.imageUrl) {
           setSupabaseChartUrl(data.imageUrl)
         } else {
-          alert("Failed to upload chart to Supabase.")
+          alert("Failed to upload chart to Supabase. " + (data.error || data.details || JSON.stringify(data)))
         }
       } catch (err) {
+        console.error("Error during upload to /api/chart-image:", err);
         setIsLoading(false)
         alert("Failed to fetch or upload natal chart. Please check your details and try again.")
       }
