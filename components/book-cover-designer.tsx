@@ -56,14 +56,14 @@ export const THEME_COLORS = {
 const ICONS = ["natal-chart", "zodiac-chart", "custom-natal-chart"]
 
 // Helper to get or create a session ID
-function getOrCreateSessionId() {
-  let sessionId = safeGetSessionItem('astrovela_session_id');
-  if (!sessionId) {
-    sessionId = uuidv4();
-    safeSetSessionItem('astrovela_session_id', sessionId);
-  }
-  return sessionId;
-}
+// function getOrCreateSessionId() {
+//   let sessionId = safeGetSessionItem('astrovela_session_id');
+//   if (!sessionId) {
+//     sessionId = uuidv4();
+//     safeSetSessionItem('astrovela_session_id', sessionId);
+//   }
+//   return sessionId;
+// }
 
 export function BookCoverDesigner() {
   // State for user information
@@ -89,6 +89,7 @@ export function BookCoverDesigner() {
   const [isLoading, setIsLoading] = useState(false)
   const [svgContent, setSvgContent] = useState<string | null>(null)
   const [supabaseChartUrl, setSupabaseChartUrl] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   // Validation for enabling custom natal chart icon
   const isCustomChartEnabled =
@@ -101,6 +102,15 @@ export function BookCoverDesigner() {
   useEffect(() => {
     setSvgContent(null)
   }, [userInfo.firstName, userInfo.lastName, userInfo.placeOfBirth, userInfo.dateOfBirth, userInfo.gender, userInfo.timeOfBirth, selectedIcon])
+
+  useEffect(() => {
+    let id = safeGetSessionItem('astrovela_session_id');
+    if (!id) {
+      id = uuidv4();
+      safeSetSessionItem('astrovela_session_id', id);
+    }
+    setSessionId(id);
+  }, []);
 
   // Custom IconSelector handler to prevent selecting custom-natal-chart unless enabled
   const handleIconSelect = (icon: string) => {
@@ -138,8 +148,6 @@ export function BookCoverDesigner() {
         // Upload S3 URL to Supabase via API route
         // Debug log before upload
         console.log("Preparing to upload to /api/chart-image", s3Url, userInfo);
-
-        const sessionId = getOrCreateSessionId();
 
         const response = await fetch("/api/chart-image", {
           method: "POST",

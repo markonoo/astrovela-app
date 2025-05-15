@@ -16,6 +16,11 @@ export function PersonalizedLanding() {
   const { state } = useQuiz()
   const [zodiacSign, setZodiacSign] = useState<string | null>(null)
   const [chartLoaded, setChartLoaded] = useState(false)
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (state.birthDate.month && state.birthDate.day) {
@@ -34,6 +39,8 @@ export function PersonalizedLanding() {
   const handleChartLoaded = () => {
     setChartLoaded(true)
   }
+
+  if (!mounted) return <div />;
 
   return (
     <>

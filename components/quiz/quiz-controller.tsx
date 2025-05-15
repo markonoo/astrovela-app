@@ -217,7 +217,8 @@ export function QuizController() {
 
   // Map step types to components
   const renderStep = () => {
-    if (!stepConfig) return null
+    // Always return a React element, never null, to avoid hook order issues
+    if (!stepConfig) return <div>Loading...</div>;
     switch (stepConfig.type) {
       case "gender":
         return <GenderSelection />
