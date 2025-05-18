@@ -27,6 +27,7 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   chartImages ChartImage[]
+  natalChartInterpretations NatalChartInterpretation[]
 }
 
 model ChartImage {
@@ -39,4 +40,33 @@ model ChartImage {
   birthData Json
   chartType String?  // e.g., 'natal', 'solar return', etc.
   createdAt DateTime @default(now())
+  natalChartInterpretations NatalChartInterpretation[]
+}
+
+model NatalChartInterpretation {
+  id                      String   @id @default(uuid())
+  userId                  Int?
+  chartImageId            String?
+  session_id              String?
+  planets                 Json?
+  houses                  Json?
+  ascendant               Float?
+  midheaven               Float?
+  vertex                  Float?
+  lilith                  Json?
+  aspects                 Json?
+  moon_phase_name         String?
+  moon_phase_description  String?
+  hemisphere_east_west    String?
+  hemisphere_north_south  String?
+  elements                Json?
+  elements_description    String?
+  modes                   Json?
+  modes_description       String?
+  dominant_sign           Json?
+  sun_sign                String?
+  moon_sign               String?
+  created_at              DateTime @default(now())
+  user                    User?    @relation(fields: [userId], references: [id])
+  chartImage              ChartImage? @relation(fields: [chartImageId], references: [id])
 }

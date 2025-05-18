@@ -157,7 +157,16 @@ export function BookCoverDesigner() {
             userId: null, // anonymous
             email: userInfo.email || null,
             session_id: sessionId,
-            birthData: { ...userInfo, geo },
+            birthData: {
+              day: Number(userInfo.dateOfBirth.split("-")[2]),
+              month: Number(userInfo.dateOfBirth.split("-")[1]),
+              year: Number(userInfo.dateOfBirth.split("-")[0]),
+              hour: Number((userInfo.timeOfBirth || "12:00").split(":")[0]),
+              min: Number((userInfo.timeOfBirth || "12:00").split(":")[1]),
+              lat: geo.latitude,
+              lon: geo.longitude,
+              tzone: 1.0 // or your timezone logic
+            },
             chartType: "natal",
           })
         })

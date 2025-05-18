@@ -1,5 +1,5 @@
 {
+  "/api/chart-image/route": "app/api/chart-image/route.js",
   "/page": "app/page.js",
-  "/quiz/page": "app/quiz/page.js",
   "/book-designer/page": "app/book-designer/page.js"
 }
