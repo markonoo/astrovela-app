@@ -90,6 +90,8 @@ export function BookCoverDesigner() {
   const [svgContent, setSvgContent] = useState<string | null>(null)
   const [supabaseChartUrl, setSupabaseChartUrl] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sunSign, setSunSign] = useState<string | undefined>(undefined)
+  const [moonSign, setMoonSign] = useState<string | undefined>(undefined)
 
   // Validation for enabling custom natal chart icon
   const isCustomChartEnabled =
@@ -128,6 +130,8 @@ export function BookCoverDesigner() {
     if (selectedIcon === "custom-natal-chart") {
       setIsLoading(true)
       setSupabaseChartUrl(null)
+      setSunSign(undefined)
+      setMoonSign(undefined)
       try {
         // Geocode place of birth
         const geo = await geocodeLocation(userInfo.placeOfBirth)
@@ -178,6 +182,16 @@ export function BookCoverDesigner() {
         setIsLoading(false)
         if (data.imageUrl) {
           setSupabaseChartUrl(data.imageUrl)
+          // Extract sun and moon sign from response if available
+          if (data.sunSign) setSunSign(data.sunSign)
+          if (data.moonSign) setMoonSign(data.moonSign)
+          // Fallback: try to extract from interpretation if present
+          if (!data.sunSign && data.interpretation && Array.isArray(data.interpretation.planets)) {
+            const sun = data.interpretation.planets.find((p: any) => p.name === 'Sun')
+            const moon = data.interpretation.planets.find((p: any) => p.name === 'Moon')
+            setSunSign(sun?.sign)
+            setMoonSign(moon?.sign)
+          }
         } else {
           alert("Failed to upload chart to Supabase. " + (data.error || data.details || JSON.stringify(data)))
         }
@@ -208,6 +222,8 @@ export function BookCoverDesigner() {
             selectedIcon={selectedIcon}
             customChartUrl={supabaseChartUrl}
             isLoading={isLoading}
+            sunSign={selectedIcon === "custom-natal-chart" ? (sunSign || (isLoading ? "Aries" : undefined)) : undefined}
+            moonSign={selectedIcon === "custom-natal-chart" ? (moonSign || (isLoading ? "Libra" : undefined)) : undefined}
           />
         </div>
       </div>

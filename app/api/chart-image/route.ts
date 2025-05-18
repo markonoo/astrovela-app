@@ -197,9 +197,9 @@ export async function POST(request: Request) {
 
     // --- NEW: Store interpretation in Supabase ---
     let interpretationRow;
+    let sunSign, moonSign;
     try {
       // Extract sun and moon sign from planets array
-      let sunSign, moonSign;
       if (Array.isArray(interpretationData?.planets)) {
         const sun = interpretationData.planets.find((p: any) => p.name === 'Sun');
         const moon = interpretationData.planets.find((p: any) => p.name === 'Moon');
@@ -250,7 +250,9 @@ export async function POST(request: Request) {
       success: true, 
       imageUrl, 
       chartImageId: chartImage.id,
-      interpretationId: interpretationRow.id
+      interpretationId: interpretationRow.id,
+      sunSign,
+      moonSign
     })
   } catch (error) {
     console.error('Unexpected error in chart-image API:', error)
