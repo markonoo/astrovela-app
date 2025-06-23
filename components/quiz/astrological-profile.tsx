@@ -159,12 +159,9 @@ export function AstrologicalProfile() {
           return { value: generatePseudoRandomTraitValue(trait) }
       }
     }
-    // If interpretation is still loading
-    if (state.natalChart && !state.chartInterpretation) {
-      return { value: 0, description: "Loading interpretation..." }
-    }
-    // Default fallback
-    return { value: 0, description: "" }
+
+    // Fallback to pseudo-random but consistent values
+    return { value: generatePseudoRandomTraitValue(trait) }
   }
 
   // Generate pseudo-random but consistent trait values based on user data

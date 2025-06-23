@@ -3,7 +3,7 @@
  * Handles all interactions with the astrologyapi.com API
  */
 
-import type { NatalChart, PlanetPosition, ZodiacSign, House, Angle } from "@/types/astrology"
+import type { NatalChart, PlanetPosition, ZodiacSign, House, Angle, CelestialBody } from "@/types/astrology"
 import { getFallbackNatalChart } from "@/utils/fallback-chart"
 import { safeGetSessionItem, safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
 
@@ -452,19 +452,23 @@ function formatNatalChartResponse(
   birthDetails: any,
 ): NatalChart {
   // Extract and format planet positions
-  const planets: PlanetPosition[] = planetsData.map((planet) => {
-    // Convert planet name to our format
-    const planetName = convertPlanetName(planet.name)
-
-    return {
-      name: planetName,
-      sign: planet.sign.toLowerCase() as ZodiacSign,
-      degree: planet.norm_degree,
-      house: planet.house,
-      retrograde: planet.is_retrograde === 1,
-      aspectsToOtherPlanets: [],
-    }
-  })
+  const validCelestialBodies = [
+    "sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto", "chiron", "north_node", "south_node"
+  ] as const;
+  const planets: PlanetPosition[] = planetsData
+    .map((planet) => {
+      const planetName = convertPlanetName(planet.name)
+      if (!validCelestialBodies.includes(planetName as any)) return null
+      return {
+        name: planetName as CelestialBody,
+        sign: planet.sign.toLowerCase() as ZodiacSign,
+        degree: planet.norm_degree,
+        house: planet.house,
+        retrograde: planet.is_retrograde === 1,
+        aspectsToOtherPlanets: [],
+      }
+    })
+    .filter(Boolean) as PlanetPosition[]
 
   // Extract and format houses
   const houses: House[] = Object.keys(housesData).map((key) => {
@@ -478,7 +482,7 @@ function formatNatalChartResponse(
   })
 
   // Extract and format angles (Ascendant, Midheaven, etc.)
-  const angles: Record<string, Angle> = {
+  const angles = {
     ascendant: {
       sign: housesData.ascendant.sign.toLowerCase() as ZodiacSign,
       degree: housesData.ascendant.degree,
@@ -718,6 +722,41 @@ export async function getDailyHoroscope(sign: ZodiacSign): Promise<any> {
     }
   } catch (error) {
     console.error("Error getting daily horoscope:", error)
+    throw error
+  }
+}
+
+export async function getNatalChartInterpretationFromAPI(birthData: {
+  day: number;
+  month: number;
+  year: number;
+  hour: number;
+  min: number;
+  lat: number;
+  lon: number;
+  tzone: number;
+  house_type?: string;
+}): Promise<any> {
+  try {
+    if (!hasValidCredentials()) {
+      throw new Error("API credentials not configured")
+    }
+    const headers = getAuthHeaders()
+    const response = await fetch(`${ASTROLOGY_API_BASE_URL}/natal_chart_interpretation`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(birthData),
+    })
+    const data = await response.json()
+    if (data.status === false && data.msg) {
+      throw new Error(data.msg)
+    }
+    if (!response.ok) {
+      throw new Error(`Interpretation API error: ${response.status} ${response.statusText}`)
+    }
+    return data
+  } catch (error) {
+    console.error("Error fetching natal chart interpretation:", error)
     throw error
   }
 }

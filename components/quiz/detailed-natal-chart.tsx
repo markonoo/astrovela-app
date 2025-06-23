@@ -122,12 +122,6 @@ export function DetailedNatalChart() {
                   </div>
                 </div>
 
-                {/* Show loading or placeholder if interpretation is not yet loaded */}
-                {!state.chartInterpretation && (
-                  <div className="bg-gray-50 p-6 rounded-lg text-center text-gray-400">
-                    Loading interpretation...
-                  </div>
-                )}
                 {state.chartInterpretation && (
                   <div className="bg-gray-50 p-6 rounded-lg">
                     <h3 className="text-xl font-bold mb-3">{state.chartInterpretation.overview.title}</h3>

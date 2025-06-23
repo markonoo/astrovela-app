@@ -21,90 +21,24 @@ export async function POST(request: Request) {
     // Debug log for chartUrl
     console.log('Processing chart upload:', { chartUrl, userId, chartType })
 
-    // --- NEW: Fetch natal chart interpretation in parallel ---
-    async function fetchNatalChartInterpretation(birthData: any) {
-      const apiUrl = 'https://json.astrologyapi.com/v1/natal_chart_interpretation';
-      const userId = process.env.USER_ID;
-      const apiKey = process.env.API_KEY;
-      if (!userId || !apiKey) throw new Error('USER_ID or API_KEY is not set in environment');
-
-      // Accept both flat and nested formats
-      let payload;
-      if (
-        typeof birthData.day === 'number' && typeof birthData.month === 'number' && typeof birthData.year === 'number' &&
-        typeof birthData.hour === 'number' && typeof birthData.min === 'number' &&
-        typeof birthData.lat === 'number' && typeof birthData.lon === 'number'
-      ) {
-        // Already flat format
-        payload = birthData;
-      } else if (
-        birthData.birthDate && birthData.birthTime &&
-        (typeof birthData.latitude === 'number' || typeof birthData.lat === 'number') &&
-        (typeof birthData.longitude === 'number' || typeof birthData.lon === 'number')
-      ) {
-        // Nested format, transform
-        const [year, month, day] = birthData.birthDate.split ? birthData.birthDate.split('-').map(Number) : [
-          Number(birthData.birthDate.year),
-          Number(birthData.birthDate.month),
-          Number(birthData.birthDate.day)
-        ];
-        const [hour, min] = birthData.birthTime.split(':').map(Number);
-        payload = {
-          day,
-          month,
-          year,
-          hour,
-          min,
-          lat: birthData.latitude ?? birthData.lat,
-          lon: birthData.longitude ?? birthData.lon,
-          tzone: birthData.tzone ?? 1.0
-        };
-      } else {
-        throw new Error('Invalid or missing birth data for interpretation API');
-      }
-
-      // Validate required fields
-      if (
-        !payload.day || !payload.month || !payload.year ||
-        isNaN(payload.hour) || isNaN(payload.min) ||
-        isNaN(payload.lat) || isNaN(payload.lon)
-      ) {
-        console.error('Interpretation API birth data validation failed:', payload);
-        throw new Error('Invalid or missing birth data for interpretation API');
-      }
-
-      // Create Basic Auth header
-      const authString = `${userId}:${apiKey}`;
-      const base64Auth = Buffer.from(authString).toString('base64');
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${base64Auth}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const text = await res.text();
-      console.log('Interpretation API response:', res.status, text);
-      if (!res.ok) throw new Error('Failed to fetch natal chart interpretation');
-      return JSON.parse(text);
-    }
-
-    // Download the image and fetch interpretation in parallel
-    let imageRes, interpretationData;
+    // Download the image from the provided URL
+    let imageRes;
     try {
-      [imageRes, interpretationData] = await Promise.all([
-        (async () => {
-          console.log('Fetching chart from URL:', chartUrl)
-          const res = await fetch(chartUrl)
-          if (!res.ok) throw new Error('Failed to download chart image')
-          return res;
-        })(),
-        fetchNatalChartInterpretation(birthData)
-      ]);
+      console.log('Fetching chart from URL:', chartUrl)
+      imageRes = await fetch(chartUrl)
+      if (!imageRes.ok) {
+        console.error('Failed to download chart image', imageRes.status, imageRes.statusText)
+        return NextResponse.json({ 
+          error: 'Failed to download chart image', 
+          details: `${imageRes.status} ${imageRes.statusText}` 
+        }, { status: 500 })
+      }
     } catch (err) {
-      console.error('Error fetching chart image or interpretation:', err)
-      return NextResponse.json({ error: 'Failed to fetch chart image or interpretation', details: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
+      console.error('Error fetching SVG from S3:', err)
+      return NextResponse.json({ 
+        error: 'Failed to fetch chart image', 
+        details: err instanceof Error ? err.message : 'Unknown error' 
+      }, { status: 500 })
     }
 
     // Process the image data
@@ -175,14 +109,15 @@ export async function POST(request: Request) {
     // Save metadata in the ChartImage table
     let chartImage;
     try {
-      const chartImageData: any = {
-        imageUrl,
-        birthData,
-        chartType: chartType || 'natal',
-      };
-      if (userId) chartImageData.userId = Number(userId);
       chartImage = await prisma.chartImage.create({
-        data: chartImageData,
+        data: {
+          userId: userId ? Number(userId) : undefined,
+          email: email || null,
+          session_id: session_id || null,
+          imageUrl,
+          birthData,
+          chartType: chartType || 'natal',
+        },
       })
       console.log('Successfully saved chart metadata:', chartImage.id)
     } catch (err) {
@@ -195,64 +130,10 @@ export async function POST(request: Request) {
       }, { status: 500 })
     }
 
-    // --- NEW: Store interpretation in Supabase ---
-    let interpretationRow;
-    let sunSign, moonSign;
-    try {
-      // Extract sun and moon sign from planets array
-      if (Array.isArray(interpretationData?.planets)) {
-        const sun = interpretationData.planets.find((p: any) => p.name === 'Sun');
-        const moon = interpretationData.planets.find((p: any) => p.name === 'Moon');
-        sunSign = sun?.sign;
-        moonSign = moon?.sign;
-      }
-      interpretationRow = await prisma.natalChartInterpretation.create({
-        data: {
-          userId: userId ? Number(userId) : undefined,
-          chartImageId: chartImage.id,
-          session_id: session_id || undefined,
-          planets: interpretationData?.planets,
-          houses: interpretationData?.houses,
-          ascendant: interpretationData?.ascendant,
-          midheaven: interpretationData?.midheaven,
-          vertex: interpretationData?.vertex,
-          lilith: interpretationData?.lilith,
-          aspects: interpretationData?.aspects,
-          moon_phase_name: interpretationData?.moon_phase?.moon_phase_name,
-          moon_phase_description: interpretationData?.moon_phase?.moon_phase_description,
-          hemisphere_east_west: interpretationData?.hemisphere?.east_west?.description,
-          hemisphere_north_south: interpretationData?.hemisphere?.north_south?.description,
-          elements: interpretationData?.elements?.elements,
-          elements_description: interpretationData?.elements?.description,
-          modes: interpretationData?.modes?.modes,
-          modes_description: interpretationData?.errorMessage || interpretationData?.modes?.description,
-          dominant_sign: interpretationData?.dominant_sign,
-          sun_sign: sunSign,
-          moon_sign: moonSign,
-        },
-      });
-      console.log('Successfully saved natal chart interpretation:', interpretationRow.id)
-    } catch (err) {
-      // If interpretationData is missing (API failed), store the error message
-      const errorMessage = (err instanceof Error ? err.message : 'Unknown error') + (interpretationData?.errorMessage ? ` | ${interpretationData.errorMessage}` : '');
-      interpretationRow = await prisma.natalChartInterpretation.create({
-        data: {
-          userId: userId ? Number(userId) : undefined,
-          chartImageId: chartImage.id,
-          session_id: session_id || undefined,
-          modes_description: errorMessage,
-        },
-      });
-      console.error('Error saving natal chart interpretation, stored error:', errorMessage)
-    }
-
     return NextResponse.json({ 
       success: true, 
       imageUrl, 
-      chartImageId: chartImage.id,
-      interpretationId: interpretationRow.id,
-      sunSign,
-      moonSign
+      chartImageId: chartImage.id 
     })
   } catch (error) {
     console.error('Unexpected error in chart-image API:', error)
@@ -325,10 +206,12 @@ export async function PUT(request: NextRequest) {
     // Update all ChartImage records with this session_id and no userId
     const result = await prisma.chartImage.updateMany({
       where: {
-        userId: undefined,
+        session_id,
+        userId: null,
       },
       data: {
         userId: Number(userId),
+        session_id: null,
       },
     });
     return NextResponse.json({ success: true, updated: result.count });

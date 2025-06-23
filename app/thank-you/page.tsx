@@ -93,8 +93,6 @@ export default function ThankYouPage() {
             }}
             themeColor={THEME_COLORS[state.coverColorScheme]}
             selectedIcon={"natal-chart"}
-            sunSign={(state.chartInterpretation as any)?.sun_sign || state.chartInterpretation?.sunSign || undefined}
-            moonSign={(state.chartInterpretation as any)?.moon_sign || state.chartInterpretation?.moonSign || undefined}
           />
         </div>
       </div>

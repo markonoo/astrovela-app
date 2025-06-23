@@ -4,7 +4,6 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 import { saveQuizData, getQuizData, isQuizCompleted, clearQuizData } from "@/utils/storage"
 import type { NatalChart, ChartInterpretation } from "@/types/astrology"
 import { supabase } from "@/lib/supabaseClient"
-import { createClient } from '@supabase/supabase-js'
 
 type Gender = "male" | "female" | "non-binary" | null
 type AstrologyLevel = "beginner" | "intermediate" | "expert" | null
@@ -38,7 +37,6 @@ export interface QuizState {
   isLoadingChart: boolean
   chartError: string | null
   customChartUrl: string | null
-  interpretationId: string | null
 }
 
 interface QuizContextType {
@@ -93,7 +91,6 @@ const initialState: QuizState = {
   isLoadingChart: false,
   chartError: null,
   customChartUrl: null,
-  interpretationId: null,
 }
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined)
@@ -297,6 +294,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setNatalChart(natalChart)
 
       // Fetch the custom natal wheel chart SVG (Supabase URL)
+      let chartImageId: string | null = null
       try {
         const chartApiResult = await fetchNatalWheelChart(
           formattedDate,
@@ -304,7 +302,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           latitude,
           longitude,
           1.0, // UTC offset for Germany, adjust as needed
-          "Black",
+          "Black", // sign_icon_color
           [
             "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1",
             "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1"
@@ -312,24 +310,19 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         )
         const s3Url = chartApiResult.chartUrl
         if (s3Url) {
+          // Get the current session
           const { data: { session } } = await supabase.auth.getSession()
-          if (!session) throw new Error('No active session')
+          if (!session) {
+            throw new Error('No active session')
+          }
+
           const response = await fetch("/api/chart-image", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chartUrl: s3Url,
               userId: 1, // TODO: replace with real user ID
-              birthData: {
-                day: Number(state.birthDate.day),
-                month: Number(state.birthDate.month),
-                year: Number(state.birthDate.year),
-                hour: Number(state.birthTime?.split(":")[0]),
-                min: Number(state.birthTime?.split(":")[1]),
-                lat: latitude,
-                lon: longitude,
-                tzone: 1.0 // or your timezone logic
-              },
+              birthData: { ...state, latitude, longitude },
               chartType: "natal",
               authToken: session.access_token
             })
@@ -337,22 +330,69 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           const data = await response.json()
           if (data.imageUrl) {
             setCustomChartUrl(data.imageUrl)
+            chartImageId = data.id || null
           } else {
             setCustomChartUrl(null)
           }
-          if (data.interpretationId) {
-            setState((prev) => ({ ...prev, interpretationId: data.interpretationId }))
-            fetchInterpretationFromSupabase(data.interpretationId)
-          } else {
-            setState((prev) => ({ ...prev, interpretationId: null, chartInterpretation: null }))
-          }
         } else {
           setCustomChartUrl(null)
-          setState((prev) => ({ ...prev, interpretationId: null, chartInterpretation: null }))
         }
       } catch (err) {
         setCustomChartUrl(null)
-        setState((prev) => ({ ...prev, interpretationId: null, chartInterpretation: null }))
+      }
+
+      try {
+        // Prepare birth data for interpretation API
+        const [year, month, day] = formattedDate.split("-").map(Number)
+        const [hour, min] = state.birthTime.split(":").map(Number)
+        const birthData = {
+          day,
+          month,
+          year,
+          hour,
+          min,
+          lat: latitude,
+          lon: longitude,
+          tzone: 1.0, // TODO: use real timezone if available
+          house_type: "placidus"
+        }
+        // Import the real API call
+        const { getNatalChartInterpretationFromAPI } = await import("@/services/astrology-api-service")
+        const interpretation = await getNatalChartInterpretationFromAPI(birthData)
+        setChartInterpretation(interpretation)
+
+        // Store in Supabase
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          await supabase.from("NatalChartInterpretation").insert([
+            {
+              userId: 1, // TODO: replace with real user ID
+              chartImageId: chartImageId,
+              session_id: session.user.id,
+              planets: interpretation.planets,
+              houses: interpretation.houses,
+              ascendant: interpretation.ascendant,
+              midheaven: interpretation.midheaven,
+              vertex: interpretation.vertex,
+              lilith: interpretation.lilith,
+              aspects: interpretation.aspects,
+              moon_phase_name: interpretation.moon_phase?.moon_phase_name,
+              moon_phase_description: interpretation.moon_phase?.moon_phase_description,
+              hemisphere_east_west: interpretation.hemisphere?.east_west?.description,
+              hemisphere_north_south: interpretation.hemisphere?.north_south?.description,
+              elements: interpretation.elements,
+              elements_description: interpretation.elements?.description,
+              modes: interpretation.modes,
+              modes_description: interpretation.modes?.description,
+              dominant_sign: interpretation.dominant_sign,
+              sun_sign: interpretation.planets?.find((p: any) => p.name === "Sun")?.sign,
+              moon_sign: interpretation.planets?.find((p: any) => p.name === "Moon")?.sign,
+            }
+          ])
+        }
+      } catch (error) {
+        console.error("Error getting or storing chart interpretation:", error)
+        // Continue even if interpretation fails
       }
 
       setState((prev) => ({ ...prev, isLoadingChart: false }))
@@ -364,24 +404,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         chartError: error instanceof Error ? error.message : "Failed to generate natal chart",
       }))
     }
-  }
-
-  // Update fetchInterpretationFromSupabase to use setState
-  async function fetchInterpretationFromSupabase(interpretationId: string) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !supabaseAnonKey) return;
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-    const { data, error } = await supabaseClient
-      .from('NatalChartInterpretation')
-      .select('*')
-      .eq('id', interpretationId)
-      .single();
-    if (error) {
-      setState((prev) => ({ ...prev, chartInterpretation: null }));
-      return;
-    }
-    setState((prev) => ({ ...prev, chartInterpretation: data }));
   }
 
   return (

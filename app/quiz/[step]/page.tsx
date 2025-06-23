@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import { COLOR_SCHEMES, type ColorSchemeKey } from "@/utils/constants"
-import { useQuiz } from "@/contexts/quiz-context"
 
 const QuizStepPage = ({ params }: { params: { step: string } }) => {
   const step = Number.parseInt(params.step)
   const router = useRouter()
-  const { state } = useQuiz()
   const [formData, setFormData] = useState({
     name: "",
     birthDate: "",
@@ -154,9 +152,6 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
                 }}
                 themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
                 selectedIcon={"natal-chart"}
-                // Support both DB (snake_case) and frontend (camelCase) keys
-                sunSign={(state.chartInterpretation as any)?.sun_sign || state.chartInterpretation?.sunSign || undefined}
-                moonSign={(state.chartInterpretation as any)?.moon_sign || state.chartInterpretation?.moonSign || undefined}
               />
             </div>
 
@@ -181,9 +176,6 @@ const QuizStepPage = ({ params }: { params: { step: string } }) => {
                 }}
                 themeColor={THEME_COLORS[formData.colorScheme as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
                 selectedIcon={"natal-chart"}
-                // Support both DB (snake_case) and frontend (camelCase) keys
-                sunSign={(state.chartInterpretation as any)?.sun_sign || state.chartInterpretation?.sunSign || undefined}
-                moonSign={(state.chartInterpretation as any)?.moon_sign || state.chartInterpretation?.moonSign || undefined}
               />
             </div>
 

@@ -267,28 +267,26 @@ export function BookCover({
         </div>
 
         {/* Sun and Moon sign indicators */}
-        <div className="w-full flex justify-between mt-6">
-          <div className="flex flex-col items-center">
+        <div className="w-full flex justify-between">
+          <div className="flex flex-col items-center absolute left-4 bottom-4">
+            <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>SUN</span>
             <div
-              className="w-16 h-16 rounded-full border-2 flex items-center justify-center"
-              style={{ borderColor: colors.accentColor, color: colors.accentColor }}
+              className="w-14 h-14 rounded-full border-2 flex items-center justify-center bg-transparent"
+              style={{ borderColor: colors.textColor, color: colors.textColor }}
             >
               <div className="text-center">
-                <div className="text-xs uppercase">SUN</div>
-                <div className="text-xs uppercase">SIGN</div>
                 <div className="text-xl">{zodiacSymbols[sunSign]}</div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center absolute right-4 bottom-4">
+            <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>MOON</span>
             <div
-              className="w-16 h-16 rounded-full border-2 flex items-center justify-center"
-              style={{ borderColor: colors.accentColor, color: colors.accentColor }}
+              className="w-14 h-14 rounded-full border-2 flex items-center justify-center bg-transparent"
+              style={{ borderColor: colors.textColor, color: colors.textColor }}
             >
               <div className="text-center">
-                <div className="text-xs uppercase">MOON</div>
-                <div className="text-xs uppercase">SIGN</div>
                 <div className="text-xl">{zodiacSymbols[moonSign]}</div>
               </div>
             </div>

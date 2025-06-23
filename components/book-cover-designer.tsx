@@ -11,6 +11,7 @@ import { fetchNatalWheelChart } from "@/services/astrology-api-service"
 import { supabase } from "@/lib/supabaseClient"
 import { v4 as uuidv4 } from 'uuid';
 import { safeGetSessionItem, safeSetSessionItem } from '@/utils/safe-storage';
+import { createClient } from '@supabase/supabase-js'
 
 // Define the available theme colors
 export const THEME_COLORS = {
@@ -90,8 +91,8 @@ export function BookCoverDesigner() {
   const [svgContent, setSvgContent] = useState<string | null>(null)
   const [supabaseChartUrl, setSupabaseChartUrl] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sunSign, setSunSign] = useState<string | undefined>(undefined)
-  const [moonSign, setMoonSign] = useState<string | undefined>(undefined)
+  const [sunSign, setSunSign] = useState<string | null>(null)
+  const [moonSign, setMoonSign] = useState<string | null>(null)
 
   // Validation for enabling custom natal chart icon
   const isCustomChartEnabled =
@@ -120,6 +121,8 @@ export function BookCoverDesigner() {
     setSelectedIcon(icon)
   }
 
+  const supabaseClient = supabase || createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
   // Handle form submission
   const handleSubmit = async () => {
     if (!userInfo.firstName.trim()) {
@@ -130,8 +133,6 @@ export function BookCoverDesigner() {
     if (selectedIcon === "custom-natal-chart") {
       setIsLoading(true)
       setSupabaseChartUrl(null)
-      setSunSign(undefined)
-      setMoonSign(undefined)
       try {
         // Geocode place of birth
         const geo = await geocodeLocation(userInfo.placeOfBirth)
@@ -161,16 +162,7 @@ export function BookCoverDesigner() {
             userId: null, // anonymous
             email: userInfo.email || null,
             session_id: sessionId,
-            birthData: {
-              day: Number(userInfo.dateOfBirth.split("-")[2]),
-              month: Number(userInfo.dateOfBirth.split("-")[1]),
-              year: Number(userInfo.dateOfBirth.split("-")[0]),
-              hour: Number((userInfo.timeOfBirth || "12:00").split(":")[0]),
-              min: Number((userInfo.timeOfBirth || "12:00").split(":")[1]),
-              lat: geo.latitude,
-              lon: geo.longitude,
-              tzone: 1.0 // or your timezone logic
-            },
+            birthData: { ...userInfo, geo },
             chartType: "natal",
           })
         })
@@ -182,15 +174,20 @@ export function BookCoverDesigner() {
         setIsLoading(false)
         if (data.imageUrl) {
           setSupabaseChartUrl(data.imageUrl)
-          // Extract sun and moon sign from response if available
-          if (data.sunSign) setSunSign(data.sunSign)
-          if (data.moonSign) setMoonSign(data.moonSign)
-          // Fallback: try to extract from interpretation if present
-          if (!data.sunSign && data.interpretation && Array.isArray(data.interpretation.planets)) {
-            const sun = data.interpretation.planets.find((p: any) => p.name === 'Sun')
-            const moon = data.interpretation.planets.find((p: any) => p.name === 'Moon')
-            setSunSign(sun?.sign)
-            setMoonSign(moon?.sign)
+          // Fetch sun and moon sign from Supabase interpretation table
+          const { data: interpData, error: interpError } = await supabaseClient
+            .from('NatalChartInterpretation')
+            .select('sun_sign, moon_sign')
+            .eq('session_id', sessionId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+          if (!interpError && interpData) {
+            setSunSign(interpData.sun_sign || null)
+            setMoonSign(interpData.moon_sign || null)
+          } else {
+            setSunSign(null)
+            setMoonSign(null)
           }
         } else {
           alert("Failed to upload chart to Supabase. " + (data.error || data.details || JSON.stringify(data)))
@@ -222,8 +219,8 @@ export function BookCoverDesigner() {
             selectedIcon={selectedIcon}
             customChartUrl={supabaseChartUrl}
             isLoading={isLoading}
-            sunSign={selectedIcon === "custom-natal-chart" ? (sunSign || (isLoading ? "Aries" : undefined)) : undefined}
-            moonSign={selectedIcon === "custom-natal-chart" ? (moonSign || (isLoading ? "Libra" : undefined)) : undefined}
+            sunSign={sunSign}
+            moonSign={moonSign}
           />
         </div>
       </div>

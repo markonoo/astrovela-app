@@ -40,6 +40,18 @@ export function PersonalizedLanding() {
     setChartLoaded(true)
   }
 
+  // Prepare dateOfBirth and formattedDate for BookCoverPreview
+  const dateOfBirth = state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+    : "";
+  const formattedDate = dateOfBirth
+    ? new Date(dateOfBirth).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "Date of Birth";
+
   if (!mounted) return <div />;
 
   return (
@@ -77,14 +89,13 @@ export function PersonalizedLanding() {
                   firstName: state.firstName || "FIRST",
                   lastName: state.lastName || "",
                   placeOfBirth: state.birthPlace || "Place of Birth",
-                  dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-                    : "",
+                  dateOfBirth,
                 }}
                 themeColor={THEME_COLORS[state.coverColorScheme]}
                 selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
                 customChartUrl={state.customChartUrl || undefined}
                 isLoading={state.isLoadingChart}
+                formattedDate={formattedDate}
               />
             </div>
           </div>

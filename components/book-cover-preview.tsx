@@ -19,39 +19,15 @@ interface BookCoverPreviewProps {
   selectedIcon: string
   customChartUrl?: string | null
   isLoading?: boolean
-  sunSign?: string
-  moonSign?: string
+  sunSign?: string | null
+  moonSign?: string | null
+  formattedDate: string
 }
 
-// Mapping from sign name to SVG path
-const zodiacSVGs: Record<string, string> = {
-  Aries: "/images/zodiac/aries.svg",
-  Taurus: "/images/zodiac/taurus.svg",
-  Gemini: "/images/zodiac/gemini.svg",
-  Cancer: "/images/zodiac/cancer.svg",
-  Leo: "/images/zodiac/leo.svg",
-  Virgo: "/images/zodiac/virgo.svg",
-  Libra: "/images/zodiac/libra.svg",
-  Scorpio: "/images/zodiac/scorpio.svg",
-  Sagittarius: "/images/zodiac/sagittarius.svg",
-  Capricorn: "/images/zodiac/capricorn.svg",
-  Aquarius: "/images/zodiac/aquarius.svg",
-  Pisces: "/images/zodiac/pisces.svg",
-};
-
-export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading, sunSign, moonSign }: BookCoverPreviewProps) {
-  const { firstName, lastName, placeOfBirth, dateOfBirth } = userInfo
+export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading, sunSign, moonSign, formattedDate }: BookCoverPreviewProps) {
+  const { firstName, lastName, placeOfBirth } = userInfo
   const hasLastName = lastName && lastName.trim() !== ""
 
-  // Format date if provided
-  const formattedDate = dateOfBirth
-    ? new Date(dateOfBirth).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "Date of Birth"
-    
   // Determine text color based on background
   const textColorValue = themeColor.bg === "bg-amber-50" ? "#000000" : "#ffffff"
 
@@ -179,11 +155,45 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                 )}
               </div>
               
+              {/* Sun and Moon sign circles */}
+              <div className="absolute left-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(-40%, 52%)' }}>
+                <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
+                <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                  {selectedIcon === "custom-natal-chart" && isLoading ? (
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="18" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                  ) : sunSign ? (
+                    <img
+                      src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
+                      alt={sunSign}
+                      className="w-8 h-8"
+                    />
+                  ) : (
+                    <span className="text-lg" style={{ color: textColorValue }}>☉</span>
+                  )}
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(40%, 52%)' }}>
+                <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
+                <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                  {selectedIcon === "custom-natal-chart" && isLoading ? (
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="18" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                  ) : moonSign ? (
+                    <img
+                      src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
+                      alt={moonSign}
+                      className="w-8 h-8"
+                    />
+                  ) : (
+                    <span className="text-lg" style={{ color: textColorValue }}>☽</span>
+                  )}
+                </div>
+              </div>
+              
               {/* Text positioned to curve around the bottom of the chart - shown for both chart types */}
               <div 
                 className="absolute w-[330px]"
                 style={{ 
-                  bottom: "49px"
+                  bottom: "45px"
                 }}
               >
                 <CurvedText
@@ -199,39 +209,6 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
             </div>
           </div>
-
-          {/* Sun sign SVG at bottom left */}
-          {sunSign && zodiacSVGs[sunSign] && (
-            <div className="absolute left-[4%] bottom-2 flex flex-col items-center z-[3]" style={{ height: 58, width: 48, position: 'absolute' }}>
-              <div style={{ position: 'relative', width: 38, height: 38 }}>
-                <img
-                  src={zodiacSVGs[sunSign]}
-                  alt={`${sunSign} symbol`}
-                  className="w-[38px] h-[38px]"
-                  style={{ filter: themeColor.bg === "bg-amber-50" ? "none" : "invert(1)", position: 'absolute', top: 11, left: 0 }}
-                />
-              </div>
-              <span className="text-[7.5px] mt-[5px] mb-0 font-normal whitespace-nowrap" style={{ color: textColorValue, fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                SUN SIGN
-              </span>
-            </div>
-          )}
-          {/* Moon sign SVG at bottom right */}
-          {moonSign && zodiacSVGs[moonSign] && (
-            <div className="absolute bottom-2 flex flex-col items-center z-[3]" style={{ height: 58, width: 48, position: 'absolute', right: 'calc(4% + 2px)' }}>
-              <div style={{ position: 'relative', width: 38, height: 38 }}>
-                <img
-                  src={zodiacSVGs[moonSign]}
-                  alt={`${moonSign} symbol`}
-                  className="w-[38px] h-[38px]"
-                  style={{ filter: themeColor.bg === "bg-amber-50" ? "none" : "invert(1)", position: 'absolute', top: 11, left: 0 }}
-                />
-              </div>
-              <span className="text-[7.5px] mt-[5px] mb-0 font-normal whitespace-nowrap" style={{ color: textColorValue, fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                MOON SIGN
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Clean, subtle shadow for depth without 3D effects */}
