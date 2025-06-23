@@ -14,8 +14,9 @@ import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
-import { createShopifyCheckout, getShopifyProducts, ShopifyProduct } from "@/services/shopify-service"
+import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-service"
 import { ShopifyError } from "@/utils/shopify-error-handler"
+import { format } from "date-fns"
 
 interface SelectedOptions {
   app: boolean
@@ -69,25 +70,32 @@ export default function PricingPage() {
 
   // Calculate total price based on selected options
   const calculateTotalPrice = () => {
-    if (selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook) {
-      return 79.99 // All options selected
-    } else if (selectedOptions.paperback) {
-      // Any combination with paperback costs at least the paperback price
-      return 55.99
-    } else if (selectedOptions.app && selectedOptions.ebook) {
-      // App + eBook without paperback
-      return 30.99
-    } else if (selectedOptions.app) {
-      // Just app
-      return 30.99
-    } else if (selectedOptions.ebook) {
-      // Just eBook
-      return 30.99
+    // Only ebook
+    if (selectedOptions.ebook && !selectedOptions.app && !selectedOptions.paperback) {
+      return 49.99;
     }
-    return 0 // Nothing selected
+    // Only app
+    if (selectedOptions.app && !selectedOptions.ebook && !selectedOptions.paperback) {
+      return 30.99;
+    }
+    // Paperback selected (with or without others)
+    if (selectedOptions.paperback) {
+      return 55.99;
+    }
+    // App + ebook (no paperback)
+    if (selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback) {
+      return 49.99;
+    }
+    return 0;
   }
 
   const totalPrice = calculateTotalPrice()
+
+  // Helper for price display logic
+  const isOnlyEbook = selectedOptions.ebook && !selectedOptions.app && !selectedOptions.paperback;
+  const isOnlyApp = selectedOptions.app && !selectedOptions.ebook && !selectedOptions.paperback;
+  const isPaperback = selectedOptions.paperback;
+  const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback;
 
   // Handle option selection
   const handleOptionSelect = (option: keyof SelectedOptions) => {
@@ -313,6 +321,11 @@ export default function PricingPage() {
                 }}
                 themeColor={THEME_COLORS[state.coverColorScheme]}
                 selectedIcon={"natal-chart"}
+                formattedDate={
+                  state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                    ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "MMMM d, yyyy")
+                    : "Date of Birth"
+                }
               />
             </div>
           </div>
@@ -340,9 +353,9 @@ export default function PricingPage() {
             "New daily horoscopes & astrology content",
             "FREE 1-month trial with ebook or paperback",
           ]}
-          price={selectedOptions.paperback ? "FREE" : getProductPrice("app-subscription") ? `$${getProductPrice("app-subscription")}` : "$30.99"}
-          originalPrice="$30.99"
-          priceUnit={!selectedOptions.paperback ? "/month" : ""}
+          price={isPaperback || isOnlyEbook || isAppAndEbook ? "FREE" : getProductPrice("app-subscription") ? `$${getProductPrice("app-subscription")}` : "$30.99"}
+          originalPrice={isOnlyApp ? "" : "$30.99"}
+          priceUnit={isPaperback || isOnlyEbook || isAppAndEbook ? "" : "/month"}
           imageSrc="/placeholder.svg?height=80&width=60"
           isSelected={selectedOptions.app}
           onSelect={() => handleOptionSelect("app")}
@@ -364,8 +377,8 @@ export default function PricingPage() {
           type="ebook"
           title="astrovela ebook"
           features={["Digital copy delivered to your email", "FREE app included", "FREE with the paperback"]}
-          price={selectedOptions.paperback ? "FREE" : getProductPrice("ebook") ? `$${getProductPrice("ebook")}` : "$30.99"}
-          originalPrice="$49.99"
+          price={isPaperback ? "FREE" : isOnlyEbook || isAppAndEbook ? "$49.99" : getProductPrice("ebook") ? `$${getProductPrice("ebook")}` : "$49.99"}
+          originalPrice={isOnlyEbook || isAppAndEbook ? "" : "$49.99"}
           imageSrc="/placeholder.svg?height=80&width=60"
           isSelected={selectedOptions.ebook}
           onSelect={() => handleOptionSelect("ebook")}
@@ -399,9 +412,12 @@ export default function PricingPage() {
         {/* Order Button */}
         <button
           onClick={handleOrderClick}
-          disabled={isProcessingOrder || orderSuccess}
+          disabled={
+            isProcessingOrder || orderSuccess || !termsAccepted ||
+            (!selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook)
+          }
           className={`w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold mb-4 ${
-            !termsAccepted || isProcessingOrder || orderSuccess ? "opacity-70" : ""
+            !termsAccepted || isProcessingOrder || orderSuccess || (!selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) ? "opacity-70" : ""
           }`}
         >
           {isProcessingOrder ? (

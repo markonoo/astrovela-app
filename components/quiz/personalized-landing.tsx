@@ -52,6 +52,18 @@ export function PersonalizedLanding() {
       })
     : "Date of Birth";
 
+  // Prepare dateOfBirth and formattedDate for AstrologicalProfile
+  const astroProfileDateOfBirth = state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+    : "";
+  const astroProfileFormattedDate = astroProfileDateOfBirth
+    ? new Date(astroProfileDateOfBirth).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "Date of Birth";
+
   if (!mounted) return <div />;
 
   return (
@@ -109,7 +121,7 @@ export function PersonalizedLanding() {
         </section>
 
         {/* New Astrological Profile Section */}
-        <AstrologicalProfile />
+        <AstrologicalProfile formattedDate={astroProfileFormattedDate} />
 
         {/* Generated content section */}
         <section className="bg-white rounded-lg shadow-sm p-8 mb-8">

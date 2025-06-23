@@ -4,6 +4,7 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { getZodiacSign } from "@/utils/zodiac"
 import { useRouter } from "next/navigation"
 import { Calendar, Clock, MapPin } from "lucide-react"
+import Image from "next/image"
 
 interface TraitMeterProps {
   name: string
@@ -42,20 +43,13 @@ const TraitMeter = ({ name, value, description }: TraitMeterProps) => {
   )
 }
 
-export function AstrologicalProfile() {
+interface AstrologicalProfileProps {
+  formattedDate: string;
+}
+
+export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps) {
   const router = useRouter()
   const { state } = useQuiz()
-
-  // Format birth date for display
-  const formatBirthDate = () => {
-    if (!state.birthDate.month || !state.birthDate.day || !state.birthDate.year) {
-      return "1990-08-26"
-    }
-
-    const month = state.birthDate.month.padStart(2, "0")
-    const day = state.birthDate.day.padStart(2, "0")
-    return `${state.birthDate.year}-${month}-${day}`
-  }
 
   // Get zodiac sign
   const getZodiacSignName = () => {
@@ -190,82 +184,103 @@ export function AstrologicalProfile() {
   const empathy = getTraitValue("empathy")
   const creativity = getTraitValue("creativity")
 
+  // Helper to get SVG file name for zodiac sign
+  const getZodiacSvg = (sign: string) => {
+    return `/images/zodiac/${sign.toLowerCase()}.svg`
+  }
+
+  // Get sun and moon sign from chart interpretation if available
+  const sunSign = state.chartInterpretation?.sunSign?.title?.toLowerCase() || "sun"
+  const moonSign = state.chartInterpretation?.moonSign?.title?.toLowerCase() || "moon"
+
   return (
     <section className="bg-gray-50 rounded-lg p-8 mb-8">
       <h2 className="text-2xl font-bold mb-10 text-center">Your astrological profile</h2>
 
       {/* Circular profile display with central zodiac illustration and info bubbles */}
-      <div className="relative flex justify-center items-center mb-12" style={{ minHeight: 340 }}>
-        {/* Concentric circles */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="rounded-full border-4 border-yellow-200 w-64 h-64 flex items-center justify-center">
-            <div className="rounded-full border-2 border-yellow-100 w-48 h-48 flex items-center justify-center bg-yellow-50">
-              {/* Central zodiac illustration (placeholder SVG) */}
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="40" cy="40" r="38" stroke="#f7c800" strokeWidth="2" fill="#fffbe6" />
-                <text x="50%" y="54%" textAnchor="middle" fill="#f7c800" fontSize="48" fontWeight="bold" dominantBaseline="middle">
-                  ♍
-                </text>
-              </svg>
+      <div className="flex justify-center items-center mb-12 gap-12" style={{ minHeight: 420 }}>
+        {/* Left column: Moon, Element, Birth place */}
+        <div className="flex flex-col justify-between h-[340px] min-w-[160px]">
+          {/* Moon */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
+              <img src={getZodiacSvg(moonSign)} alt={moonSign} width={32} height={32} className="w-8 h-8" style={{ objectFit: 'contain', transform: 'translateY(6%)' }} />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Moon</div>
+              <div className="font-bold text-base capitalize">{moonSign}</div>
+            </div>
+          </div>
+          {/* Element */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
+              <svg viewBox="0 0 24 24" width="22" height="22" className="text-yellow-800"><path fill="currentColor" d="M12 3L6 15h12L12 3zm0 5l2 4h-4l2-4z" /></svg>
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Element</div>
+              <div className="font-bold text-base">{element}</div>
+            </div>
+          </div>
+          {/* Birth place */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
+              <MapPin className="w-6 h-6 text-yellow-800" />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Birth place</div>
+              <div className="font-bold text-base">{state.birthPlace || "Not specified"}</div>
             </div>
           </div>
         </div>
-
-        {/* Date of birth */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-end">
-          <span className="text-sm text-gray-500 mb-1">Date of birth</span>
-          <div className="flex items-center">
-            <span className="font-bold text-lg mr-2">{formatBirthDate()}</span>
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Calendar size={22} className="text-yellow-800" />
+        {/* Center: Large zodiac sign in concentric circles */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative flex items-center justify-center">
+            <div className="rounded-full border-4 border-yellow-200 w-64 h-64 flex items-center justify-center shadow-lg" style={{ boxShadow: '0 0 32px 0 #ffe06655' }}>
+              <div className="rounded-full border-2 border-yellow-100 w-48 h-48 flex items-center justify-center bg-yellow-50">
+                <img
+                  src={getZodiacSvg(zodiacSign)}
+                  alt={zodiacSign}
+                  width={136}
+                  height={136}
+                  className="w-34 h-34"
+                  style={{ objectFit: 'contain', transform: 'translateY(6%)' }}
+                />
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Element */}
-        <div className="absolute left-1/4 bottom-0 translate-y-1/2 flex flex-col items-end">
-          <span className="text-sm text-gray-500 mb-1">Element</span>
-          <div className="flex items-center">
-            <span className="font-bold text-lg mr-2">{element}</span>
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" width="22" height="22" className="text-yellow-800">
-                <path fill="currentColor" d="M12 3L6 15h12L12 3zm0 5l2 4h-4l2-4z" />
-              </svg>
+        {/* Right column: Sun, Time of birth, Date of birth */}
+        <div className="flex flex-col justify-between h-[340px] min-w-[160px]">
+          {/* Sun */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
+              <img src={getZodiacSvg(sunSign)} alt={sunSign} width={32} height={32} className="w-8 h-8" style={{ objectFit: 'contain', transform: 'translateY(6%)' }} />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Sun</div>
+              <div className="font-bold text-base capitalize">{sunSign}</div>
             </div>
           </div>
-        </div>
-
-        {/* Zodiac sign */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-start">
-          <span className="text-sm text-gray-500 mb-1">Zodiac sign</span>
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
-              <span className="text-yellow-800 font-bold text-2xl">♍</span>
-            </div>
-            <span className="font-bold text-lg capitalize">{zodiacSign}</span>
-          </div>
-        </div>
-
-        {/* Time of birth */}
-        <div className="absolute right-1/4 bottom-0 translate-y-1/2 flex flex-col items-start">
-          <span className="text-sm text-gray-500 mb-1">Time of birth</span>
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
+          {/* Time of birth */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
               <Clock size={22} className="text-yellow-800" />
             </div>
-            <span className="font-bold text-lg">{formatBirthTime()}</span>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Time of birth</div>
+              <div className="font-bold text-base">{formatBirthTime()}</div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Birth place */}
-      <div className="flex items-center border-t border-b border-gray-200 py-6 mb-8">
-        <div className="w-12 h-12 flex-shrink-0 mr-4">
-          <MapPin className="w-full h-full text-yellow-500" />
-        </div>
-        <div>
-          <span className="text-sm text-gray-500 mb-1">Birth place</span>
-          <p className="text-gray-700 font-bold text-lg">{state.birthPlace || "Not specified"}</p>
+          {/* Date of birth */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
+              <Calendar size={22} className="text-yellow-800" />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 font-medium">Date of birth</div>
+              <div className="font-bold text-base">{formattedDate}</div>
+            </div>
+          </div>
         </div>
       </div>
 
