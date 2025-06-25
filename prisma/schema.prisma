@@ -17,26 +17,59 @@ model QuizResponse {
   firstName   String?
   lastName    String?
   gender      String?
-  coverDesign String?
   createdAt   DateTime @default(now())
+  coverDesign String?
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  chartImages ChartImage[]
+  id                       Int                        @id @default(autoincrement())
+  email                    String                     @unique
+  name                     String?
+  createdAt                DateTime                   @default(now())
+  chartImages              ChartImage[]
+  NatalChartInterpretation NatalChartInterpretation[]
 }
 
 model ChartImage {
-  id        String   @id @default(cuid())
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
-  email     String?
-  session_id String?
-  imageUrl  String
-  birthData Json
-  chartType String?  // e.g., 'natal', 'solar return', etc.
-  createdAt DateTime @default(now())
+  id                       String                     @id @default(cuid())
+  userId                   Int?
+  imageUrl                 String
+  birthData                Json
+  chartType                String?
+  createdAt                DateTime                   @default(now())
+  email                    String?
+  session_id               String?
+  user                     User?                      @relation(fields: [userId], references: [id])
+  NatalChartInterpretation NatalChartInterpretation[]
+}
+
+model NatalChartInterpretation {
+  id                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                 Int?
+  chartImageId           String?
+  session_id             String?
+  planets                Json?
+  houses                 Json?
+  ascendant              Float?
+  midheaven              Float?
+  vertex                 Float?
+  lilith                 Json?
+  aspects                Json?
+  moon_phase_name        String?
+  moon_phase_description String?
+  hemisphere_east_west   String?
+  hemisphere_north_south String?
+  elements               Json?
+  elements_description   String?
+  modes                  Json?
+  modes_description      String?
+  dominant_sign          Json?
+  created_at             DateTime?   @default(now()) @db.Timestamptz(6)
+  sun_sign               String?
+  moon_sign              String?
+  ChartImage             ChartImage? @relation(fields: [chartImageId], references: [id], onUpdate: NoAction)
+  User                   User?       @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@index([chartImageId])
+  @@index([userId])
 }

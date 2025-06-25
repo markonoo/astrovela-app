@@ -19,14 +19,15 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
     if ([1, 4, 13, 16, 17].includes(num)) return true;
     
     // Multi-select by text cues (any question mentioning "choose all", "select all", etc.)
-    if (text.toLowerCase().includes("choose all") || 
+    // Add null check to prevent TypeError and fix operator precedence
+    if (text && (text.toLowerCase().includes("choose all") || 
         text.toLowerCase().includes("select all") || 
-        text.toLowerCase().includes("all that apply")) return true;
+        text.toLowerCase().includes("all that apply"))) return true;
         
     return false;
   };
   
-  const isMultiSelect = isMultiSelectQuestion(questionNumber, questionText);
+  const isMultiSelect = isMultiSelectQuestion(questionNumber, questionText || "");
   const initialValue = state.answers[`question_${questionNumber}`] || (isMultiSelect ? [] : null);
   const [selectedOption, setSelectedOption] = useState<any>(initialValue);
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -74,7 +75,7 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
     <div
       className={`space-y-3 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
     >
-      <h1 className="text-2xl font-semibold text-gray-900">{questionText}</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">{questionText || `Question ${questionNumber}`}</h1>
       
       {isMultiSelect && (
         <div>

@@ -11,8 +11,8 @@ export function BirthTime() {
   const handleSubmit = () => {
     if (birthTimeInput.trim()) {
       setBirthTime(birthTimeInput.trim())
-      nextStep()
     }
+    nextStep()
   }
 
   const handleSkip = () => {
@@ -20,9 +20,6 @@ export function BirthTime() {
     setBirthTime("12:00")
     nextStep()
   }
-
-  // Check if time has been entered
-  const isTimeEntered = birthTimeInput.trim() !== ""
 
   return (
     <div className="space-y-6 text-center">
@@ -50,12 +47,7 @@ export function BirthTime() {
         <div className="flex flex-col space-y-3 pt-4">
           <button
             onClick={handleSubmit}
-            disabled={!isTimeEntered}
-            className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-              isTimeEntered
-                ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400 cursor-pointer"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            }`}
+            className="w-full py-3 px-4 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
           >
             Continue
           </button>
@@ -78,3 +70,4 @@ export function BirthTime() {
     </div>
   )
 }
+

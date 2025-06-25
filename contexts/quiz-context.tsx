@@ -1,9 +1,28 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { saveQuizData, getQuizData, isQuizCompleted, clearQuizData } from "@/utils/storage"
 import type { NatalChart, ChartInterpretation } from "@/types/astrology"
 import { supabase } from "@/lib/supabaseClient"
+
+// Import debug helpers in development
+if (process.env.NODE_ENV === "development") {
+  import("@/utils/debug-helpers").catch(() => {
+    // Ignore import errors in case the file doesn't exist
+  })
+}
+
+// Helper function to get or create persistent session ID
+const getOrCreateSessionId = (): string => {
+  if (typeof window === 'undefined') return `server_${Date.now()}`
+  
+  let sessionId = sessionStorage.getItem('astrovela_session_id')
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    sessionStorage.setItem('astrovela_session_id', sessionId)
+  }
+  return sessionId
+}
 
 type Gender = "male" | "female" | "non-binary" | null
 type AstrologyLevel = "beginner" | "intermediate" | "expert" | null
@@ -65,7 +84,7 @@ interface QuizContextType {
 
 const initialState: QuizState = {
   currentStep: 1,
-  totalSteps: 13,
+  totalSteps: 25,
   gender: null,
   astrologyLevel: null,
   firstName: null,
@@ -104,7 +123,14 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       const quizCompleted = isQuizCompleted()
 
       if (savedData) {
-        return { ...savedData, quizCompleted }
+        // Always reset loading states when restoring from storage
+        // Loading states should never persist across sessions
+        return { 
+          ...savedData, 
+          quizCompleted,
+          isLoadingChart: false,  // Reset loading state
+          chartError: null        // Clear any old errors
+        }
       }
     }
     return initialState
@@ -236,6 +262,12 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
   // Function to fetch natal chart data from the API
   const fetchNatalChart = async () => {
+    // Rate limiting: prevent multiple simultaneous calls
+    if (state.isLoadingChart) {
+      console.log("⚠️ Chart is already loading, skipping duplicate request")
+      return
+    }
+    
     // Import the service dynamically to avoid server-side issues
     const { fetchNatalChart, geocodeLocation, getNatalChartInterpretation } = await import(
       "@/services/astrology-service"
@@ -243,165 +275,105 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     const { fetchNatalWheelChart } = await import("@/services/astrology-api-service")
     setState((prev) => ({ ...prev, isLoadingChart: true, chartError: null }))
     try {
-      // Check if we have all required data
-      if (!state.birthDate.year || !state.birthDate.month || !state.birthDate.day) {
-        throw new Error("Birth date is required")
+      console.log("📍 Starting natal chart fetch process...")
+
+      // Geocode the birth place if not already done
+      let location = state.birthLocation
+      if (!location || !location.latitude || !location.longitude) {
+        console.log("🌍 Geocoding birth place:", state.birthPlace)
+        location = await geocodeLocation(state.birthPlace)
+        setBirthLocation(location.latitude, location.longitude, location.name)
       }
 
-      if (!state.birthTime) {
-        throw new Error("Birth time is required for accurate chart calculation")
+      // Format birth data for API
+      const birthData = {
+        date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
+        time: state.birthTime,
+        latitude: location.latitude,
+        longitude: location.longitude,
       }
 
-      if (!state.birthPlace) {
-        throw new Error("Birth place is required")
-      }
-
-      // Format date for API
-      const formattedDate = `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-
-      // Get coordinates if we don't have them yet
-      let latitude: number, longitude: number, locationName: string
-
-      if (!state.birthLocation.latitude || !state.birthLocation.longitude) {
+      console.log("📊 Fetching natal chart data with:", birthData)
+      
+      // Try to fetch the natal chart with retry logic for 429 errors
+      let natalChart
+      let retryAttempts = 0
+      const maxRetries = 3
+      const baseDelay = 10000 // 10 seconds
+      
+      while (retryAttempts <= maxRetries) {
         try {
-          const geoData = await geocodeLocation(state.birthPlace)
-          latitude = geoData.latitude
-          longitude = geoData.longitude
-          locationName = geoData.name
-
-          // Save the location data
-          setBirthLocation(latitude, longitude, locationName)
-        } catch (error) {
-          console.error("Error geocoding location:", error)
-          // Use default coordinates (0,0) if geocoding fails
-          latitude = 0
-          longitude = 0
-          locationName = state.birthPlace
-
-          // Save the default location data
-          setBirthLocation(latitude, longitude, locationName)
+          natalChart = await fetchNatalChart(
+            birthData.date,
+            birthData.time,
+            birthData.latitude,
+            birthData.longitude
+          )
+          break // Success, exit retry loop
+        } catch (error: any) {
+          retryAttempts++
+          
+          // Check if it's a rate limiting error
+          if (error.message?.includes("429") || error.message?.includes("Too Many Requests") || error.message?.includes("API_RATE_LIMITED")) {
+            if (retryAttempts <= maxRetries) {
+              const delay = baseDelay * Math.pow(2, retryAttempts - 1) // Exponential backoff
+              console.log(`⏳ Rate limited (attempt ${retryAttempts}/${maxRetries + 1}), waiting ${delay/1000}s before retry...`)
+              
+              // Update UI to show retry status
+              setState((prev) => ({ 
+                ...prev, 
+                chartError: `API rate limited. Retrying in ${delay/1000} seconds... (attempt ${retryAttempts}/${maxRetries + 1})`
+              }))
+              
+              await new Promise(resolve => setTimeout(resolve, delay))
+              continue
+            } else {
+              console.log("❌ Max retries exceeded for rate limiting")
+              throw new Error("API temporarily unavailable due to rate limiting. Please try again in a few minutes.")
+            }
+          } else {
+            // Non-rate-limiting error, don't retry
+            throw error
+          }
         }
-      } else {
-        latitude = state.birthLocation.latitude
-        longitude = state.birthLocation.longitude
-        locationName = state.birthLocation.name || state.birthPlace
       }
 
-      // Fetch the natal chart using the new AstrologyAPI service
-      const natalChart = await fetchNatalChart(formattedDate, state.birthTime, latitude, longitude)
-
-      // Save the natal chart
+      console.log("✅ Natal chart data fetched successfully")
       setNatalChart(natalChart)
 
-      // Fetch the custom natal wheel chart SVG (Supabase URL)
-      let chartImageId: string | null = null
+      // Try to fetch chart image/URL
+      console.log("🎨 Fetching custom chart image...")
       try {
-        const chartApiResult = await fetchNatalWheelChart(
-          formattedDate,
-          state.birthTime,
-          latitude,
-          longitude,
-          1.0, // UTC offset for Germany, adjust as needed
-          "Black", // sign_icon_color
-          [
-            "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1",
-            "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1", "#FFF8E1"
-          ]
+        const chartResult = await fetchNatalWheelChart(
+          birthData.date,
+          birthData.time,
+          birthData.latitude,
+          birthData.longitude
         )
-        const s3Url = chartApiResult.chartUrl
-        if (s3Url) {
-          // Get the current session
-          const { data: { session } } = await supabase.auth.getSession()
-          if (!session) {
-            throw new Error('No active session')
-          }
 
-          const response = await fetch("/api/chart-image", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chartUrl: s3Url,
-              userId: 1, // TODO: replace with real user ID
-              birthData: { ...state, latitude, longitude },
-              chartType: "natal",
-              authToken: session.access_token
-            })
-          })
-          const data = await response.json()
-          if (data.imageUrl) {
-            setCustomChartUrl(data.imageUrl)
-            chartImageId = data.id || null
-          } else {
-            setCustomChartUrl(null)
-          }
-        } else {
-          setCustomChartUrl(null)
+        if (chartResult.chartUrl) {
+          setCustomChartUrl(chartResult.chartUrl)
+          console.log("✅ Custom chart URL set:", chartResult.chartUrl)
+        } else if (chartResult.svgContent) {
+          // If we got SVG content instead of URL, we can use it directly
+          setCustomChartUrl(`data:image/svg+xml;base64,${btoa(chartResult.svgContent)}`)
+          console.log("✅ Custom chart SVG content processed")
         }
-      } catch (err) {
-        setCustomChartUrl(null)
+      } catch (chartError: any) {
+        console.log("⚠️ Custom chart fetch failed, continuing without it:", chartError.message)
+        // Don't throw here - continue with the basic natal chart data
       }
 
-      try {
-        // Prepare birth data for interpretation API
-        const [year, month, day] = formattedDate.split("-").map(Number)
-        const [hour, min] = state.birthTime.split(":").map(Number)
-        const birthData = {
-          day,
-          month,
-          year,
-          hour,
-          min,
-          lat: latitude,
-          lon: longitude,
-          tzone: 1.0, // TODO: use real timezone if available
-          house_type: "placidus"
-        }
-        // Import the real API call
-        const { getNatalChartInterpretationFromAPI } = await import("@/services/astrology-api-service")
-        const interpretation = await getNatalChartInterpretationFromAPI(birthData)
-        setChartInterpretation(interpretation)
-
-        // Store in Supabase
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          await supabase.from("NatalChartInterpretation").insert([
-            {
-              userId: 1, // TODO: replace with real user ID
-              chartImageId: chartImageId,
-              session_id: session.user.id,
-              planets: interpretation.planets,
-              houses: interpretation.houses,
-              ascendant: interpretation.ascendant,
-              midheaven: interpretation.midheaven,
-              vertex: interpretation.vertex,
-              lilith: interpretation.lilith,
-              aspects: interpretation.aspects,
-              moon_phase_name: interpretation.moon_phase?.moon_phase_name,
-              moon_phase_description: interpretation.moon_phase?.moon_phase_description,
-              hemisphere_east_west: interpretation.hemisphere?.east_west?.description,
-              hemisphere_north_south: interpretation.hemisphere?.north_south?.description,
-              elements: interpretation.elements,
-              elements_description: interpretation.elements?.description,
-              modes: interpretation.modes,
-              modes_description: interpretation.modes?.description,
-              dominant_sign: interpretation.dominant_sign,
-              sun_sign: interpretation.planets?.find((p: any) => p.name === "Sun")?.sign,
-              moon_sign: interpretation.planets?.find((p: any) => p.name === "Moon")?.sign,
-            }
-          ])
-        }
-      } catch (error) {
-        console.error("Error getting or storing chart interpretation:", error)
-        // Continue even if interpretation fails
-      }
-
-      setState((prev) => ({ ...prev, isLoadingChart: false }))
-    } catch (error) {
-      console.error("Error fetching natal chart:", error)
-      setState((prev) => ({
-        ...prev,
-        isLoadingChart: false,
-        chartError: error instanceof Error ? error.message : "Failed to generate natal chart",
+      console.log("🎯 Natal chart fetch process completed successfully")
+      
+      // Clear any error state
+      setState((prev) => ({ ...prev, chartError: null, isLoadingChart: false }))
+    } catch (error: any) {
+      console.error("❌ Error in fetchNatalChart:", error)
+      setState((prev) => ({ 
+        ...prev, 
+        chartError: error.message || "Failed to fetch natal chart data",
+        isLoadingChart: false 
       }))
     }
   }

@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://astrovela.com/sitemap.xml
+
+# Disallow admin/debug pages
+Disallow: /debug
+Disallow: /hard-reset
+Disallow: /api/
+
+# Allow important pages
+Allow: /
+Allow: /pricing
+Allow: /quiz
+Allow: /contact-us
+Allow: /privacy
+Allow: /terms 

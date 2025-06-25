@@ -6,19 +6,20 @@
 import type { NatalChart, PlanetPosition, ZodiacSign, House, Angle, CelestialBody } from "@/types/astrology"
 import { getFallbackNatalChart } from "@/utils/fallback-chart"
 import { safeGetSessionItem, safeSetSessionItem, safeRemoveSessionItem } from "@/utils/safe-storage"
+import { env, devLog, devError } from "@/utils/environment"
 
-// API configuration - using the provided credentials
-const USER_ID = process.env.USER_ID || "640668"
-const API_KEY = process.env.API_KEY || "f54e96a1b5d0607f65433e754ae9a4f94fa5a9f8"
+// API configuration - using environment variables only
+const USER_ID = env.USER_ID
+const API_KEY = env.API_KEY
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
 // Check if API credentials are properly configured
 const hasValidCredentials = () => {
   const hasCredentials = USER_ID && API_KEY && USER_ID.length > 0 && API_KEY.length > 0
 
-  console.log("Debug - Has Valid Credentials:", hasCredentials)
-  console.log("Debug - User ID Length:", USER_ID.length)
-  console.log("Debug - API Key Length:", API_KEY.length)
+  devLog("Debug - Has Valid Credentials:", hasCredentials)
+  devLog("Debug - User ID Length:", USER_ID.length)
+  devLog("Debug - API Key Length:", API_KEY.length)
 
   return hasCredentials
 }
@@ -26,20 +27,20 @@ const hasValidCredentials = () => {
 // Store authentication error status in session storage to avoid repeated failed attempts
 const setAuthError = (hasError: boolean) => {
   safeSetSessionItem("astrology_api_auth_error", hasError ? "true" : "false");
-  console.log("Debug - Set Auth Error:", hasError);
+  devLog("Debug - Set Auth Error:", hasError);
 }
 
 // Check if we've already encountered an authentication error
 const hasAuthError = (): boolean => {
   const hasError = safeGetSessionItem("astrology_api_auth_error") === "true";
-  console.log("Debug - Has Auth Error:", hasError);
+  devLog("Debug - Has Auth Error:", hasError);
   return hasError;
 }
 
 // Clear any stored authentication errors
 export const clearAuthErrors = () => {
   safeRemoveSessionItem("astrology_api_auth_error");
-  console.log("Debug - Cleared Auth Errors");
+  devLog("Debug - Cleared Auth Errors");
 }
 
 /**
@@ -50,22 +51,22 @@ const getAuthHeaders = (): Record<string, string> => {
   try {
     // Create the auth string in the format "userId:apiKey"
     const authString = `${USER_ID}:${API_KEY}`
-    console.log("Debug - Auth String Format:", `${USER_ID}:API_KEY`)
+    devLog("Debug - Auth String Format:", `${USER_ID}:API_KEY`)
 
     // Encode to base64 - similar to Python's HTTPBasicAuth
     let base64Auth = ""
     if (typeof window !== "undefined" && window.btoa) {
       base64Auth = window.btoa(authString)
-      console.log("Debug - Using window.btoa for encoding")
+      devLog("Debug - Using window.btoa for encoding")
     } else if (typeof Buffer !== "undefined") {
       base64Auth = Buffer.from(authString).toString("base64")
-      console.log("Debug - Using Buffer for encoding")
+      devLog("Debug - Using Buffer for encoding")
     } else {
-      console.error("Debug - No method available for base64 encoding")
+      devError("Debug - No method available for base64 encoding")
       throw new Error("Base64 encoding not available")
     }
 
-    console.log("Debug - Base64 Auth (first 10 chars):", base64Auth.substring(0, 10) + "...")
+    devLog("Debug - Base64 Auth (first 10 chars):", base64Auth.substring(0, 10) + "...")
 
     // Return headers with Basic Auth
     return {
@@ -73,7 +74,7 @@ const getAuthHeaders = (): Record<string, string> => {
       "Content-Type": "application/json",
     }
   } catch (error) {
-    console.error("Error creating auth headers:", error)
+    devError("Error creating auth headers:", error)
     return {
       "Content-Type": "application/json",
       "Authorization": "", // Return empty string instead of undefined
@@ -82,7 +83,50 @@ const getAuthHeaders = (): Record<string, string> => {
 }
 
 /**
+ * Fetch with retry logic for handling 429 rate limiting
+ */
+async function fetchWithRetry(
+  url: string, 
+  options: RequestInit, 
+  maxRetries: number = 2,
+  baseDelay: number = 5000
+): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options)
+      
+      // If successful or non-retryable error, return response
+      if (response.ok || response.status !== 429) {
+        return response
+      }
+      
+      // Handle 429 rate limiting
+      if (response.status === 429 && attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt) // Exponential backoff
+        devLog(`Rate limited (429), retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+        continue
+      }
+      
+      // Return the response for final attempt or non-429 errors
+      return response
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw error
+      }
+      // Wait before retrying on network errors
+      const delay = baseDelay * Math.pow(2, attempt)
+      devLog(`Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  
+  throw new Error("Max retries exceeded")
+}
+
+/**
  * Fetches natal chart data from AstrologyAPI
+ * Returns structured natal chart data for the application
  */
 export async function fetchNatalChart(
   birthDate: string,
@@ -92,14 +136,17 @@ export async function fetchNatalChart(
   timezone = 5.5, // Default to IST
 ): Promise<NatalChart> {
   try {
+    devLog("Fetching natal chart with params:", { birthDate, birthTime, latitude, longitude, timezone })
+
     // Check for previous auth errors to avoid repeated failed API calls
     if (hasAuthError()) {
-      console.warn("Skipping API call due to previous authentication error")
-      throw new Error("API authentication error - using fallback data")
+      devLog("Skipping API call due to previous authentication error")
+      throw new Error("API credentials not configured")
     }
 
     // Check credentials first
     if (!hasValidCredentials()) {
+      devLog("Missing API credentials for AstrologyAPI")
       setAuthError(true)
       throw new Error("API credentials not configured")
     }
@@ -120,22 +167,17 @@ export async function fetchNatalChart(
       tzone: timezone,
     }
 
-    console.log("Fetching natal chart with params:", requestBody)
-    console.log("Using auth headers:", getAuthHeaders())
-
-    // Make the API request for planets
-    const planetsResponse = await fetch(`${ASTROLOGY_API_BASE_URL}/planets`, {
+    // Fetch planets data with retry logic for 429 errors
+    const planetsResponse = await fetchWithRetry(`${ASTROLOGY_API_BASE_URL}/planets`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(requestBody),
     })
 
-    // Parse the response even if status is not OK to check for auth errors
     const planetsData = await planetsResponse.json()
 
-    // Check for authentication error in response
     if (planetsData.status === false && planetsData.msg) {
-      console.error("API error:", planetsData.msg)
+      devError("API error:", planetsData.msg)
 
       // Check if it's an authentication error
       if (planetsData.msg.includes("invalid") || planetsData.msg.includes("User ID")) {
@@ -146,12 +188,16 @@ export async function fetchNatalChart(
     }
 
     if (!planetsResponse.ok) {
+      // Handle 429 specifically with a more user-friendly message
+      if (planetsResponse.status === 429) {
+        throw new Error("API_RATE_LIMITED")
+      }
       throw new Error(`Planets API error: ${planetsResponse.status} ${planetsResponse.statusText}`)
     }
 
-    // Fetch houses data
-    const housesResponse = await fetch(`${ASTROLOGY_API_BASE_URL}/houses`, {
-      method: "POST",
+    // Fetch houses data with retry logic
+    const housesResponse = await fetchWithRetry(`${ASTROLOGY_API_BASE_URL}/house_cusps/tropical`, {
+      method: "POST", 
       headers: getAuthHeaders(),
       body: JSON.stringify(requestBody),
     })
@@ -163,19 +209,26 @@ export async function fetchNatalChart(
     }
 
     if (!housesResponse.ok) {
+      if (housesResponse.status === 429) {
+        throw new Error("API_RATE_LIMITED")
+      }
       throw new Error(`Houses API error: ${housesResponse.status} ${housesResponse.statusText}`)
     }
 
-    // Fetch aspects data
-    const aspectsResponse = await fetch(`${ASTROLOGY_API_BASE_URL}/aspects`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(requestBody),
-    })
-
+    // Fetch aspects data with retry logic (optional, continue if it fails)
     let aspectsData = []
-    if (aspectsResponse.ok) {
-      aspectsData = await aspectsResponse.json()
+    try {
+      const aspectsResponse = await fetchWithRetry(`${ASTROLOGY_API_BASE_URL}/aspects`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(requestBody),
+      })
+      
+      if (aspectsResponse.ok) {
+        aspectsData = await aspectsResponse.json()
+      }
+    } catch (error) {
+      devLog("Aspects data fetch failed, continuing without it:", error)
     }
 
     // Format the data into our application's structure
@@ -189,7 +242,7 @@ export async function fetchNatalChart(
       },
     })
   } catch (error) {
-    console.error("Error fetching natal chart:", error)
+    devError("Error fetching natal chart:", error)
     throw error
   }
 }
@@ -211,11 +264,11 @@ export async function fetchNatalWheelChart(
   ]
 ): Promise<{ chartUrl: string; svgContent?: string }> {
   try {
-    console.log("Debug - fetchNatalWheelChart called with:", { birthDate, birthTime, latitude, longitude, timezone })
+    devLog("Debug - fetchNatalWheelChart called with:", { birthDate, birthTime, latitude, longitude, timezone })
 
     // Check for previous auth errors to avoid repeated failed API calls
     if (hasAuthError()) {
-      console.warn("Skipping API call due to previous authentication error")
+      devLog("Skipping API call due to previous authentication error")
 
       // Use the general fallback SVG for other charts
       return {
@@ -226,7 +279,7 @@ export async function fetchNatalWheelChart(
 
     // Check credentials first
     if (!hasValidCredentials()) {
-      console.warn("Missing API credentials for AstrologyAPI")
+      devLog("Missing API credentials for AstrologyAPI")
       setAuthError(true)
       throw new Error("API credentials not configured")
     }
@@ -257,17 +310,17 @@ export async function fetchNatalWheelChart(
       image_type: "svg"
     }
 
-    console.log("Debug - Request Body:", requestBody)
+    devLog("Debug - Request Body:", requestBody)
 
     // Get auth headers
     const headers = getAuthHeaders()
-    console.log("Debug - Headers:", {
+    devLog("Debug - Headers:", {
       Authorization: headers.Authorization ? "Basic ***" : "Missing",
       "Content-Type": headers["Content-Type"],
     })
 
     // Make the API request
-    console.log("Debug - Fetching from URL:", `${ASTROLOGY_API_BASE_URL}/natal_wheel_chart`)
+    devLog("Debug - Fetching from URL:", `${ASTROLOGY_API_BASE_URL}/natal_wheel_chart`)
 
     const response = await fetch(`${ASTROLOGY_API_BASE_URL}/natal_wheel_chart`, {
       method: "POST",
@@ -276,25 +329,25 @@ export async function fetchNatalWheelChart(
     })
 
     // Log the response status for debugging
-    console.log(`Debug - API Response Status: ${response.status} ${response.statusText}`)
+    devLog(`Debug - API Response Status: ${response.status} ${response.statusText}`)
 
     // Get the raw response text first for debugging
     const rawResponseText = await response.text()
-    console.log("Debug - Raw Response (first 200 chars):", rawResponseText.substring(0, 200))
+    devLog("Debug - Raw Response (first 200 chars):", rawResponseText.substring(0, 200))
 
     // Try to parse the response as JSON
     let data
     try {
       data = JSON.parse(rawResponseText)
-      console.log("Debug - Response Keys:", Object.keys(data))
+      devLog("Debug - Response Keys:", Object.keys(data))
     } catch (e) {
-      console.error("Debug - Failed to parse response as JSON:", e)
+      devError("Debug - Failed to parse response as JSON:", e)
       throw new Error(`Failed to parse API response as JSON: ${rawResponseText.substring(0, 100)}...`)
     }
 
     // Check for error in response
     if (data.status === false && data.msg) {
-      console.error("API error:", data.msg)
+      devError("API error:", data.msg)
 
       // Check if it's an authentication error
       if (data.msg.includes("invalid") || data.msg.includes("User ID")) {
@@ -310,7 +363,7 @@ export async function fetchNatalWheelChart(
 
     // Check if we have the chart_url in the response
     if (data.chart_url) {
-      console.log("Debug - Successfully retrieved chart URL:", data.chart_url)
+      devLog("Debug - Successfully retrieved chart URL:", data.chart_url)
 
       // Clear any stored auth errors since the request succeeded
       clearAuthErrors()
@@ -319,7 +372,7 @@ export async function fetchNatalWheelChart(
     }
     // Fallback to the old format if svg property exists
     else if (data.svg) {
-      console.log("Debug - Retrieved SVG content instead of URL, length:", data.svg.length)
+      devLog("Debug - Retrieved SVG content instead of URL, length:", data.svg.length)
 
       // Clear any stored auth errors since the request succeeded
       clearAuthErrors()
@@ -329,11 +382,11 @@ export async function fetchNatalWheelChart(
         svgContent: data.svg,
       }
     } else {
-      console.error("API response missing chart_url and svg data:", data)
+      devError("API response missing chart_url and svg data:", data)
       throw new Error("No chart data returned from the API")
     }
   } catch (error) {
-    console.error("Error fetching natal wheel chart:", error)
+    devError("Error fetching natal wheel chart:", error)
 
     // Use the general fallback SVG for other charts
     return {
@@ -361,7 +414,7 @@ export async function fetchNatalWheelChartSVG(
 
     // If we have a chart URL, fetch the SVG content
     if (result.chartUrl) {
-      console.log("Debug - Fetching SVG content from URL:", result.chartUrl)
+      devLog("Debug - Fetching SVG content from URL:", result.chartUrl)
 
       try {
         const svgResponse = await fetch(result.chartUrl)
@@ -370,11 +423,11 @@ export async function fetchNatalWheelChartSVG(
         }
 
         const svgContent = await svgResponse.text()
-        console.log("Debug - Successfully fetched SVG content, length:", svgContent.length)
+        devLog("Debug - Successfully fetched SVG content, length:", svgContent.length)
 
         return svgContent
       } catch (error) {
-        console.error("Error fetching SVG from URL:", error)
+        devError("Error fetching SVG from URL:", error)
 
         // Return fallback SVG if we can't fetch from URL
         return getFallbackNatalChart()
@@ -384,7 +437,7 @@ export async function fetchNatalWheelChartSVG(
     // Return fallback SVG if no chart data available
     return getFallbackNatalChart()
   } catch (error) {
-    console.error("Error in fetchNatalWheelChartSVG:", error)
+    devError("Error in fetchNatalWheelChartSVG:", error)
 
     // Return fallback SVG for other charts
     return getFallbackNatalChart()
@@ -396,43 +449,54 @@ export async function fetchNatalWheelChartSVG(
  */
 export async function geocodeLocation(location: string): Promise<{ latitude: number; longitude: number; name: string }> {
   try {
-    console.log("Geocoding location:", location);
+    devLog("Geocoding location:", location);
 
     if (!hasValidCredentials()) {
-      console.warn("Missing API credentials for AstrologyAPI");
+      devLog("Missing API credentials for AstrologyAPI");
       setAuthError(true);
       throw new Error("API credentials not configured");
     }
 
     const headers = getAuthHeaders();
-    console.log("Using auth headers:", headers);
+    devLog("Using auth headers:", headers);
 
-    // Use GET, not POST
-    const url = `${ASTROLOGY_API_BASE_URL}/geo_details?place=${encodeURIComponent(location)}`;
+    // Use POST method with place in request body as per API documentation
+    const url = `${ASTROLOGY_API_BASE_URL}/geo_details`;
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers,
+      body: JSON.stringify({
+        place: location,
+        maxRows: 1
+      }),
     });
 
     if (!response.ok) {
-      console.error("Geocoding API error:", response.status);
+      devError("Geocoding API error:", response.status);
       throw new Error(`Geocoding API error: ${response.status}`);
     }
 
     const data = await response.json();
 
-    if (!data || !data.latitude || !data.longitude) {
-      console.error("Invalid geocoding response:", data);
+    // The API returns a "geonames" array with multiple results
+    if (!data || !data.geonames || !Array.isArray(data.geonames) || data.geonames.length === 0) {
+      devError("Invalid geocoding response:", data);
       throw new Error("Invalid geocoding response");
     }
 
+    const firstResult = data.geonames[0];
+    if (!firstResult.latitude || !firstResult.longitude) {
+      devError("Invalid geocoding coordinates:", firstResult);
+      throw new Error("Invalid geocoding coordinates");
+    }
+
     return {
-      latitude: data.latitude,
-      longitude: data.longitude,
-      name: data.name || location,
+      latitude: parseFloat(firstResult.latitude),
+      longitude: parseFloat(firstResult.longitude),
+      name: firstResult.place_name || location,
     };
   } catch (error) {
-    console.error("Error geocoding location:", error);
+    devError("Error geocoding location:", error);
     // Fallback: Las Vegas
     return {
       latitude: 36.1699,
@@ -677,7 +741,7 @@ export async function getNatalChartInterpretation(natalChart: NatalChart): Promi
       },
     }
   } catch (error) {
-    console.error("Error getting chart interpretation:", error)
+    devError("Error getting chart interpretation:", error)
     throw error
   }
 }
@@ -721,7 +785,7 @@ export async function getDailyHoroscope(sign: ZodiacSign): Promise<any> {
       compatibility: data.compatibility || "Libra",
     }
   } catch (error) {
-    console.error("Error getting daily horoscope:", error)
+    devError("Error getting daily horoscope:", error)
     throw error
   }
 }
@@ -756,7 +820,7 @@ export async function getNatalChartInterpretationFromAPI(birthData: {
     }
     return data
   } catch (error) {
-    console.error("Error fetching natal chart interpretation:", error)
+    devError("Error fetching natal chart interpretation:", error)
     throw error
   }
 }

@@ -470,68 +470,34 @@ export function QuizController() {
   }, [])
 
   // Trigger fetchNatalChart during the loading step (step 12) instead of zodiacResult step
-  const hasStartedFetching = useRef(false)
-  const lastApiCallTime = useRef<number>(0)
-  
   useEffect(() => {
+    // TEMPORARY: Simplify the trigger to stop infinite loop and focus on data storage
     console.log('🔍 Simple debug - Current step:', currentStep)
     
-    // Reset the flag when we're not on step 12
-    if (currentStep !== 12) {
-      hasStartedFetching.current = false
-      return
+    // Only trigger on step 12 (loading) if we have all birth data and haven't already fetched
+    if (currentStep === 12 && 
+        state.birthDate.year && state.birthDate.month && state.birthDate.day &&
+        state.birthTime && state.birthPlace &&
+        !state.customChartUrl && !state.isLoadingChart) {
+      
+      console.log('✅ Simplified conditions met! Calling fetchNatalChart()')
+      console.log('Birth data:', {
+        date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
+        time: state.birthTime,
+        place: state.birthPlace
+      })
+      
+      fetchNatalChart()
+    } else if (currentStep === 12) {
+      console.log('❌ Step 12 but missing conditions:', {
+        hasBirthDate: !!(state.birthDate.year && state.birthDate.month && state.birthDate.day),
+        hasTime: !!state.birthTime,
+        hasPlace: !!state.birthPlace,
+        noCustomChart: !state.customChartUrl,
+        notLoading: !state.isLoadingChart
+      })
     }
-    
-    // Add rate limiting: ensure at least 3 seconds between API calls
-    const now = Date.now()
-    const timeSinceLastCall = now - lastApiCallTime.current
-    const minInterval = 3000 // 3 seconds minimum between calls
-    
-    const makeApiCall = () => {
-      // Only trigger on step 12 (loading) if we have all birth data and haven't already started fetching
-      if (currentStep === 12 && 
-          state.birthDate.year && state.birthDate.month && state.birthDate.day &&
-          state.birthTime && state.birthPlace &&
-          !state.customChartUrl &&
-          !hasStartedFetching.current &&
-          !state.isLoadingChart) {
-        
-        console.log('✅ Simplified conditions met! Calling fetchNatalChart()')
-        console.log('Birth data:', {
-          date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
-          time: state.birthTime,
-          place: state.birthPlace
-        })
-        
-        hasStartedFetching.current = true
-        lastApiCallTime.current = Date.now()
-        
-        // Add error handling to reset the flag if API fails
-        fetchNatalChart().catch((error) => {
-          console.error('API call failed, resetting flag:', error)
-          hasStartedFetching.current = false
-        })
-      } else if (currentStep === 12) {
-        console.log('❌ Step 12 but missing conditions:', {
-          hasBirthDate: !!(state.birthDate.year && state.birthDate.month && state.birthDate.day),
-          hasTime: !!state.birthTime,
-          hasPlace: !!state.birthPlace,
-          noCustomChart: !state.customChartUrl,
-          notAlreadyStarted: !hasStartedFetching.current,
-          notCurrentlyLoading: !state.isLoadingChart
-        })
-      }
-    }
-    
-    if (timeSinceLastCall >= minInterval) {
-      makeApiCall()
-    } else {
-      // Delay the API call to respect rate limiting
-      console.log(`⏳ Rate limiting: waiting ${minInterval - timeSinceLastCall}ms before next API call`)
-      const timeoutId = setTimeout(makeApiCall, minInterval - timeSinceLastCall)
-      return () => clearTimeout(timeoutId)
-    }
-  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart])
+  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart, fetchNatalChart])
 
   // Get stepConfig first (needed for useEffect dependency)
   const stepConfig = quizSteps[currentStep - 1] // currentStep is 1-based
