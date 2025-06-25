@@ -156,6 +156,47 @@ export default function PricingPage() {
     return () => clearInterval(timer)
   }, [state])
 
+  // Extract sun and moon signs - same logic as cover customization and personalized landing
+  const { extractedSunSign, extractedMoonSign } = (() => {
+    // First, try to get from natal chart data
+    if (state.natalChart?.planets) {
+      const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
+      const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
+      
+      if (sunPlanet && moonPlanet) {
+        return {
+          extractedSunSign: sunPlanet.sign,
+          extractedMoonSign: moonPlanet.sign
+        }
+      }
+    }
+
+    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    if (state.birthDate?.month && state.birthDate?.day) {
+      const calculatedSunSign = getZodiacSign(
+        Number.parseInt(state.birthDate.month), 
+        Number.parseInt(state.birthDate.day)
+      )
+      
+      // Use a contrasting moon sign as fallback
+      const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                          "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
+      const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
+      const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
+      
+      return {
+        extractedSunSign: calculatedSunSign,
+        extractedMoonSign: zodiacSigns[moonIndex]
+      }
+    }
+
+    // Ultimate fallback
+    return {
+      extractedSunSign: null,
+      extractedMoonSign: null
+    }
+  })()
+
   const handleBackClick = () => {
     // Navigate back to the personalized landing page
     router.back()
@@ -319,13 +360,16 @@ export default function PricingPage() {
                     ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
                     : "",
                 }}
-                themeColor={THEME_COLORS[state.coverColorScheme]}
-                selectedIcon={"natal-chart"}
+                themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.black}
+                selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
                 formattedDate={
                   state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
                     ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "MMMM d, yyyy")
                     : "Date of Birth"
                 }
+                sunSign={extractedSunSign}
+                moonSign={extractedMoonSign}
+                customChartUrl={state.customChartUrl}
               />
             </div>
           </div>

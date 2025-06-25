@@ -1,9 +1,10 @@
 "use client"
 
 import { useQuiz } from "@/contexts/quiz-context"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
+import { getZodiacSign } from "@/utils/zodiac"
 
 // Import the quiz steps data needed for navigation
 interface QuizStep {
@@ -55,6 +56,58 @@ export function BookCoverConfirmation() {
     }, 300)
   }
 
+  // Format birth date for display
+  const formattedDate = useMemo(() => {
+    if (state.birthDate?.year && state.birthDate?.month && state.birthDate?.day) {
+      const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", {
+        month: "long",
+      })
+      return `${month} ${state.birthDate.day}, ${state.birthDate.year}`
+    }
+    return "Your Birth Date"
+  }, [state.birthDate])
+
+  // Extract sun and moon signs from natal chart data or calculate fallback
+  const { sunSign, moonSign } = useMemo(() => {
+    // First, try to get from natal chart data
+    if (state.natalChart?.planets) {
+      const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
+      const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
+      
+      if (sunPlanet && moonPlanet) {
+        return {
+          sunSign: sunPlanet.sign,
+          moonSign: moonPlanet.sign
+        }
+      }
+    }
+
+    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    if (state.birthDate?.month && state.birthDate?.day) {
+      const calculatedSunSign = getZodiacSign(
+        Number.parseInt(state.birthDate.month), 
+        Number.parseInt(state.birthDate.day)
+      )
+      
+      // Use a contrasting moon sign as fallback
+      const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                          "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
+      const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
+      const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
+      
+      return {
+        sunSign: calculatedSunSign,
+        moonSign: zodiacSigns[moonIndex]
+      }
+    }
+
+    // Ultimate fallback
+    return {
+      sunSign: null,
+      moonSign: null
+    }
+  }, [state.natalChart, state.birthDate])
+
   return (
     <div
       className={`space-y-3 text-center transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
@@ -80,6 +133,9 @@ export function BookCoverConfirmation() {
             selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
             customChartUrl={state.customChartUrl || undefined}
             isLoading={state.isLoadingChart}
+            formattedDate={formattedDate}
+            sunSign={sunSign}
+            moonSign={moonSign}
           />
         </div>
       </div>

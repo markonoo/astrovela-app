@@ -179,6 +179,57 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
   const zodiacSign = getZodiacSignName()
   const element = getElement()
 
+  // Get sun and moon sign from natal chart data if available, with fallbacks
+  const getSunSign = () => {
+    // First, try to get from natal chart data
+    if (state.natalChart?.planets) {
+      const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
+      if (sunPlanet) {
+        return sunPlanet.sign
+      }
+    }
+
+    // Second, try chart interpretation
+    if (state.chartInterpretation?.sunSign?.title) {
+      return state.chartInterpretation.sunSign.title.toLowerCase()
+    }
+
+    // Third, calculate from birth date
+    if (state.birthDate?.month && state.birthDate?.day) {
+      return getZodiacSign(Number.parseInt(state.birthDate.month), Number.parseInt(state.birthDate.day))
+    }
+
+    // Final fallback
+    return "taurus"
+  }
+
+  const getMoonSign = () => {
+    // First, try to get from natal chart data
+    if (state.natalChart?.planets) {
+      const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
+      if (moonPlanet) {
+        return moonPlanet.sign
+      }
+    }
+
+    // Second, try chart interpretation
+    if (state.chartInterpretation?.moonSign?.title) {
+      return state.chartInterpretation.moonSign.title.toLowerCase()
+    }
+
+    // Third, calculate contrasting sign from sun sign
+    const sunSign = getSunSign()
+    const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                        "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
+    const sunIndex = zodiacSigns.indexOf(sunSign)
+    const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 5
+
+    return zodiacSigns[moonIndex]
+  }
+
+  const sunSign = getSunSign()
+  const moonSign = getMoonSign()
+
   // Get trait values
   const intuition = getTraitValue("intuition")
   const empathy = getTraitValue("empathy")
@@ -188,10 +239,6 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
   const getZodiacSvg = (sign: string) => {
     return `/images/zodiac/${sign.toLowerCase()}.svg`
   }
-
-  // Get sun and moon sign from chart interpretation if available
-  const sunSign = state.chartInterpretation?.sunSign?.title?.toLowerCase() || "sun"
-  const moonSign = state.chartInterpretation?.moonSign?.title?.toLowerCase() || "moon"
 
   return (
     <section className="bg-gray-50 rounded-lg p-8 mb-8">
@@ -278,7 +325,7 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
             </div>
             <div>
               <div className="text-xs text-gray-500 font-medium">Date of birth</div>
-              <div className="font-bold text-base">{formattedDate}</div>
+              <div className="font-bold text-base">{formattedDate || "Not specified"}</div>
             </div>
           </div>
         </div>

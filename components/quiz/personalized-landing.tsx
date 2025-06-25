@@ -1,26 +1,24 @@
 "use client"
 
 import { useQuiz } from "@/contexts/quiz-context"
-import { getZodiacSign } from "@/utils/zodiac"
-import { AstrologicalProfile } from "./astrological-profile"
-import { useEffect, useState } from "react"
-import { Book, Star, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Footer } from "@/components/shared/footer"
+import { useState, useEffect, useMemo } from "react"
 import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
-import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
+import { AstrologicalProfile } from "./astrological-profile"
+import { Footer } from "../shared/footer"
+import AstrovelaIcon from "../icons/AstrovelaIcon"
+import { DrawerMenu } from "../drawer-menu"
+import { HamburgerButton } from "../hamburger-button"
+import { ResetButton } from "./reset-button"
+import { getZodiacSign } from "@/utils/zodiac"
+import { Book, Star, Check } from "lucide-react"
 
 export function PersonalizedLanding() {
   const router = useRouter()
   const { state } = useQuiz()
   const [zodiacSign, setZodiacSign] = useState<string | null>(null)
   const [chartLoaded, setChartLoaded] = useState(false)
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (state.birthDate.month && state.birthDate.day) {
@@ -40,88 +38,118 @@ export function PersonalizedLanding() {
     setChartLoaded(true)
   }
 
-  // Prepare dateOfBirth and formattedDate for BookCoverPreview
-  const dateOfBirth = state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-    : "";
-  const formattedDate = dateOfBirth
-    ? new Date(dateOfBirth).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "Date of Birth";
+  // Extract sun and moon signs with multiple fallbacks - same logic as cover customization
+  const { extractedSunSign, extractedMoonSign } = useMemo(() => {
+    // First, try to get from natal chart data (same as cover customization)
+    if (state.natalChart?.planets) {
+      const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
+      const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
+      
+      if (sunPlanet && moonPlanet) {
+        return {
+          extractedSunSign: sunPlanet.sign,
+          extractedMoonSign: moonPlanet.sign
+        }
+      }
+    }
 
-  // Prepare dateOfBirth and formattedDate for AstrologicalProfile
-  const astroProfileDateOfBirth = state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-    : "";
-  const astroProfileFormattedDate = astroProfileDateOfBirth
-    ? new Date(astroProfileDateOfBirth).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "Date of Birth";
+    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    if (state.birthDate?.month && state.birthDate?.day) {
+      const calculatedSunSign = getZodiacSign(
+        Number.parseInt(state.birthDate.month), 
+        Number.parseInt(state.birthDate.day)
+      )
+      
+      // Use a contrasting moon sign as fallback
+      const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                          "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
+      const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
+      const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
+      
+      return {
+        extractedSunSign: calculatedSunSign,
+        extractedMoonSign: zodiacSigns[moonIndex]
+      }
+    }
 
-  if (!mounted) return <div />;
+    // Ultimate fallback
+    return {
+      extractedSunSign: null,
+      extractedMoonSign: null
+    }
+  }, [state.natalChart, state.birthDate])
+
+  // Format date for book cover
+  const formattedDate = useMemo(() => {
+    if (state.birthDate?.year && state.birthDate?.month && state.birthDate?.day) {
+      const date = new Date(
+        Number(state.birthDate.year),
+        Number(state.birthDate.month) - 1,
+        Number(state.birthDate.day)
+      )
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      })
+    }
+    return ""
+  }, [state.birthDate])
 
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm py-4 sticky top-0 z-50">
+      <header className="bg-white shadow-sm py-4 sticky top-0 z-10">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-lg font-medium">astrovela</span>
-            <Star size={16} className="ml-1 text-yellow-400" />
+            <AstrovelaIcon width={20} height={20} className="ml-2" />
           </div>
-          <div>
-            <a
-              href="/reset-quiz"
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
-            >
-              Reset Quiz
-            </a>
-          </div>
+          {/* Home button removed as requested */}
         </div>
       </header>
 
       {/* Main content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Book cover section - only this section is kept at the top */}
-        <section className="bg-white rounded-lg shadow-sm p-8 mb-8 flex flex-col items-center min-h-[700px]">
-          <h1 className="text-2xl font-bold mb-2 text-center">Your personalized book ASTROVELA</h1>
-          <p className="text-gray-600 mb-6 text-center">is almost ready!</p>
+        <section className="bg-white rounded-lg shadow-sm p-8 mb-8 text-center">
+          <h1 className="text-2xl font-bold mb-2">Your personalised astrovela book</h1>
+          <p className="text-gray-600 mb-8">is almost ready!</p>
 
-          {/* Book cover display with user-selected color and info */}
-          <div className="flex justify-center items-center w-full mb-8">
-            <div className="w-[350px] h-[450px] flex items-center justify-center mx-auto">
-              <BookCoverPreview
-                userInfo={{
-                  firstName: state.firstName || "FIRST",
-                  lastName: state.lastName || "",
-                  placeOfBirth: state.birthPlace || "Place of Birth",
-                  dateOfBirth,
-                }}
-                themeColor={THEME_COLORS[state.coverColorScheme]}
-                selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
-                customChartUrl={state.customChartUrl || undefined}
-                isLoading={state.isLoadingChart}
-                formattedDate={formattedDate}
-              />
-            </div>
+          {/* Book cover display with proper sun/moon signs - fully centered */}
+          <div className="w-full flex justify-center mb-8">
+            <BookCoverPreview
+              userInfo={{
+                firstName: state.firstName || "Your Name",
+                lastName: state.lastName || "",
+                placeOfBirth: state.birthPlace || "Your Birth Place",
+                dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                  ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                  : "",
+              }}
+              themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.black}
+              selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
+              customChartUrl={state.customChartUrl}
+              isLoading={false}
+              sunSign={extractedSunSign}
+              moonSign={extractedMoonSign}
+              formattedDate={formattedDate || ""}
+            />
           </div>
 
-          <button
-            onClick={handleGetBook}
-            className="w-full sm:w-auto px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors mt-2"
-          >
-            Get the book
-          </button>
+          {/* Button with reduced spacing - moved up */}
+          <div className="mt-6 pt-2">
+            <button
+              onClick={handleGetBook}
+              className="w-full sm:w-auto px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors"
+            >
+              Get the book
+            </button>
+          </div>
         </section>
 
-        {/* New Astrological Profile Section */}
-        <AstrologicalProfile formattedDate={astroProfileFormattedDate} />
+        {/* Astrological Profile Section with proper data */}
+        <AstrologicalProfile formattedDate={formattedDate} />
 
         {/* Generated content section */}
         <section className="bg-white rounded-lg shadow-sm p-8 mb-8">
@@ -201,7 +229,7 @@ export function PersonalizedLanding() {
 
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                <AstrovelaIcon width={20} height={20} className="text-yellow-600" />
+                <Star size={20} className="text-yellow-600" />
               </div>
               <div>
                 <h3 className="font-medium mb-1">Personality & life path profile</h3>

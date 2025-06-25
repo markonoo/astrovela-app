@@ -86,6 +86,286 @@ function LoadingAnimation({ message }: { message: string }) {
   );
 }
 
+// Create stable components outside of QuizController
+function MainGoalsMultiSelect({ stepConfig }: { stepConfig: any }) {
+  const { state, updateAnswer, nextStep, prevStep } = useQuiz();
+  const questionId = `question_${stepConfig.questionNumber}`;
+  const mainGoalsOptions = ["🏆 Self-growth", "❤️ Love", "💼 Career", "🧘‍♂️ Health", "✨ Other"];
+  const [selected, setSelected] = useState<string[]>(
+    Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
+  );
+  
+  const handleSelect = (option: string) => {
+    let updated = [...selected];
+    if (updated.includes(option)) {
+      updated = updated.filter((o) => o !== option);
+    } else {
+      updated.push(option);
+    }
+    setSelected(updated);
+    updateAnswer(questionId, updated);
+  };
+  
+  return (
+    <div className="space-y-3 text-center">
+      <h1 className="text-2xl font-semibold text-gray-900">What are your main goals?</h1>
+      
+      <div>
+        <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
+          Select all that apply
+        </p>
+        {selected.length > 0 && (
+          <p className="text-xs text-green-600 mb-2">
+            You selected: {selected.join(", ")}
+          </p>
+        )}
+      </div>
+      
+      <div className="space-y-2 mt-4">
+        {mainGoalsOptions.map((option, index) => (
+          <OptionCard
+            key={index}
+            selected={selected.includes(option)}
+            onClick={() => handleSelect(option)}
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            isMultiSelect={true}
+          >
+            <span className="text-lg font-normal flex items-center gap-2">{option}</span>
+          </OptionCard>
+        ))}
+      </div>
+      
+      <button
+        onClick={nextStep}
+        disabled={selected.length === 0}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selected.length > 0
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
+      
+      <button
+        onClick={prevStep}
+        className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+      >
+        Previous Question
+      </button>
+    </div>
+  );
+}
+
+function MotivationMultiSelect({ stepConfig }: { stepConfig: any }) {
+  const { state, updateAnswer, nextStep, prevStep } = useQuiz();
+  const questionId = `question_${stepConfig.questionNumber}`;
+  const motivationOptions = ["🏆 Achievement", "🤝 Connection", "🎨 Creativity", "🫶 Helping others", "📚 Learning", "🔮 Other"];
+  const [selected, setSelected] = useState<string[]>(
+    Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
+  );
+  
+  const handleSelect = (option: string) => {
+    let updated = [...selected];
+    if (updated.includes(option)) {
+      updated = updated.filter((o) => o !== option);
+    } else {
+      updated.push(option);
+    }
+    setSelected(updated);
+    updateAnswer(questionId, updated);
+  };
+  
+  return (
+    <div className="space-y-3 text-center">
+      <h1 className="text-2xl font-semibold text-gray-900">What motivates you most in life?</h1>
+      
+      <div>
+        <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
+          Select all that apply
+        </p>
+        {selected.length > 0 && (
+          <p className="text-xs text-green-600 mb-2">
+            You selected: {selected.join(", ")}
+          </p>
+        )}
+      </div>
+      
+      <div className="space-y-2 mt-4">
+        {motivationOptions.map((option, index) => (
+          <OptionCard
+            key={index}
+            selected={selected.includes(option)}
+            onClick={() => handleSelect(option)}
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            isMultiSelect={true}
+          >
+            <span className="text-lg font-normal flex items-center gap-2">{option}</span>
+          </OptionCard>
+        ))}
+      </div>
+      
+      <button
+        onClick={nextStep}
+        disabled={selected.length === 0}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selected.length > 0
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
+      
+      <button
+        onClick={prevStep}
+        className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+      >
+        Previous Question
+      </button>
+    </div>
+  );
+}
+
+function AdditionalTopicsMultiSelect({ stepConfig }: { stepConfig: any }) {
+  const { state, updateAnswer, nextStep, prevStep } = useQuiz();
+  const questionId = `question_${stepConfig.questionNumber}`;
+  const additionalTopicsOptions = ["🔮 Tarot cards", "✋ Palm reading", "💎 Crystals", "💑 Compatibility/partner"];
+  const [selected, setSelected] = useState<string[]>(
+    Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
+  );
+  
+  const handleSelect = (option: string) => {
+    let updated = [...selected];
+    if (updated.includes(option)) {
+      updated = updated.filter((o) => o !== option);
+    } else {
+      updated.push(option);
+    }
+    setSelected(updated);
+    updateAnswer(questionId, updated);
+  };
+  
+  return (
+    <div className="space-y-3 text-center">
+      <h1 className="text-2xl font-semibold text-gray-900">What additional topics would you like to include in your book?</h1>
+      
+      <div>
+        <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
+          Select all that apply
+        </p>
+        {selected.length > 0 && (
+          <p className="text-xs text-green-600 mb-2">
+            You selected: {selected.join(", ")}
+          </p>
+        )}
+      </div>
+      
+      <div className="space-y-2 mt-4">
+        {additionalTopicsOptions.map((option, index) => (
+          <OptionCard
+            key={index}
+            selected={selected.includes(option)}
+            onClick={() => handleSelect(option)}
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            isMultiSelect={true}
+          >
+            <span className="text-lg font-normal flex items-center gap-2">{option}</span>
+          </OptionCard>
+        ))}
+      </div>
+      
+      <button
+        onClick={nextStep}
+        disabled={selected.length === 0}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selected.length > 0
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
+      
+      <button
+        onClick={prevStep}
+        className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+      >
+        Previous Question
+      </button>
+    </div>
+  );
+}
+
+function GenericMultiSelect({ stepConfig, question }: { stepConfig: any; question: any }) {
+  const { state, updateAnswer, nextStep, prevStep } = useQuiz();
+  const questionId = `question_${stepConfig.questionNumber}`;
+  const [selected, setSelected] = useState<string[]>(
+    Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
+  );
+  
+  const handleSelect = (option: string) => {
+    let updated = [...selected];
+    if (updated.includes(option)) {
+      updated = updated.filter((o) => o !== option);
+    } else {
+      updated.push(option);
+    }
+    setSelected(updated);
+    updateAnswer(questionId, updated);
+  };
+  
+  return (
+    <div className="space-y-3 text-center">
+      <h1 className="text-2xl font-semibold text-gray-900">{question.questionText}</h1>
+      
+      <div>
+        <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
+          Select all that apply
+        </p>
+        {selected.length > 0 && (
+          <p className="text-xs text-green-600 mb-2">
+            You selected: {selected.join(", ")}
+          </p>
+        )}
+      </div>
+      
+      <div className="space-y-2 mt-4">
+        {question.options.map((option: string, index: number) => (
+          <OptionCard
+            key={index}
+            selected={selected.includes(option)}
+            onClick={() => handleSelect(option)}
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            isMultiSelect={true}
+          >
+            <span className="text-lg font-normal flex items-center gap-2">{option}</span>
+          </OptionCard>
+        ))}
+      </div>
+      
+      <button
+        onClick={nextStep}
+        disabled={selected.length === 0}
+        className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
+          selected.length > 0
+            ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
+            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Continue
+      </button>
+      
+      <button
+        onClick={prevStep}
+        className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+      >
+        Previous Question
+      </button>
+    </div>
+  );
+}
+
 // Define the 3 parts with names, subtitles, and their steps
 const quizParts = [
   {
@@ -117,9 +397,9 @@ const quizParts = [
     subtitle: "Customize your book and add your personal insights.",
     steps: [
       { type: "motivation", questionNumber: 8 },
-      { type: "agreeWorry", questionNumber: 3 },
-      { type: "optimism", questionNumber: 4 },
-      { type: "relationshipQuestion", questionNumber: 5 },
+      { type: "agreeWorry", questionNumber: 14 },
+      { type: "optimism", questionNumber: 15 },
+      { type: "relationshipQuestion", questionNumber: 16 },
       { type: "additionalTopics", questionNumber: 6 },
       { type: "generic", questionNumber: 17 },
       { type: "giftOrSelf" },
@@ -174,18 +454,26 @@ function isQuestionStep(type: string) {
 export function QuizController() {
   const { state, nextStep, prevStep, fetchNatalChart } = useQuiz()
   const { currentStep, quizCompleted } = state
+  const [mounted, setMounted] = useState(false)
 
+  // ALL HOOKS MUST BE CALLED FIRST - BEFORE ANY CONDITIONAL RETURNS
+  
   // Track previous step to detect transitions
   const prevStepRef = useRef<number>(currentStep)
   useEffect(() => {
     prevStepRef.current = currentStep
   }, [currentStep])
 
-  // Trigger fetchNatalChart after birthPlace step (step 10) is completed
+  // Set mounted to true after hydration
   useEffect(() => {
-    // Step 10 is birthPlace, step 11 is zodiacResult
+    setMounted(true)
+  }, [])
+
+  // Trigger fetchNatalChart during the loading step (step 12) instead of zodiacResult step
+  useEffect(() => {
+    // Step 11 is zodiacResult, step 12 is loading
     if (
-      prevStepRef.current === 10 && currentStep === 11 &&
+      prevStepRef.current === 11 && currentStep === 12 &&
       state.birthDate.year && state.birthDate.month && state.birthDate.day &&
       state.birthTime && state.birthPlace &&
       !state.isLoadingChart && !state.customChartUrl
@@ -194,22 +482,56 @@ export function QuizController() {
     }
   }, [currentStep, state.birthDate, state.birthTime, state.birthPlace, state.isLoadingChart, state.customChartUrl, fetchNatalChart])
 
-  if (quizCompleted || isQuizCompleted()) {
-    return <PersonalizedLanding />
-  }
-
+  // Get stepConfig first (needed for useEffect dependency)
   const stepConfig = quizSteps[currentStep - 1] // currentStep is 1-based
   const currentPart = getCurrentPart(currentStep)
 
-  // Auto-advance for loading steps
+  // Auto-advance for loading steps - FIXED: Always return cleanup function
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null
+    
     if (stepConfig && stepConfig.type === "loading") {
-      const timer = setTimeout(() => {
-        nextStep()
-      }, 3000) // Increased to 3 seconds for more noticeable effect
-      return () => clearTimeout(timer)
+      // For step 12 (natal chart loading), wait longer and check if chart is ready
+      if (currentStep === 12) {
+        // If chart is already loaded or loading is complete, advance quickly
+        if (state.customChartUrl || (!state.isLoadingChart && state.natalChart)) {
+          timer = setTimeout(() => {
+            nextStep()
+          }, 1000)
+        } else {
+          // Give more time for API call to complete
+          timer = setTimeout(() => {
+            nextStep()
+          }, 6000)
+        }
+      } else {
+        // For other loading steps, use normal timing
+        timer = setTimeout(() => {
+          nextStep()
+        }, 3000)
+      }
     }
-  }, [stepConfig, nextStep])
+    
+    // Always return cleanup function to maintain consistent hook behavior
+    return () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    }
+  }, [stepConfig, nextStep, currentStep, state.customChartUrl, state.isLoadingChart, state.natalChart])
+
+  // NOW SAFE TO HAVE CONDITIONAL RETURNS AFTER ALL HOOKS
+
+  // Prevent hydration mismatch by only checking localStorage after mount
+  if (!mounted) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-yellow-300"></div>
+    </div>
+  }
+
+  if (quizCompleted || isQuizCompleted()) {
+    return <PersonalizedLanding />
+  }
 
   // Count only question steps for progress bar
   const totalQuestionSteps = quizSteps.filter(s => isQuestionStep(s.type)).length
@@ -249,80 +571,8 @@ export function QuizController() {
             </button>
           </div>
         )
-      case "mainGoals": {
-        // Explicitly create a custom GenericQuestion with forced multi-select
-        const mainGoalsOptions = ["🏆 Self-growth", "❤️ Love", "💼 Career", "🧘‍♂️ Health", "✨ Other"];
-        const CustomMultiSelect = () => {
-          const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-          const questionId = `question_${stepConfig.questionNumber}`;
-          const [selected, setSelected] = useState<string[]>(
-            Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
-          );
-          
-          const handleSelect = (option: string) => {
-            let updated = [...selected];
-            if (updated.includes(option)) {
-              updated = updated.filter((o) => o !== option);
-            } else {
-              updated.push(option);
-            }
-            setSelected(updated);
-            updateAnswer(questionId, updated);
-          };
-          
-          return (
-            <div className="space-y-3 text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">What are your main goals?</h1>
-              
-              <div>
-                <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
-                  Select all that apply
-                </p>
-                {selected.length > 0 && (
-                  <p className="text-xs text-green-600 mb-2">
-                    You selected: {selected.join(", ")}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                {mainGoalsOptions.map((option, index) => (
-                  <OptionCard
-                    key={index}
-                    selected={selected.includes(option)}
-                    onClick={() => handleSelect(option)}
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    isMultiSelect={true}
-                  >
-                    <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                  </OptionCard>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextStep}
-                disabled={selected.length === 0}
-                className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                  selected.length > 0
-                    ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={prevStep}
-                className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                Previous Question
-              </button>
-            </div>
-          );
-        };
-        
-        return <CustomMultiSelect />;
-      }
+      case "mainGoals": 
+        return <MainGoalsMultiSelect stepConfig={stepConfig} />
       case "relationshipStatus":
         return <RelationshipStatusQuestion />
       case "loading": {
@@ -363,372 +613,44 @@ export function QuizController() {
         return <BirthPlace />
       case "zodiacResult":
         return <ZodiacDisplay />
-      case "motivation": {
-        const motivationOptions = ["🏆 Achievement", "🤝 Connection", "🎨 Creativity", "🫶 Helping others", "📚 Learning", "🔮 Other"];
-        
-        // Create a custom multi-select component for motivation question
-        const CustomMultiSelect = () => {
-          const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-          const questionId = `question_${stepConfig.questionNumber}`;
-          const [selected, setSelected] = useState<string[]>(
-            Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
-          );
-          
-          const handleSelect = (option: string) => {
-            let updated = [...selected];
-            if (updated.includes(option)) {
-              updated = updated.filter((o) => o !== option);
-            } else {
-              updated.push(option);
-            }
-            setSelected(updated);
-            updateAnswer(questionId, updated);
-          };
-          
-          return (
-            <div className="space-y-3 text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">What motivates you?</h1>
-              
-              <div>
-                <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
-                  Select all that apply
-                </p>
-                {selected.length > 0 && (
-                  <p className="text-xs text-green-600 mb-2">
-                    You selected: {selected.join(", ")}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                {motivationOptions.map((option, index) => (
-                  <OptionCard
-                    key={index}
-                    selected={selected.includes(option)}
-                    onClick={() => handleSelect(option)}
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    isMultiSelect={true}
-                  >
-                    <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                  </OptionCard>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextStep}
-                disabled={selected.length === 0}
-                className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                  selected.length > 0
-                    ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={prevStep}
-                className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                Previous Question
-              </button>
-            </div>
-          );
-        };
-        
-        return <CustomMultiSelect />;
+      case "motivation": 
+        return <MotivationMultiSelect stepConfig={stepConfig} />
+      case "agreeWorry": {
+        const question = getQuestionByNumber(stepConfig.questionNumber || 14);
+        return <GenericQuestion 
+          questionNumber={stepConfig.questionNumber || 14} 
+          questionText={question?.questionText || "Question about stress and anxiety"} 
+          options={question?.options || []} 
+        />
       }
-      case "agreeWorry":
-        return <GenericQuestion questionNumber={stepConfig.questionNumber ?? -1} questionText="I often worry whether I made the right decisions in life." options={["😟 Strongly agree", "🙁 Agree", "😐 Neutral", "🙂 Disagree", "😊 Strongly disagree"]} />
       case "optimism": {
-        const optimismOptions = ["😞 Pessimist", "😊 Optimist", "😐 Realist"];
-        
-        // Create a custom single-choice component for the optimism question
-        const SingleChoiceQuestion = () => {
-          const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-          const questionId = `question_${stepConfig.questionNumber}`;
-          const [selected, setSelected] = useState<string | null>(
-            state.answers[questionId] || null
-          );
-          
-          const handleSelect = (option: string) => {
-            setSelected(option);
-            updateAnswer(questionId, option);
-          };
-          
-          return (
-            <div className="space-y-3 text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">Are you a pessimist, optimist, or realist?</h1>
-              
-              <div className="space-y-2 mt-4">
-                {optimismOptions.map((option, index) => (
-                  <OptionCard
-                    key={index}
-                    selected={selected === option}
-                    onClick={() => handleSelect(option)}
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    isMultiSelect={false}
-                  >
-                    <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                  </OptionCard>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextStep}
-                disabled={!selected}
-                className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                  selected
-                    ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={prevStep}
-                className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                Previous Question
-              </button>
-            </div>
-          );
-        };
-        
-        return <SingleChoiceQuestion />;
+        const question = getQuestionByNumber(stepConfig.questionNumber || 4);
+        return <GenericQuestion 
+          questionNumber={stepConfig.questionNumber || 4} 
+          questionText={question?.questionText || "Question about optimism"} 
+          options={question?.options || []} 
+        />
       }
       case "relationshipQuestion": {
-        const relationshipOptions = ["🤝 Trust", "💬 Communication", "🛡️ Support", "💑 Shared values", "🦅 Independence", "🔥 Passion"];
-        
-        // Create a custom multi-select component for relationship values question
-        const CustomMultiSelect = () => {
-          const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-          const questionId = `question_${stepConfig.questionNumber}`;
-          const [selected, setSelected] = useState<string[]>(
-            Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
-          );
-          
-          const handleSelect = (option: string) => {
-            let updated = [...selected];
-            if (updated.includes(option)) {
-              updated = updated.filter((o) => o !== option);
-            } else {
-              updated.push(option);
-            }
-            setSelected(updated);
-            updateAnswer(questionId, updated);
-          };
-          
-          return (
-            <div className="space-y-3 text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">What do you value most in a relationship?</h1>
-              
-              <div>
-                <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
-                  Select all that apply
-                </p>
-                {selected.length > 0 && (
-                  <p className="text-xs text-green-600 mb-2">
-                    You selected: {selected.join(", ")}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                {relationshipOptions.map((option, index) => (
-                  <OptionCard
-                    key={index}
-                    selected={selected.includes(option)}
-                    onClick={() => handleSelect(option)}
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    isMultiSelect={true}
-                  >
-                    <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                  </OptionCard>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextStep}
-                disabled={selected.length === 0}
-                className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                  selected.length > 0
-                    ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={prevStep}
-                className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                Previous Question
-              </button>
-            </div>
-          );
-        };
-        
-        return <CustomMultiSelect />;
+        const question = getQuestionByNumber(stepConfig.questionNumber || 16);
+        return <GenericQuestion 
+          questionNumber={stepConfig.questionNumber || 16} 
+          questionText={question?.questionText || "Question about relationships"} 
+          options={question?.options || []} 
+        />
       }
-      case "additionalTopics": {
-        const additionalTopicsOptions = ["🔮 Tarot cards", "✋ Palm reading", "💎 Crystals", "💑 Compatibility/partner"];
-        
-        // Create a custom multi-select component for additionalTopics
-        const CustomMultiSelect = () => {
-          const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-          const questionId = `question_${stepConfig.questionNumber}`;
-          const [selected, setSelected] = useState<string[]>(
-            Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
-          );
-          
-          const handleSelect = (option: string) => {
-            let updated = [...selected];
-            if (updated.includes(option)) {
-              updated = updated.filter((o) => o !== option);
-            } else {
-              updated.push(option);
-            }
-            setSelected(updated);
-            updateAnswer(questionId, updated);
-          };
-          
-          return (
-            <div className="space-y-3 text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">What additional topics would you like to include in your book?</h1>
-              
-              <div>
-                <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
-                  Select all that apply
-                </p>
-                {selected.length > 0 && (
-                  <p className="text-xs text-green-600 mb-2">
-                    You selected: {selected.join(", ")}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                {additionalTopicsOptions.map((option, index) => (
-                  <OptionCard
-                    key={index}
-                    selected={selected.includes(option)}
-                    onClick={() => handleSelect(option)}
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    isMultiSelect={true}
-                  >
-                    <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                  </OptionCard>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextStep}
-                disabled={selected.length === 0}
-                className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                  selected.length > 0
-                    ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Continue
-              </button>
-              
-              <button
-                onClick={prevStep}
-                className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-              >
-                Previous Question
-              </button>
-            </div>
-          );
-        };
-        
-        return <CustomMultiSelect />;
-      }
+      case "additionalTopics":
+        return <AdditionalTopicsMultiSelect stepConfig={stepConfig} />
       case "generic": {
         const question = getQuestionByNumber(stepConfig.questionNumber ?? -1);
         const questionNum = stepConfig.questionNumber ?? -1;
         
         // Create direct multi-select implementation for questions 13, 16, and 17
         if ([13, 16, 17].includes(questionNum) && question) {
-          // Create a custom multi-select component for these specific questions
-          const CustomMultiSelect = () => {
-            const { state, updateAnswer, nextStep, prevStep } = useQuiz();
-            const questionId = `question_${questionNum}`;
-            const [selected, setSelected] = useState<string[]>(
-              Array.isArray(state.answers[questionId]) ? state.answers[questionId] : []
-            );
-            
-            const handleSelect = (option: string) => {
-              let updated = [...selected];
-              if (updated.includes(option)) {
-                updated = updated.filter((o) => o !== option);
-              } else {
-                updated.push(option);
-              }
-              setSelected(updated);
-              updateAnswer(questionId, updated);
-            };
-            
-            return (
-              <div className="space-y-3 text-center">
-                <h1 className="text-2xl font-semibold text-gray-900">{question.questionText}</h1>
-                
-                <div>
-                  <p className="text-sm text-gray-600 mt-1 mb-2 font-medium">
-                    Select all that apply
-                  </p>
-                  {selected.length > 0 && (
-                    <p className="text-xs text-green-600 mb-2">
-                      You selected: {selected.join(", ")}
-                    </p>
-                  )}
-                </div>
-                
-                <div className="space-y-2 mt-4">
-                  {question.options.map((option, index) => (
-                    <OptionCard
-                      key={index}
-                      selected={selected.includes(option)}
-                      onClick={() => handleSelect(option)}
-                      className="hover:shadow-md transition-shadow cursor-pointer"
-                      isMultiSelect={true}
-                    >
-                      <span className="text-lg font-normal flex items-center gap-2">{option}</span>
-                    </OptionCard>
-                  ))}
-                </div>
-                
-                <button
-                  onClick={nextStep}
-                  disabled={selected.length === 0}
-                  className={`w-full py-3 px-4 rounded-full font-medium transition-colors ${
-                    selected.length > 0
-                      ? "bg-yellow-300 text-gray-900 hover:bg-yellow-400"
-                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  Continue
-                </button>
-                
-                <button
-                  onClick={prevStep}
-                  className="mt-2 w-full py-3 px-4 bg-white border border-gray-300 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Previous Question
-                </button>
-              </div>
-            );
-          };
-          
-          return <CustomMultiSelect />;
+          return <GenericMultiSelect stepConfig={stepConfig} question={question} />
         }
         
         // For all other generic questions, use the standard component
-        const isMultiSelectQuestion = [13, 16, 17].includes(questionNum);
         const questionTextModified = question?.questionText;
         
         return (
