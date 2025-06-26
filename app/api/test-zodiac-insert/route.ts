@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     console.log('Attempting to insert test data:', testData)
     
     const { data, error } = await supabase
-      .from('NatalChartInterpreation')
+      .from('NatalChartInterpretation')
       .insert([testData])
       .select()
     
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         success: false, 
         error: error.message,
         details: error,
-        tableName: 'NatalChartInterpreation'
+        tableName: 'NatalChartInterpretation'
       })
     }
     
@@ -59,7 +59,7 @@ export async function GET() {
     
     // Test retrieval
     const { data, error } = await supabase
-      .from('NatalChartInterpreation')
+      .from('NatalChartInterpretation')
       .select('session_id, sun_sign, moon_sign, created_at')
       .order('created_at', { ascending: false })
       .limit(5)
@@ -70,7 +70,7 @@ export async function GET() {
         success: false, 
         error: error.message,
         details: error,
-        tableName: 'NatalChartInterpreation'
+        tableName: 'NatalChartInterpretation'
       })
     }
     

@@ -287,27 +287,35 @@ export function PremiumBookCover({
     // Set chart data from prop or state
     setChartData(natalChart || state.natalChart || null)
 
-    // Determine zodiac signs
-    if (natalChart) {
-      // If natal chart is provided, use it to set sun and moon signs
+    // Determine zodiac signs with priority order
+    // First priority: Use stored sun and moon signs from interpretation data
+    if (state.sunSign && state.moonSign) {
+      setSunSign(state.sunSign)
+      setMoonSign(state.moonSign)
+    }
+    // Second priority: Use provided natal chart data
+    else if (natalChart) {
       const sunPlanet = natalChart.planets.find((p: { name: string }) => p.name === "sun")
       const moonPlanet = natalChart.planets.find((p: { name: string }) => p.name === "moon")
 
       if (sunPlanet) setSunSign(sunPlanet.sign)
       if (moonPlanet) setMoonSign(moonPlanet.sign)
-    } else if (state.natalChart) {
-      // If natal chart is in state, use it
+    } 
+    // Third priority: Use natal chart from state
+    else if (state.natalChart) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
 
       if (sunPlanet) setSunSign(sunPlanet.sign)
       if (moonPlanet) setMoonSign(moonPlanet.sign)
-    } else if (isOliviaExample) {
-      // For Olivia example, set specific signs
+    } 
+    // Fourth priority: Use example data for Olivia
+    else if (isOliviaExample) {
       setSunSign("sagittarius") // December 6 is Sagittarius
       setMoonSign("taurus") // Just an example moon sign
-    } else if (state.birthDate.month && state.birthDate.day) {
-      // Otherwise, calculate sun sign from birth date
+    } 
+    // Fallback: Calculate from birth date
+    else if (state.birthDate.month && state.birthDate.day) {
       const sign = getZodiacSign(Number.parseInt(state.birthDate.month), Number.parseInt(state.birthDate.day))
       setSunSign(sign)
 
@@ -328,8 +336,9 @@ export function PremiumBookCover({
       ]
       const randomIndex = (moonSignOptions.indexOf(sign) + 6) % 12 // Opposite sign for contrast
       setMoonSign(moonSignOptions[randomIndex])
-    } else {
-      // Default values for example
+    } 
+    // Ultimate fallback
+    else {
       setSunSign("libra")
       setMoonSign("taurus")
     }
@@ -340,7 +349,7 @@ export function PremiumBookCover({
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [state.birthDate, state.natalChart, natalChart, isOliviaExample])
+  }, [state.sunSign, state.moonSign, state.birthDate, state.natalChart, natalChart, isOliviaExample])
 
   // Handle retry for chart loading
   const handleRetryChartLoad = async () => {

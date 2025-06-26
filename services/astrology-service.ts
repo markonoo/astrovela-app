@@ -143,6 +143,7 @@ function getSimpleGeocoding(
     amsterdam: [52.3676, 4.9041],
     vienna: [48.2082, 16.3738],
     hamburg: [53.5511, 9.9937],
+    frankfurt: [50.1109, 8.6821],
 
     // Asia
     tokyo: [35.6762, 139.6503],

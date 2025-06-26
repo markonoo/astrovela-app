@@ -40,7 +40,15 @@ export function PersonalizedLanding() {
 
   // Extract sun and moon signs with multiple fallbacks - same logic as cover customization
   const { extractedSunSign, extractedMoonSign } = useMemo(() => {
-    // First, try to get from natal chart data (same as cover customization)
+    // First priority: Use stored sun and moon signs from interpretation data
+    if (state.sunSign && state.moonSign) {
+      return {
+        extractedSunSign: state.sunSign,
+        extractedMoonSign: state.moonSign
+      }
+    }
+
+    // Second priority: Extract from natal chart data if available
     if (state.natalChart?.planets) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
@@ -53,7 +61,7 @@ export function PersonalizedLanding() {
       }
     }
 
-    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    // Fallback: Calculate sun sign from birth date and use contrasting moon sign
     if (state.birthDate?.month && state.birthDate?.day) {
       const calculatedSunSign = getZodiacSign(
         Number.parseInt(state.birthDate.month), 
@@ -77,7 +85,7 @@ export function PersonalizedLanding() {
       extractedSunSign: null,
       extractedMoonSign: null
     }
-  }, [state.natalChart, state.birthDate])
+  }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
   // Format date for book cover
   const formattedDate = useMemo(() => {

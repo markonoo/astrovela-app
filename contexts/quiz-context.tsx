@@ -56,6 +56,8 @@ export interface QuizState {
   isLoadingChart: boolean
   chartError: string | null
   customChartUrl: string | null
+  sunSign: string | null
+  moonSign: string | null
 }
 
 interface QuizContextType {
@@ -74,12 +76,14 @@ interface QuizContextType {
   setBirthLocation: (latitude: number, longitude: number, name: string) => void
   setCoverColorScheme: (scheme: ColorScheme) => void
   setEmail: (email: string) => void
-  completeQuiz: () => void
+  completeQuiz: () => Promise<void>
   resetQuiz: () => void
   fetchNatalChart: () => Promise<void>
   setNatalChart: (chart: NatalChart) => void
   setChartInterpretation: (interpretation: ChartInterpretation) => void
   setCustomChartUrl: (customChartUrl: string | null) => void
+  setSunSign: (sunSign: string) => void
+  setMoonSign: (moonSign: string) => void
 }
 
 const initialState: QuizState = {
@@ -110,6 +114,8 @@ const initialState: QuizState = {
   isLoadingChart: false,
   chartError: null,
   customChartUrl: null,
+  sunSign: null,
+  moonSign: null,
 }
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined)
@@ -214,14 +220,64 @@ export function QuizProvider({ children }: { children: ReactNode }) {
    * This function must be explicitly called when the quiz is actually complete.
    * The quizCompleted flag determines whether to show the results page.
    */
-  const completeQuiz = () => {
+  // Function to save quiz response to database
+  const saveQuizResponse = async (quizState: QuizState) => {
+    try {
+      console.log('📝 Starting QuizResponse storage process...')
+      
+      const response = await fetch('/api/quiz/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: quizState.email || '',
+          answers: quizState.answers,
+          birthDate: quizState.birthDate,
+          birthPlace: quizState.birthPlace || '',
+          birthTime: quizState.birthTime || '',
+          firstName: quizState.firstName || '',
+          lastName: quizState.lastName || '',
+          gender: quizState.gender || '',
+          coverColorScheme: quizState.coverColorScheme || null
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`QuizResponse submission failed: ${response.statusText} - ${errorText}`)
+      }
+
+      const result = await response.json()
+      console.log('✅ QuizResponse stored successfully:', result)
+      return result
+    } catch (error) {
+      console.error('❌ Error storing QuizResponse:', error)
+      // Don't throw - we don't want to block quiz completion if database storage fails
+    }
+  }
+
+  /**
+   * Complete the quiz and save data to both local storage and database.
+   * This function must be explicitly called when the quiz is actually complete.
+   * The quizCompleted flag determines whether to show the results page.
+   */
+  const completeQuiz = async () => {
     setState((prev) => {
       const newState = { ...prev, quizCompleted: true }
-      // Save to storage immediately on completion
+      // Save to local storage immediately on completion
       saveQuizData(newState)
+      
+      // Save to database asynchronously (don't await to avoid blocking UI)
+      saveQuizResponse(newState).catch(error => {
+        console.error('Background QuizResponse save failed:', error)
+      })
+      
       return newState
     })
   }
+
+
 
   const resetQuiz = () => {
     // Clear all storage first
@@ -260,7 +316,15 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, customChartUrl }))
   }
 
-  // Function to fetch natal chart data from the API
+  const setSunSign = (sunSign: string) => {
+    setState((prev) => ({ ...prev, sunSign }))
+  }
+
+  const setMoonSign = (moonSign: string) => {
+    setState((prev) => ({ ...prev, moonSign }))
+  }
+
+  // Function to fetch natal chart data using optimized book-designer pattern
   const fetchNatalChart = async () => {
     // Rate limiting: prevent multiple simultaneous calls
     if (state.isLoadingChart) {
@@ -268,14 +332,14 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       return
     }
     
-    // Import the service dynamically to avoid server-side issues
-    const { fetchNatalChart, geocodeLocation, getNatalChartInterpretation } = await import(
-      "@/services/astrology-service"
-    )
+    // Import services dynamically to avoid server-side issues
+    const { geocodeLocation } = await import("@/services/astrology-service")
     const { fetchNatalWheelChart } = await import("@/services/astrology-api-service")
+    
     setState((prev) => ({ ...prev, isLoadingChart: true, chartError: null }))
+    
     try {
-      console.log("📍 Starting natal chart fetch process...")
+      console.log("📍 Starting optimized natal chart fetch process...")
 
       // Geocode the birth place if not already done
       let location = state.birthLocation
@@ -285,93 +349,100 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         setBirthLocation(location.latitude, location.longitude, location.name)
       }
 
-      // Format birth data for API
+      // Format birth data for API calls
+      const birthDateStr = `${state.birthDate.year}-${String(state.birthDate.month).padStart(2, '0')}-${String(state.birthDate.day).padStart(2, '0')}`
+      const birthTimeStr = state.birthTime || "12:00"
+      
       const birthData = {
-        date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
-        time: state.birthTime,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        day: parseInt(state.birthDate.day || "1"),
+        month: parseInt(state.birthDate.month || "1"),
+        year: parseInt(state.birthDate.year || "2000"),
+        hour: parseInt(state.birthTime?.split(':')[0] || "12"),
+        min: parseInt(state.birthTime?.split(':')[1] || "0"),
+        lat: location.latitude,
+        lon: location.longitude,
+        tzone: 1.0 // Default timezone, will be handled by geocoding
       }
 
-      console.log("📊 Fetching natal chart data with:", birthData)
+      console.log("🌟 Fetching natal wheel chart with formatted data:", { 
+        birthDateStr, 
+        birthTimeStr, 
+        lat: location.latitude, 
+        lon: location.longitude 
+      })
       
-      // Try to fetch the natal chart with retry logic for 429 errors
-      let natalChart
-      let retryAttempts = 0
-      const maxRetries = 3
-      const baseDelay = 10000 // 10 seconds
+      // 1. Fetch natal wheel chart URL (AWS link) - using correct parameter format
+      const wheelChartResult = await fetchNatalWheelChart(
+        birthDateStr,
+        birthTimeStr, 
+        location.latitude,
+        location.longitude,
+        1.0 // timezone
+      )
+      console.log("✅ Received wheel chart result:", wheelChartResult)
       
-      while (retryAttempts <= maxRetries) {
-        try {
-          natalChart = await fetchNatalChart(
-            birthData.date,
-            birthData.time,
-            birthData.latitude,
-            birthData.longitude
-          )
-          break // Success, exit retry loop
-        } catch (error: any) {
-          retryAttempts++
-          
-          // Check if it's a rate limiting error
-          if (error.message?.includes("429") || error.message?.includes("Too Many Requests") || error.message?.includes("API_RATE_LIMITED")) {
-            if (retryAttempts <= maxRetries) {
-              const delay = baseDelay * Math.pow(2, retryAttempts - 1) // Exponential backoff
-              console.log(`⏳ Rate limited (attempt ${retryAttempts}/${maxRetries + 1}), waiting ${delay/1000}s before retry...`)
-              
-              // Update UI to show retry status
-              setState((prev) => ({ 
-                ...prev, 
-                chartError: `API rate limited. Retrying in ${delay/1000} seconds... (attempt ${retryAttempts}/${maxRetries + 1})`
-              }))
-              
-              await new Promise(resolve => setTimeout(resolve, delay))
-              continue
-            } else {
-              console.log("❌ Max retries exceeded for rate limiting")
-              throw new Error("API temporarily unavailable due to rate limiting. Please try again in a few minutes.")
-            }
-          } else {
-            // Non-rate-limiting error, don't retry
-            throw error
-          }
+      // Extract the chart URL or create data URL from SVG
+      let chartUrlToStore = null
+      if (wheelChartResult?.chartUrl) {
+        chartUrlToStore = wheelChartResult.chartUrl
+      } else if (wheelChartResult?.svgContent) {
+        chartUrlToStore = `data:image/svg+xml;base64,${btoa(wheelChartResult.svgContent)}`
+      } else if (typeof wheelChartResult === 'string') {
+        // Handle case where the result is directly a URL string
+        chartUrlToStore = wheelChartResult
+      }
+      
+      if (!chartUrlToStore) {
+        throw new Error('No chart URL or SVG content received from natal wheel chart API')
+      }
+      
+      // 2. Call unified chart-image API to store chart + fetch interpretation in parallel
+          const sessionId = getOrCreateSessionId()
+      console.log("🔄 Calling chart-image API for storage and interpretation...")
+      
+      const response = await fetch('/api/chart-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+            body: JSON.stringify({
+          chart_url: chartUrlToStore,
+          birth_data: birthData,
+          session_id: sessionId,
+          email: state.email || null
+        })
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Chart processing failed: ${response.statusText} - ${errorText}`)
+      }
+      
+      const result = await response.json()
+      console.log("✅ Chart stored and interpretation fetched:", result)
+      console.log("🔍 Debug - API result sunSign:", result.sunSign, "moonSign:", result.moonSign)
+      
+      // 3. Update state with chart data and zodiac signs from interpretation
+      setState((prev) => {
+        console.log("🔍 Debug - Before setState - prev sunSign:", prev.sunSign, "moonSign:", prev.moonSign)
+        const newState = {
+          ...prev,
+          customChartUrl: chartUrlToStore,
+          sunSign: result.sunSign,
+          moonSign: result.moonSign,
+          isLoadingChart: false,
+          chartError: null
         }
-      }
-
-      console.log("✅ Natal chart data fetched successfully")
-      setNatalChart(natalChart)
-
-      // Try to fetch chart image/URL
-      console.log("🎨 Fetching custom chart image...")
-      try {
-        const chartResult = await fetchNatalWheelChart(
-          birthData.date,
-          birthData.time,
-          birthData.latitude,
-          birthData.longitude
-        )
-
-        if (chartResult.chartUrl) {
-          setCustomChartUrl(chartResult.chartUrl)
-          console.log("✅ Custom chart URL set:", chartResult.chartUrl)
-        } else if (chartResult.svgContent) {
-          // If we got SVG content instead of URL, we can use it directly
-          setCustomChartUrl(`data:image/svg+xml;base64,${btoa(chartResult.svgContent)}`)
-          console.log("✅ Custom chart SVG content processed")
-        }
-      } catch (chartError: any) {
-        console.log("⚠️ Custom chart fetch failed, continuing without it:", chartError.message)
-        // Don't throw here - continue with the basic natal chart data
-      }
-
-      console.log("🎯 Natal chart fetch process completed successfully")
+        console.log("🔍 Debug - After setState - new sunSign:", newState.sunSign, "moonSign:", newState.moonSign)
+        return newState
+      })
       
-      // Clear any error state
-      setState((prev) => ({ ...prev, chartError: null, isLoadingChart: false }))
+      console.log("🎉 Successfully completed optimized natal chart process")
+      
     } catch (error: any) {
-      console.error("❌ Error in fetchNatalChart:", error)
-      setState((prev) => ({ 
-        ...prev, 
+      console.error("❌ Error in optimized fetchNatalChart:", error)
+      setState((prev) => ({
+        ...prev,
         chartError: error.message || "Failed to fetch natal chart data",
         isLoadingChart: false 
       }))
@@ -402,6 +473,8 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         setNatalChart,
         setChartInterpretation,
         setCustomChartUrl,
+        setSunSign,
+        setMoonSign,
       }}
     >
       {children}

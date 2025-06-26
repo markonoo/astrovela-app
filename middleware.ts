@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com",
+    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'"

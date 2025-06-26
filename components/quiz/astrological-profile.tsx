@@ -181,7 +181,12 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
 
   // Get sun and moon sign from natal chart data if available, with fallbacks
   const getSunSign = () => {
-    // First, try to get from natal chart data
+    // First, try to get from stored state (API interpretation data)
+    if (state.sunSign) {
+      return state.sunSign.toLowerCase()
+    }
+
+    // Second, try to get from natal chart data
     if (state.natalChart?.planets) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       if (sunPlanet) {
@@ -189,12 +194,12 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
       }
     }
 
-    // Second, try chart interpretation
+    // Third, try chart interpretation
     if (state.chartInterpretation?.sunSign?.title) {
       return state.chartInterpretation.sunSign.title.toLowerCase()
     }
 
-    // Third, calculate from birth date
+    // Fourth, calculate from birth date
     if (state.birthDate?.month && state.birthDate?.day) {
       return getZodiacSign(Number.parseInt(state.birthDate.month), Number.parseInt(state.birthDate.day))
     }
@@ -204,26 +209,37 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
   }
 
   const getMoonSign = () => {
-    // First, try to get from natal chart data
+    console.log("🔍 AstrologicalProfile - state.moonSign:", state.moonSign)
+    
+    // First, try to get from stored state (API interpretation data)
+    if (state.moonSign) {
+      console.log("✅ AstrologicalProfile - Using stored moonSign:", state.moonSign)
+      return state.moonSign.toLowerCase()
+    }
+
+    // Second, try to get from natal chart data
     if (state.natalChart?.planets) {
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
       if (moonPlanet) {
+        console.log("⚡ AstrologicalProfile - Using natal chart moonSign:", moonPlanet.sign)
         return moonPlanet.sign
       }
     }
 
-    // Second, try chart interpretation
+    // Third, try chart interpretation
     if (state.chartInterpretation?.moonSign?.title) {
+      console.log("📊 AstrologicalProfile - Using chart interpretation moonSign:", state.chartInterpretation.moonSign.title)
       return state.chartInterpretation.moonSign.title.toLowerCase()
     }
 
-    // Third, calculate contrasting sign from sun sign
+    // Fourth, calculate contrasting sign from sun sign
     const sunSign = getSunSign()
     const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
                         "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
     const sunIndex = zodiacSigns.indexOf(sunSign)
     const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 5
 
+    console.log("🔄 AstrologicalProfile - Using calculated fallback moonSign:", zodiacSigns[moonIndex])
     return zodiacSigns[moonIndex]
   }
 

@@ -2,13 +2,14 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import { COLOR_SCHEMES, type ColorSchemeKey } from "@/utils/constants"
 
-const QuizStepPage = ({ params }: { params: { step: string } }) => {
-  const step = Number.parseInt(params.step)
+const QuizStepPage = () => {
+  const params = useParams()
+  const step = Number.parseInt(params.step as string)
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",

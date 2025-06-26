@@ -60,7 +60,7 @@ export function EmailQuestion() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateEmail(emailInput)) {
       return
     }
@@ -72,7 +72,7 @@ export function EmailQuestion() {
     updateAnswer("question_35", emailInput)
 
     // Mark the quiz as completed
-    completeQuiz()
+    await completeQuiz()
 
     // Move to the next step (personalized landing)
         nextStep()

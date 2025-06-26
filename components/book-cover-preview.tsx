@@ -1,7 +1,7 @@
 import Image from "next/image"
 import CurvedText from "./CurvedText"
 import { Progress } from "./ui/progress"
-import React from "react"
+import React, { useEffect, useMemo, useState } from "react"
 
 interface BookCoverPreviewProps {
   userInfo: {
@@ -25,11 +25,45 @@ interface BookCoverPreviewProps {
 }
 
 export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading, sunSign, moonSign, formattedDate }: BookCoverPreviewProps) {
-  const { firstName, lastName, placeOfBirth } = userInfo
-  const hasLastName = lastName && lastName.trim() !== ""
+  // Debug logging
+  useEffect(() => {
+    console.log("BookCoverPreview - Received props:", {
+      sunSign,
+      moonSign,
+      selectedIcon,
+      customChartUrl,
+      isLoading,
+      userInfo
+    })
+  }, [sunSign, moonSign, selectedIcon, customChartUrl, isLoading, userInfo?.firstName, userInfo?.lastName, userInfo?.placeOfBirth, userInfo?.dateOfBirth])
 
-  // Determine text color based on background
-  const textColorValue = themeColor.bg === "bg-amber-50" ? "#000000" : "#ffffff"
+  // Dynamic text color based on background
+  const textColorValue = useMemo(() => {
+    if (themeColor.bg === "bg-amber-50" || themeColor.bg === "bg-gray-100") {
+      return "#000"
+    }
+    return "#fff"
+  }, [themeColor.bg])
+
+  const [placeOfBirth, setPlaceOfBirth] = useState(userInfo.placeOfBirth || "")
+
+  useEffect(() => {
+    if (userInfo.placeOfBirth) {
+      // Clean up place names that are too long
+      let cleanedPlace = userInfo.placeOfBirth
+      if (cleanedPlace.includes(",")) {
+        const parts = cleanedPlace.split(",")
+        cleanedPlace = parts.slice(0, 2).join(",").trim()
+      }
+      if (cleanedPlace.length > 30) {
+        cleanedPlace = cleanedPlace.substring(0, 27) + "..."
+      }
+      setPlaceOfBirth(cleanedPlace)
+    }
+  }, [userInfo.placeOfBirth])
+
+  const { firstName, lastName } = userInfo
+  const hasLastName = lastName && lastName.trim() !== ""
 
   const [progress, setProgress] = React.useState(0)
   React.useEffect(() => {

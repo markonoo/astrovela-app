@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { BookCoverPreview } from "./book-cover-preview"
 import { UserInfoForm } from "./user-info-form"
 import { ColorSelector } from "./color-selector"
@@ -8,6 +8,7 @@ import { IconSelector } from "./icon-selector"
 import { Button } from "@/components/ui/button"
 import { geocodeLocation } from "@/services/astrology-service"
 import { fetchNatalWheelChart } from "@/services/astrology-api-service"
+import { useZodiacSigns } from "@/hooks/use-zodiac-signs"
 import { supabase } from "@/lib/supabaseClient"
 import { v4 as uuidv4 } from 'uuid';
 import { safeGetSessionItem, safeSetSessionItem } from '@/utils/safe-storage';
@@ -88,11 +89,18 @@ export function BookCoverDesigner() {
   const [selectedColor, setSelectedColor] = useState("cream")
   const [selectedIcon, setSelectedIcon] = useState("natal-chart")
   const [isLoading, setIsLoading] = useState(false)
-  const [svgContent, setSvgContent] = useState<string | null>(null)
+  const [, setSvgContent] = useState<string | null>(null)
   const [supabaseChartUrl, setSupabaseChartUrl] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sunSign, setSunSign] = useState<string | null>(null)
   const [moonSign, setMoonSign] = useState<string | null>(null)
+
+  // Fetch zodiac signs from database if available
+  const { sunSign: dbSunSign, moonSign: dbMoonSign } = useZodiacSigns(userInfo.email, sessionId)
+
+  // Use database zodiac signs if available, otherwise use state from chart generation
+  const finalSunSign = dbSunSign || sunSign
+  const finalMoonSign = dbMoonSign || moonSign
 
   // Validation for enabling custom natal chart icon
   const isCustomChartEnabled =
@@ -121,7 +129,7 @@ export function BookCoverDesigner() {
     setSelectedIcon(icon)
   }
 
-  const supabaseClient = supabase || createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  // const supabaseClient = supabase || createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   // Handle form submission
   const handleSubmit = async () => {
@@ -174,21 +182,10 @@ export function BookCoverDesigner() {
         setIsLoading(false)
         if (data.imageUrl) {
           setSupabaseChartUrl(data.imageUrl)
-          // Fetch sun and moon sign from Supabase interpretation table
-          const { data: interpData, error: interpError } = await supabaseClient
-            .from('NatalChartInterpretation')
-            .select('sun_sign, moon_sign')
-            .eq('session_id', sessionId)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single()
-          if (!interpError && interpData) {
-            setSunSign(interpData.sun_sign || null)
-            setMoonSign(interpData.moon_sign || null)
-          } else {
-            setSunSign(null)
-            setMoonSign(null)
-          }
+          // Use sun and moon signs from the API response
+          setSunSign(data.sunSign || null)
+          setMoonSign(data.moonSign || null)
+          console.log('Set sun and moon signs from API:', { sunSign: data.sunSign, moonSign: data.moonSign })
         } else {
           alert("Failed to upload chart to Supabase. " + (data.error || data.details || JSON.stringify(data)))
         }
@@ -208,6 +205,23 @@ export function BookCoverDesigner() {
     alert("Your book cover design has been created!")
   }
 
+  const formattedDate = useMemo(() => {
+    if (!userInfo.dateOfBirth) return "Date of Birth";
+    try {
+      const date = new Date(userInfo.dateOfBirth);
+      // Adjust for timezone offset to prevent day-before errors
+      const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+      return utcDate.toLocaleDateString("en-US", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return "Date of Birth";
+    }
+  }, [userInfo.dateOfBirth]);
+
   return (
     <div className="flex flex-col lg:flex-row gap-4 items-start justify-center py-4">
       {/* Left side - Book cover preview */}
@@ -219,8 +233,9 @@ export function BookCoverDesigner() {
             selectedIcon={selectedIcon}
             customChartUrl={supabaseChartUrl}
             isLoading={isLoading}
-            sunSign={sunSign}
-            moonSign={moonSign}
+            sunSign={finalSunSign}
+            moonSign={finalMoonSign}
+            formattedDate={formattedDate}
           />
         </div>
       </div>

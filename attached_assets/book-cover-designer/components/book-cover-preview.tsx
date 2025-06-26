@@ -7,6 +7,8 @@ interface BookCoverPreviewProps {
     lastName: string
     placeOfBirth: string
     dateOfBirth: string
+    sunSign?: string
+    moonSign?: string
   }
   themeColor: {
     bg: string
@@ -100,6 +102,16 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
 
             {/* Bottom section with place and date - fixed position from bottom */}
             {/* Removed straight text birth details, now shown as curved text above */}
+
+            {/* Add sun and moon sign icons in the corners, color matches themeColor.text */}
+            <div className={`absolute top-4 left-4 flex flex-col items-center z-30 ${themeColor.text}`}>
+              <span className="text-xs mb-1">Sun</span>
+              <img src={`/images/zodiac/${userInfo.sunSign || 'sun'}.svg`} alt="Sun Sign" className="w-8 h-8" />
+            </div>
+            <div className={`absolute top-4 right-4 flex flex-col items-center z-30 ${themeColor.text}`}>
+              <span className="text-xs mb-1">Moon</span>
+              <img src={`/images/zodiac/${userInfo.moonSign || 'moon'}.svg`} alt="Moon Sign" className="w-8 h-8" />
+            </div>
           </div>
         </div>
 

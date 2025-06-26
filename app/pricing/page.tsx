@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuiz } from "@/contexts/quiz-context"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { ChevronLeft, Clock } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { isQuizCompleted } from "@/utils/storage"
@@ -17,6 +17,29 @@ import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-service"
 import { ShopifyError } from "@/utils/shopify-error-handler"
 import { format } from "date-fns"
+
+// Type definition for ShopifyProduct
+interface ShopifyProduct {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+    };
+  };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        price: {
+          amount: string;
+        };
+      };
+    }>;
+  };
+}
 
 interface SelectedOptions {
   app: boolean
@@ -156,14 +179,26 @@ export default function PricingPage() {
     return () => clearInterval(timer)
   }, [state])
 
-  // Extract sun and moon signs - same logic as cover customization and personalized landing
-  const { extractedSunSign, extractedMoonSign } = (() => {
-    // First, try to get from natal chart data
+  // Extract sun and moon signs - using useMemo to prevent infinite re-renders
+  const { extractedSunSign, extractedMoonSign } = useMemo(() => {
+    console.log("🔍 PricingPage - state.sunSign:", state.sunSign, "state.moonSign:", state.moonSign)
+    
+    // First, try to get from stored state (API interpretation data)
+    if (state.sunSign && state.moonSign) {
+      console.log("✅ PricingPage - Using stored signs:", state.sunSign, state.moonSign)
+      return {
+        extractedSunSign: state.sunSign,
+        extractedMoonSign: state.moonSign
+      }
+    }
+
+    // Second, try to get from natal chart data
     if (state.natalChart?.planets) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
       
       if (sunPlanet && moonPlanet) {
+        console.log("⚡ PricingPage - Using natal chart signs:", sunPlanet.sign, moonPlanet.sign)
         return {
           extractedSunSign: sunPlanet.sign,
           extractedMoonSign: moonPlanet.sign
@@ -171,7 +206,7 @@ export default function PricingPage() {
       }
     }
 
-    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    // Third, if no natal chart data, calculate sun sign from birth date and use fallback moon sign
     if (state.birthDate?.month && state.birthDate?.day) {
       const calculatedSunSign = getZodiacSign(
         Number.parseInt(state.birthDate.month), 
@@ -184,6 +219,7 @@ export default function PricingPage() {
       const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
       const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
       
+      console.log("🔄 PricingPage - Using calculated fallback signs:", calculatedSunSign, zodiacSigns[moonIndex])
       return {
         extractedSunSign: calculatedSunSign,
         extractedMoonSign: zodiacSigns[moonIndex]
@@ -191,11 +227,12 @@ export default function PricingPage() {
     }
 
     // Ultimate fallback
+    console.log("❌ PricingPage - Using ultimate fallback")
     return {
       extractedSunSign: null,
       extractedMoonSign: null
     }
-  })()
+  }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
   const handleBackClick = () => {
     // Navigate back to the personalized landing page

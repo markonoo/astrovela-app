@@ -33,14 +33,27 @@ export function CoverCustomization() {
     return "Your Birth Date"
   }, [state.birthDate])
 
-  // Extract sun and moon signs from natal chart data or calculate fallback
+  // Extract sun and moon signs from stored state or fallback to calculation
   const { sunSign, moonSign } = useMemo(() => {
-    // First, try to get from natal chart data
+    console.log("🔍 CoverCustomization - state.sunSign:", state.sunSign, "state.moonSign:", state.moonSign)
+    
+    // First priority: Use stored sun and moon signs from interpretation data
+    if (state.sunSign && state.moonSign) {
+      console.log("✅ CoverCustomization - Using stored signs:", state.sunSign, state.moonSign)
+      return {
+        sunSign: state.sunSign,
+        moonSign: state.moonSign
+      }
+    }
+
+    // Second priority: Extract from natal chart data if available
     if (state.natalChart?.planets) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
+      console.log("🔍 CoverCustomization - natalChart lookup - sunPlanet:", sunPlanet, "moonPlanet:", moonPlanet)
       
       if (sunPlanet && moonPlanet) {
+        console.log("✅ CoverCustomization - Using natalChart signs:", sunPlanet.sign, moonPlanet.sign)
         return {
           sunSign: sunPlanet.sign,
           moonSign: moonPlanet.sign
@@ -48,7 +61,7 @@ export function CoverCustomization() {
       }
     }
 
-    // If no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    // Fallback: Calculate sun sign from birth date and use contrasting moon sign
     if (state.birthDate?.month && state.birthDate?.day) {
       const calculatedSunSign = getZodiacSign(
         Number.parseInt(state.birthDate.month), 
@@ -72,7 +85,7 @@ export function CoverCustomization() {
       sunSign: null,
       moonSign: null
     }
-  }, [state.natalChart, state.birthDate])
+  }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
   return (
     <div className="space-y-3 text-center">

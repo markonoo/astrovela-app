@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Loader2 } from "lucide-react"
 import { sanitizeSvg, getFallbackChart, applySvgColorScheme, getColorScheme } from "@/utils/chart-utils"
+import { useZodiacSigns } from "@/hooks/use-zodiac-signs"
 import CurvedText from "../CurvedText"
 
 interface BookCoverProps {
@@ -13,6 +14,10 @@ interface BookCoverProps {
   className?: string
   svgContent?: string | null
   isExample?: boolean
+  email?: string | null
+  sessionId?: string | null
+  sunSign?: string | null
+  moonSign?: string | null
 }
 
 export function BookCover({
@@ -23,6 +28,10 @@ export function BookCover({
   className = "",
   svgContent = null,
   isExample = false,
+  email = null,
+  sessionId = null,
+  sunSign = null,
+  moonSign = null,
 }: BookCoverProps) {
   const [currentColorScheme, setCurrentColorScheme] = useState(colorScheme)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -123,9 +132,12 @@ export function BookCover({
     pisces: "♓",
   }
 
-  // For example book, use fixed sun and moon signs
-  const sunSign = isExample ? "sagittarius" : "libra"
-  const moonSign = isExample ? "taurus" : "gemini"
+  // Fetch zodiac signs from database if available
+  const { sunSign: dbSunSign, moonSign: dbMoonSign } = useZodiacSigns(email, sessionId)
+  
+  // Use provided props first, then database signs, then example defaults
+  const finalSunSign = sunSign || dbSunSign || (isExample ? "sagittarius" : "libra")
+  const finalMoonSign = moonSign || dbMoonSign || (isExample ? "taurus" : "gemini")
 
   return (
     <div
@@ -275,7 +287,7 @@ export function BookCover({
               style={{ borderColor: colors.textColor, color: colors.textColor }}
             >
               <div className="text-center">
-                <div className="text-xl">{zodiacSymbols[sunSign]}</div>
+                <div className="text-xl">{finalSunSign ? zodiacSymbols[finalSunSign] : "☉"}</div>
               </div>
             </div>
           </div>
@@ -287,7 +299,7 @@ export function BookCover({
               style={{ borderColor: colors.textColor, color: colors.textColor }}
             >
               <div className="text-center">
-                <div className="text-xl">{zodiacSymbols[moonSign]}</div>
+                <div className="text-xl">{finalMoonSign ? zodiacSymbols[finalMoonSign] : "☽"}</div>
               </div>
             </div>
           </div>

@@ -54,7 +54,7 @@ export function EmailCollection() {
       }
 
       // Mark the quiz as completed and save data
-      completeQuiz()
+      await completeQuiz()
 
       // Move to the next step (personalized landing)
       nextStep()
