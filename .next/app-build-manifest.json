@@ -1,5 +1,20 @@
 {
   "pages": {
+    "/api/health/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/health/route.js"
+    ],
+    "/api/analytics/performance/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/analytics/performance/route.js"
+    ],
+    "/api/security/monitoring/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/security/monitoring/route.js"
+    ],
     "/global-error": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -11,55 +26,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/page": [
+    "/dashboard/monitoring/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/dashboard/monitoring/page.js"
     ],
-    "/reset-quiz/page": [
+    "/test-monitoring/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/reset-quiz/page.js"
-    ],
-    "/book-designer/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/book-designer/layout.js"
-    ],
-    "/book-designer/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/book-designer/page.js"
-    ],
-    "/api/zodiac-signs/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/zodiac-signs/route.js"
-    ],
-    "/api/chart-image/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/chart-image/route.js"
-    ],
-    "/quiz/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/quiz/page.js"
-    ],
-    "/api/quiz/submit/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/quiz/submit/route.js"
-    ],
-    "/pricing/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/pricing/layout.js"
-    ],
-    "/pricing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/pricing/page.js"
+      "static/chunks/app/test-monitoring/page.js"
     ]
   }
 }
