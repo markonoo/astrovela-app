@@ -2,10 +2,83 @@
 
 import { useEffect, useState } from 'react';
 
+interface ShopifyAnalytics {
+  status: 'connected' | 'disconnected' | 'error';
+  revenue: {
+    today: number;
+    week: number;
+    month: number;
+    currency: string;
+  };
+  orders: {
+    today: number;
+    week: number;
+    month: number;
+    pending: number;
+  };
+  products: {
+    total: number;
+    published: number;
+    outOfStock: number;
+  };
+  conversion: {
+    rate: number;
+    visitors: number;
+    checkouts: number;
+    completions: number;
+  };
+  lastUpdated: string;
+  responseTime: number;
+}
+
+interface ShopifyConnection {
+  success: boolean;
+  status: 'connected' | 'disconnected' | 'error';
+  shop?: {
+    name: string;
+    url: string;
+    domain: string;
+    currency: string;
+  };
+  checks: {
+    endpoint: boolean;
+    token: boolean;
+    network: boolean;
+    authentication: boolean;
+  };
+  responseTime: number;
+  error?: string;
+}
+
+interface MarketingPlatformStatus {
+  platform: string;
+  status: 'configured' | 'not_configured' | 'connected' | 'disconnected' | 'error';
+  pixel_id?: string | null;
+  measurement_id?: string | null;
+  last_event?: string | null;
+  last_event_time?: number | null;
+  events_today?: number;
+  error_message?: string | null;
+}
+
+interface MarketingAnalytics {
+  summary: {
+    overall_status: 'partial' | 'not_configured' | 'fully_configured';
+    platforms_configured: number;
+    total_platforms: number;
+    configuration_percentage: number;
+    last_updated: string;
+  };
+  platforms: MarketingPlatformStatus[];
+}
+
 export default function MonitoringDashboard() {
   const [healthStatus, setHealthStatus] = useState<any>(null);
   const [performanceData, setPerformanceData] = useState<any>(null);
   const [securityEvents, setSecurityEvents] = useState<any[]>([]);
+  const [shopifyAnalytics, setShopifyAnalytics] = useState<ShopifyAnalytics | null>(null);
+  const [shopifyConnection, setShopifyConnection] = useState<ShopifyConnection | null>(null);
+  const [marketingAnalytics, setMarketingAnalytics] = useState<MarketingAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -53,12 +126,62 @@ export default function MonitoringDashboard() {
     }
   };
 
+  const fetchShopifyData = async () => {
+    try {
+      console.log('🛍️ Fetching Shopify data...');
+      
+      // Fetch both analytics and connection status in parallel
+      const [analyticsResponse, connectionResponse] = await Promise.all([
+        fetch('/api/shopify/analytics'),
+        fetch('/api/shopify/connection')
+      ]);
+
+      if (analyticsResponse.ok) {
+        const analyticsData = await analyticsResponse.json();
+        setShopifyAnalytics(analyticsData.analytics);
+        console.log('✅ Shopify analytics loaded:', analyticsData.analytics);
+      } else {
+        console.error('❌ Shopify analytics error:', analyticsResponse.status);
+      }
+
+      if (connectionResponse.ok) {
+        const connectionData = await connectionResponse.json();
+        setShopifyConnection(connectionData);
+        console.log('✅ Shopify connection status loaded:', connectionData);
+      } else {
+        console.error('❌ Shopify connection error:', connectionResponse.status);
+      }
+    } catch (err) {
+      console.error('Error fetching Shopify data:', err);
+    }
+  };
+
+  const fetchMarketingData = async () => {
+    try {
+      console.log('📊 Fetching Marketing data...');
+      
+      const response = await fetch('/api/marketing/status');
+      
+      if (response.ok) {
+        const marketingData = await response.json();
+        setMarketingAnalytics(marketingData);
+        console.log('✅ Marketing analytics loaded:', marketingData);
+      } else {
+        console.error('❌ Marketing analytics error:', response.status);
+      }
+    } catch (err) {
+      console.error('Error fetching Marketing data:', err);
+    }
+  };
+
   const fetchAllData = async () => {
     setLoading(true);
     await Promise.all([
       fetchHealthData(),
       fetchPerformanceData(),
-      fetchSecurityData()
+      fetchSecurityData(),
+      fetchShopifyData(),
+      fetchMarketingData()
     ]);
     setLastRefresh(new Date());
     setLoading(false);
@@ -102,6 +225,14 @@ export default function MonitoringDashboard() {
     return `${minutes}m`;
   };
 
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
   if (loading && !healthStatus) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -120,7 +251,7 @@ export default function MonitoringDashboard() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">🚀 System Monitoring Dashboard</h1>
+              <h1 className="text-3xl font-bold text-gray-900">🚀 AstroBook Monitoring Dashboard</h1>
               <p className="text-gray-600 mt-1">
                 Last updated: {lastRefresh.toLocaleTimeString()} • Auto-refresh: 30s
               </p>
@@ -148,6 +279,328 @@ export default function MonitoringDashboard() {
             </div>
           </div>
         )}
+
+        {/* Shopify E-commerce Overview */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            🛍️ Shopify E-commerce Overview
+            {shopifyConnection && (
+              <span className={`ml-3 ${getStatusBadge(shopifyConnection.status)}`}>
+                {shopifyConnection.status.toUpperCase()}
+              </span>
+            )}
+          </h2>
+          
+          {shopifyAnalytics ? (
+            <div className="space-y-6">
+              {/* Revenue Metrics */}
+              <div>
+                <h3 className="font-medium text-gray-700 mb-3">💰 Revenue Analytics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-green-50 p-4 rounded border">
+                    <h4 className="font-medium text-green-700">Today</h4>
+                    <p className="text-2xl font-bold text-green-600">
+                      {formatCurrency(shopifyAnalytics.revenue.today, shopifyAnalytics.revenue.currency)}
+                    </p>
+                    <p className="text-sm text-green-600">
+                      {shopifyAnalytics.orders.today} orders
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded border">
+                    <h4 className="font-medium text-blue-700">This Week</h4>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {formatCurrency(shopifyAnalytics.revenue.week, shopifyAnalytics.revenue.currency)}
+                    </p>
+                    <p className="text-sm text-blue-600">
+                      {shopifyAnalytics.orders.week} orders
+                    </p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded border">
+                    <h4 className="font-medium text-purple-700">This Month</h4>
+                    <p className="text-2xl font-bold text-purple-600">
+                      {formatCurrency(shopifyAnalytics.revenue.month, shopifyAnalytics.revenue.currency)}
+                    </p>
+                    <p className="text-sm text-purple-600">
+                      {shopifyAnalytics.orders.month} orders
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Conversion & Traffic */}
+              <div>
+                <h3 className="font-medium text-gray-700 mb-3">📊 Conversion Analytics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-gray-50 p-4 rounded border">
+                    <h4 className="font-medium text-gray-700">Visitors</h4>
+                    <p className="text-xl font-bold text-gray-800">
+                      {shopifyAnalytics.conversion.visitors.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600">Recent traffic</p>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded border">
+                    <h4 className="font-medium text-orange-700">Checkouts</h4>
+                    <p className="text-xl font-bold text-orange-600">
+                      {shopifyAnalytics.conversion.checkouts}
+                    </p>
+                    <p className="text-sm text-orange-600">Initiated</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded border">
+                    <h4 className="font-medium text-green-700">Completions</h4>
+                    <p className="text-xl font-bold text-green-600">
+                      {shopifyAnalytics.conversion.completions}
+                    </p>
+                    <p className="text-sm text-green-600">Successful</p>
+                  </div>
+                  <div className="bg-indigo-50 p-4 rounded border">
+                    <h4 className="font-medium text-indigo-700">Conversion Rate</h4>
+                    <p className="text-xl font-bold text-indigo-600">
+                      {shopifyAnalytics.conversion.rate}%
+                    </p>
+                    <p className="text-sm text-indigo-600">Visitor to purchase</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Product Inventory */}
+              <div>
+                <h3 className="font-medium text-gray-700 mb-3">📦 Product Inventory</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 p-4 rounded border">
+                    <h4 className="font-medium text-blue-700">Total Products</h4>
+                    <p className="text-xl font-bold text-blue-600">
+                      {shopifyAnalytics.products.total}
+                    </p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded border">
+                    <h4 className="font-medium text-green-700">Published</h4>
+                    <p className="text-xl font-bold text-green-600">
+                      {shopifyAnalytics.products.published}
+                    </p>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded border">
+                    <h4 className="font-medium text-red-700">Out of Stock</h4>
+                    <p className="text-xl font-bold text-red-600">
+                      {shopifyAnalytics.products.outOfStock}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shopify Connection Details */}
+              {shopifyConnection && (
+                <div>
+                  <h3 className="font-medium text-gray-700 mb-3">🔌 Connection Status</h3>
+                  <div className="bg-gray-50 p-4 rounded border">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium text-gray-700">Store Information</h4>
+                        {shopifyConnection.shop ? (
+                          <div className="text-sm text-gray-600 space-y-1">
+                            <p><strong>Name:</strong> {shopifyConnection.shop.name}</p>
+                            <p><strong>Domain:</strong> {shopifyConnection.shop.domain}</p>
+                            <p><strong>Currency:</strong> {shopifyConnection.shop.currency}</p>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-red-600">Store info unavailable</p>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-700">Connection Checks</h4>
+                        <div className="text-sm space-y-1">
+                          <div className="flex items-center">
+                            <span className={shopifyConnection.checks.endpoint ? "text-green-600" : "text-red-600"}>
+                              {shopifyConnection.checks.endpoint ? "✅" : "❌"}
+                            </span>
+                            <span className="ml-2">Endpoint Configuration</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className={shopifyConnection.checks.token ? "text-green-600" : "text-red-600"}>
+                              {shopifyConnection.checks.token ? "✅" : "❌"}
+                            </span>
+                            <span className="ml-2">Access Token</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className={shopifyConnection.checks.network ? "text-green-600" : "text-red-600"}>
+                              {shopifyConnection.checks.network ? "✅" : "❌"}
+                            </span>
+                            <span className="ml-2">Network Connectivity</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className={shopifyConnection.checks.authentication ? "text-green-600" : "text-red-600"}>
+                              {shopifyConnection.checks.authentication ? "✅" : "❌"}
+                            </span>
+                            <span className="ml-2">Authentication</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <p className="text-sm text-gray-600">
+                        Response Time: {shopifyConnection.responseTime}ms • 
+                        Last Updated: {new Date(shopifyAnalytics.lastUpdated).toLocaleString()}
+                      </p>
+                      {shopifyConnection.error && (
+                        <p className="text-sm text-red-600 mt-1">
+                          <strong>Error:</strong> {shopifyConnection.error}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading Shopify analytics...</p>
+            </div>
+          )}
+        </div>
+
+        {/* Marketing Tracking Overview */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            📊 Marketing Tracking Status
+            {marketingAnalytics?.summary && (
+              <span className={`ml-3 ${
+                marketingAnalytics.summary.overall_status === 'fully_configured' ? 'bg-green-200 text-green-800' :
+                marketingAnalytics.summary.overall_status === 'partial' ? 'bg-yellow-200 text-yellow-800' :
+                'bg-red-200 text-red-800'
+              } px-2 py-1 rounded text-sm font-medium`}>
+                {marketingAnalytics.summary.overall_status === 'fully_configured' ? 'FULLY CONFIGURED' :
+                 marketingAnalytics.summary.overall_status === 'partial' ? 'PARTIALLY CONFIGURED' :
+                 'NOT CONFIGURED'}
+              </span>
+            )}
+          </h2>
+          
+          {marketingAnalytics ? (
+            <div className="space-y-6">
+              {/* Overall Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-blue-50 p-4 rounded border">
+                  <h3 className="font-medium text-blue-700">Platforms Configured</h3>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {marketingAnalytics.summary.platforms_configured} / {marketingAnalytics.summary.total_platforms}
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    {marketingAnalytics.summary.configuration_percentage}% Complete
+                  </p>
+                </div>
+                <div className="bg-green-50 p-4 rounded border">
+                  <h3 className="font-medium text-green-700">Status</h3>
+                  <p className="text-lg font-semibold text-green-600 capitalize">
+                    {marketingAnalytics.summary.overall_status.replace('_', ' ')}
+                  </p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded border">
+                  <h3 className="font-medium text-purple-700">Last Updated</h3>
+                  <p className="text-sm text-purple-600">
+                    {new Date(marketingAnalytics.summary.last_updated).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Platform Status Grid */}
+              <div>
+                <h3 className="font-medium text-gray-700 mb-3">🎯 Platform Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {marketingAnalytics.platforms.map((platform, index) => (
+                    <div key={index} className="bg-gray-50 p-4 rounded border">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-800">{platform.platform}</h4>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          platform.status === 'configured' ? 'bg-green-200 text-green-800' :
+                          platform.status === 'connected' ? 'bg-blue-200 text-blue-800' :
+                          'bg-red-200 text-red-800'
+                        }`}>
+                          {platform.status.toUpperCase().replace('_', ' ')}
+                        </span>
+                      </div>
+                      
+                      {/* Platform ID */}
+                      {(platform.pixel_id || platform.measurement_id) && (
+                        <div className="mb-2">
+                          <span className="text-xs text-gray-500">ID:</span>
+                          <p className="text-sm font-mono text-gray-700 truncate">
+                            {platform.pixel_id || platform.measurement_id}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Error Message */}
+                      {platform.error_message && (
+                        <div className="mb-2">
+                          <p className="text-xs text-red-600">{platform.error_message}</p>
+                        </div>
+                      )}
+                      
+                      {/* Events Today */}
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Events today:</span>
+                        <span>{platform.events_today || 0}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Configuration Guide */}
+              {marketingAnalytics.summary.overall_status !== 'fully_configured' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+                  <h3 className="font-medium text-yellow-800 mb-2">⚠️ Configuration Required</h3>
+                  <p className="text-sm text-yellow-700 mb-3">
+                    To enable full marketing tracking, add the following environment variables to your .env files:
+                  </p>
+                  <div className="space-y-1 text-sm font-mono bg-white p-3 rounded border">
+                    {!process.env.NEXT_PUBLIC_META_PIXEL_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_META_PIXEL_ID=your_meta_pixel_id</div>
+                    )}
+                    {!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX</div>
+                    )}
+                    {!process.env.NEXT_PUBLIC_GOOGLE_ADS_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX</div>
+                    )}
+                    {!process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_TIKTOK_PIXEL_ID=your_tiktok_pixel_id</div>
+                    )}
+                    {!process.env.NEXT_PUBLIC_PINTEREST_TAG_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_PINTEREST_TAG_ID=your_pinterest_tag_id</div>
+                    )}
+                    {!process.env.NEXT_PUBLIC_TWITTER_PIXEL_ID && (
+                      <div className="text-gray-600">NEXT_PUBLIC_TWITTER_PIXEL_ID=your_twitter_pixel_id</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Marketing Events API */}
+              <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <h3 className="font-medium text-blue-800 mb-2">📡 Marketing Events API</h3>
+                <p className="text-sm text-blue-700 mb-2">
+                  Track marketing events programmatically:
+                </p>
+                <code className="text-sm text-blue-600 block bg-white p-2 rounded border">
+                  POST /api/analytics/events
+                </code>
+                <a 
+                  href="/api/marketing/status" 
+                  target="_blank" 
+                  className="text-blue-600 hover:text-blue-800 text-sm underline mt-2 inline-block"
+                >
+                  View Marketing Status API →
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading marketing tracking status...</p>
+            </div>
+          )}
+        </div>
 
         {/* System Health Overview */}
         <div className="bg-white p-6 rounded-lg shadow">

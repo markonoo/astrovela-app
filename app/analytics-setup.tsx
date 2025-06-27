@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { trackWebVitals, monitorPageLoad, trackPageView } from '@/utils/performance';
+import { initializeMarketingTracking, trackMarketingEvent, MarketingEvents } from '@/utils/marketing-tracking';
 import { usePathname } from 'next/navigation';
 
 /**
@@ -15,13 +16,38 @@ export function AnalyticsSetup() {
     trackWebVitals();
     monitorPageLoad();
     
+    // Initialize marketing tracking (Meta Pixel, Google Analytics, etc.)
+    initializeMarketingTracking();
+    
     // Track initial page view
-    trackPageView(pathname);
+    if (pathname) {
+      trackPageView(pathname);
+      
+      // Track marketing page view
+      trackMarketingEvent({
+        event_name: MarketingEvents.PAGE_VIEW,
+        custom_data: {
+          page_path: pathname,
+          page_title: typeof document !== 'undefined' ? document.title : 'Unknown',
+        },
+      });
+    }
   }, []);
 
   // Track page changes
   useEffect(() => {
-    trackPageView(pathname);
+    if (pathname) {
+      trackPageView(pathname);
+      
+      // Track marketing page view for route changes
+      trackMarketingEvent({
+        event_name: MarketingEvents.PAGE_VIEW,
+        custom_data: {
+          page_path: pathname,
+          page_title: typeof document !== 'undefined' ? document.title : 'Unknown',
+        },
+      });
+    }
   }, [pathname]);
 
   // Global error handler for unhandled errors
