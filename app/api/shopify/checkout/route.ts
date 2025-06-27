@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout using Storefront API
-    const checkoutMutation = \`
-      mutation checkoutCreate(\$input: CheckoutCreateInput!) {
-        checkoutCreate(input: \$input) {
+    const checkoutMutation = `
+      mutation checkoutCreate($input: CheckoutCreateInput!) {
+        checkoutCreate(input: $input) {
           checkout {
             id
             webUrl
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    \`;
+    `;
 
     // Format line items for Shopify
     const lineItems = body.lineItems.map(item => ({
@@ -95,17 +95,17 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error(\`HTTP \${response.status}: \${response.statusText}\`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
 
     if (data.errors) {
-      throw new Error(\`GraphQL errors: \${JSON.stringify(data.errors)}\`);
+      throw new Error(`GraphQL errors: ${JSON.stringify(data.errors)}`);
     }
 
     if (data.data.checkoutCreate.checkoutUserErrors.length > 0) {
-      throw new Error(\`Checkout errors: \${JSON.stringify(data.data.checkoutCreate.checkoutUserErrors)}\`);
+      throw new Error(`Checkout errors: ${JSON.stringify(data.data.checkoutCreate.checkoutUserErrors)}`);
     }
 
     const checkout = data.data.checkoutCreate.checkout;
