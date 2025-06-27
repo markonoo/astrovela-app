@@ -76,28 +76,52 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
-${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
-  })
-  .join("\n")}
-}
-`
-          )
-          .join("\n"),
-      }}
-    />
-  )
+  // Generate CSS safely without dangerouslySetInnerHTML
+  const cssRules = Object.entries(THEMES)
+    .map(([theme, prefix]) => {
+      const colorDeclarations = colorConfig
+        .map(([key, itemConfig]) => {
+          const color =
+            itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+            itemConfig.color
+          
+          // Sanitize color values to prevent XSS
+          if (!color || typeof color !== 'string') return null
+          
+          // Basic color validation to prevent malicious CSS
+          const colorPattern = /^(#[0-9a-fA-F]{3,8}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)|rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*[\d.]+\s*\)|hsl\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)|hsla\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*[\d.]+\s*\)|[a-zA-Z]+)$/
+          
+          if (!colorPattern.test(color.trim())) {
+            console.warn(`Invalid color value detected: ${color}`)
+            return null
+          }
+          
+          // Escape key to prevent CSS injection
+          const safeKey = key.replace(/[^a-zA-Z0-9\-_]/g, '')
+          return `  --color-${safeKey}: ${color.trim()};`
+        })
+        .filter(Boolean)
+        .join('\n')
+
+      if (!colorDeclarations) return null
+
+      // Escape the chart ID to prevent CSS injection
+      const safeId = id.replace(/[^a-zA-Z0-9\-_]/g, '')
+      return `${prefix} [data-chart="${safeId}"] {\n${colorDeclarations}\n}`
+    })
+    .filter(Boolean)
+    .join('\n')
+
+  // Use a safer approach with a style element and text content
+  const styleRef = React.useRef<HTMLStyleElement>(null)
+  
+  React.useEffect(() => {
+    if (styleRef.current) {
+      styleRef.current.textContent = cssRules
+    }
+  }, [cssRules])
+
+  return <style ref={styleRef} />
 }
 
 const ChartTooltip = RechartsPrimitive.Tooltip

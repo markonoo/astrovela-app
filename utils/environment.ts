@@ -75,4 +75,59 @@ export function validateEnvironment(): void {
   }
 }
 
+interface MonitoringConfig {
+  sentryDsn?: string;
+  sentryEnvironment: string;
+  vercelAnalyticsId?: string;
+  enableErrorReporting: boolean;
+  enablePerformanceTracking: boolean;
+  enableSecurityMonitoring: boolean;
+}
+
+/**
+ * Get monitoring configuration from environment variables
+ */
+export function getMonitoringConfig(): MonitoringConfig {
+  return {
+    sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    sentryEnvironment: process.env.NODE_ENV || 'development',
+    vercelAnalyticsId: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_ID,
+    enableErrorReporting: process.env.FEATURE_ERROR_REPORTING !== 'false',
+    enablePerformanceTracking: process.env.FEATURE_PERFORMANCE_TRACKING !== 'false',
+    enableSecurityMonitoring: process.env.SECURITY_MONITORING_ENABLED === 'true',
+  };
+}
+
+/**
+ * Validate monitoring environment variables
+ */
+export function validateMonitoringEnv(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  // Check for Sentry configuration in production
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    errors.push('NEXT_PUBLIC_SENTRY_DSN is recommended for production error monitoring');
+  }
+  
+  // Validate Sentry DSN format if provided
+  if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+    if (!dsn.startsWith('https://') || !dsn.includes('@sentry.io')) {
+      errors.push('NEXT_PUBLIC_SENTRY_DSN appears to be invalid format');
+    }
+  }
+  
+  // Check for analytics configuration
+  if (process.env.NODE_ENV === 'production' && 
+      !process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_ID && 
+      !process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) {
+    errors.push('No analytics configuration found (NEXT_PUBLIC_VERCEL_ANALYTICS_ID or NEXT_PUBLIC_GA_MEASUREMENT_ID)');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
 export default env 

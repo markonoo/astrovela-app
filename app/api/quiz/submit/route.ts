@@ -13,6 +13,7 @@ export async function POST(request: Request) {
       email: quizData.email,
       firstName: quizData.firstName,
       lastName: quizData.lastName,
+      sessionId: quizData.session_id,
       hasAnswers: !!quizData.answers
     })
     
@@ -27,7 +28,9 @@ export async function POST(request: Request) {
         firstName: quizData.firstName || '',
         lastName: quizData.lastName || '',
         gender: quizData.gender || '',
-        coverDesign: quizData.coverColorScheme || null
+        coverDesign: quizData.coverColorScheme || null,
+        session_id: quizData.session_id || null,
+        userId: quizData.userId || null
       })
       .select()
     

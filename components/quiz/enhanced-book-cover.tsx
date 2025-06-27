@@ -23,14 +23,14 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
   // Use the unified color system
   const colorScheme = THEME_COLORS[state.coverColorScheme]
 
-  // Format birth date for book cover
+  // Format birth date for book cover (Day Month Year format)
   const formatBirthDate = () => {
     if (!state.birthDate.month || !state.birthDate.day || !state.birthDate.year) {
       return "Not provided"
     }
 
     const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", { month: "long" })
-    return `${month} ${state.birthDate.day}, ${state.birthDate.year}`
+    return `${state.birthDate.day} ${month} ${state.birthDate.year}`
   }
 
   // Format birth place for book cover

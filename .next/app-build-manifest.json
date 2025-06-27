@@ -21,15 +21,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/reset-quiz/page.js"
     ],
-    "/quiz/page": [
+    "/book-designer/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/quiz/page.js"
+      "static/chunks/app/book-designer/layout.js"
+    ],
+    "/book-designer/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/book-designer/page.js"
+    ],
+    "/api/zodiac-signs/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/zodiac-signs/route.js"
     ],
     "/api/chart-image/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/chart-image/route.js"
+    ],
+    "/quiz/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/quiz/page.js"
     ],
     "/api/quiz/submit/route": [
       "static/chunks/webpack.js",

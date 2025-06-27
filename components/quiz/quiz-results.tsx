@@ -87,11 +87,8 @@ export function QuizResults() {
   const formattedDate = useMemo(() => {
     if (dateOfBirth) {
       const date = new Date(dateOfBirth)
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
+      const month = date.toLocaleString("default", { month: "long" })
+      return `${date.getDate()} ${month} ${date.getFullYear()}`
     }
     return null
   }, [dateOfBirth])

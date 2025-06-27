@@ -206,21 +206,13 @@ export function BookCoverDesigner() {
   }
 
   const formattedDate = useMemo(() => {
-    if (!userInfo.dateOfBirth) return "Date of Birth";
-    try {
-      const date = new Date(userInfo.dateOfBirth);
-      // Adjust for timezone offset to prevent day-before errors
-      const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      return utcDate.toLocaleDateString("en-US", {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch (e) {
-      console.error("Error formatting date:", e);
-      return "Date of Birth";
+    if (userInfo.dateOfBirth) {
+      const utcDate = new Date(userInfo.dateOfBirth + 'T00:00:00Z')
+      const month = utcDate.toLocaleString("default", { month: "long" })
+      return `${utcDate.getUTCDate()} ${month} ${utcDate.getUTCFullYear()}`
     }
-  }, [userInfo.dateOfBirth]);
+    return ""
+  }, [userInfo.dateOfBirth])
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 items-start justify-center py-4">

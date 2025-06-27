@@ -200,6 +200,9 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                       src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
                       alt={sunSign}
                       className="w-8 h-8"
+                      style={{
+                        filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                      }}
                     />
                   ) : (
                     <span className="text-lg" style={{ color: textColorValue }}>☉</span>
@@ -216,6 +219,9 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                       src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
                       alt={moonSign}
                       className="w-8 h-8"
+                      style={{
+                        filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                      }}
                     />
                   ) : (
                     <span className="text-lg" style={{ color: textColorValue }}>☽</span>

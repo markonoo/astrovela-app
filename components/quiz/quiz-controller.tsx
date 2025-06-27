@@ -23,23 +23,28 @@ import { BirthPlace } from "./birth-place"
 import { OptionCard } from "./option-card"
 
 // Create a separate loading animation component
-function LoadingAnimation({ message }: { message: string }) {
+function LoadingAnimation({ message, isStep12 = false }: { message: string; isStep12?: boolean }) {
   const [progress, setProgress] = useState(0);
   
   // Animation to gradually increase the progress
   useEffect(() => {
+    // For step 12 (API call), make progress slower to match ~5 second duration
+    // For other steps, keep original ~3 second timing
+    const updateInterval = isStep12 ? 50 : 30; // 50ms for step 12, 30ms for others
+    const incrementAmount = isStep12 ? 1 : 1; // Same increment for both now
+    
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        return prev + 1;
+        return Math.min(prev + incrementAmount, 100);
       });
-    }, 30); // Update every 30ms to reach 100% in ~3 seconds
+    }, updateInterval);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [isStep12]);
   
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px] bg-transparent text-yellow-100 rounded-xl p-8 mx-auto max-w-xl">
@@ -67,6 +72,7 @@ function LoadingAnimation({ message }: { message: string }) {
             strokeDasharray="283"
             strokeDashoffset={283 - (progress / 100) * 283}
             transform="rotate(-90 50 50)"
+            style={{ transition: 'stroke-dashoffset 0.1s ease-in-out' }}
           />
           <text
             x="50"
@@ -77,7 +83,7 @@ function LoadingAnimation({ message }: { message: string }) {
             fontSize="20"
             className="text-yellow-300"
           >
-            {progress}%
+            {Math.round(progress)}%
           </text>
         </svg>
       </div>
@@ -627,7 +633,7 @@ export function QuizController() {
       case "relationshipStatus":
         return <RelationshipStatusQuestion />
       case "loading": {
-        return <LoadingAnimation message={stepConfig.message || ""} />;
+        return <LoadingAnimation message={stepConfig.message || ""} isStep12={currentStep === 12} />;
       }
       case "testimonial":
         return (

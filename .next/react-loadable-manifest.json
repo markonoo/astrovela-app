@@ -1,4 +1,10 @@
 {
+  "app/analytics-setup.tsx -> @/utils/error-monitoring": {
+    "id": "app/analytics-setup.tsx -> @/utils/error-monitoring",
+    "files": [
+      "static/chunks/_app-pages-browser_utils_error-monitoring_ts.js"
+    ]
+  },
   "contexts/quiz-context.tsx -> @/services/astrology-api-service": {
     "id": "contexts/quiz-context.tsx -> @/services/astrology-api-service",
     "files": [
@@ -32,5 +38,17 @@
   "node_modules/@supabase/storage-js/dist/module/lib/helpers.js -> @supabase/node-fetch": {
     "id": "node_modules/@supabase/storage-js/dist/module/lib/helpers.js -> @supabase/node-fetch",
     "files": []
+  },
+  "utils/error-monitoring.ts -> ./security": {
+    "id": "utils/error-monitoring.ts -> ./security",
+    "files": [
+      "static/chunks/_app-pages-browser_utils_security_ts.js"
+    ]
+  },
+  "utils/performance.ts -> web-vitals": {
+    "id": "utils/performance.ts -> web-vitals",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_web-vitals_dist_web-vitals_js.js"
+    ]
   }
 }

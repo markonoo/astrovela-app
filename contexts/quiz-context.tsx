@@ -225,6 +225,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     try {
       console.log('📝 Starting QuizResponse storage process...')
       
+      const sessionId = getOrCreateSessionId()
+      console.log('🔍 Using session ID for quiz submission:', sessionId)
+      
       const response = await fetch('/api/quiz/submit', {
         method: 'POST',
         headers: {
@@ -239,7 +242,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           firstName: quizState.firstName || '',
           lastName: quizState.lastName || '',
           gender: quizState.gender || '',
-          coverColorScheme: quizState.coverColorScheme || null
+          coverColorScheme: quizState.coverColorScheme || null,
+          session_id: sessionId,
+          userId: null // Will be set later when user registers/logs in
         })
       })
 
@@ -345,8 +350,20 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       let location = state.birthLocation
       if (!location || !location.latitude || !location.longitude) {
         console.log("🌍 Geocoding birth place:", state.birthPlace)
+        if (!state.birthPlace) {
+          throw new Error("Birth place is required for natal chart generation")
+        }
         location = await geocodeLocation(state.birthPlace)
-        setBirthLocation(location.latitude, location.longitude, location.name)
+        // Ensure we have valid location data before setting
+        if (!location.latitude || !location.longitude) {
+          throw new Error("Unable to determine location coordinates for natal chart generation")
+        }
+        setBirthLocation(location.latitude, location.longitude, location.name || state.birthPlace || "Unknown")
+      }
+
+      // Double-check we have valid location data
+      if (!location.latitude || !location.longitude) {
+        throw new Error("Unable to determine location coordinates for natal chart generation")
       }
 
       // Format birth data for API calls

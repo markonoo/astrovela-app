@@ -3,6 +3,7 @@
   "middleware": {
     "/": {
       "files": [
+        "server/edge-instrumentation.js",
         "server/edge-runtime-webpack.js",
         "server/middleware.js"
       ],

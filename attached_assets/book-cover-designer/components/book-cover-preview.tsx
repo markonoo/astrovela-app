@@ -23,13 +23,13 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
   const { firstName, lastName, placeOfBirth, dateOfBirth } = userInfo
   const hasLastName = lastName && lastName.trim() !== ""
 
-  // Format date if provided
+  // Format date if provided (Day Month Year format)
   const formattedDate = dateOfBirth
-    ? new Date(dateOfBirth).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
+    ? (() => {
+        const date = new Date(dateOfBirth)
+        const month = date.toLocaleString("default", { month: "long" })
+        return `${date.getDate()} ${month} ${date.getFullYear()}`
+      })()
     : "Date of Birth"
 
   return (
@@ -106,11 +106,25 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon }: BookCov
             {/* Add sun and moon sign icons in the corners, color matches themeColor.text */}
             <div className={`absolute top-4 left-4 flex flex-col items-center z-30 ${themeColor.text}`}>
               <span className="text-xs mb-1">Sun</span>
-              <img src={`/images/zodiac/${userInfo.sunSign || 'sun'}.svg`} alt="Sun Sign" className="w-8 h-8" />
+              <img 
+                src={`/images/zodiac/${userInfo.sunSign || 'sun'}.svg`} 
+                alt="Sun Sign" 
+                className="w-8 h-8"
+                style={{
+                  filter: themeColor.bg === "bg-amber-50" ? "brightness(0)" : "brightness(0) invert(1)"
+                }}
+              />
             </div>
             <div className={`absolute top-4 right-4 flex flex-col items-center z-30 ${themeColor.text}`}>
               <span className="text-xs mb-1">Moon</span>
-              <img src={`/images/zodiac/${userInfo.moonSign || 'moon'}.svg`} alt="Moon Sign" className="w-8 h-8" />
+              <img 
+                src={`/images/zodiac/${userInfo.moonSign || 'moon'}.svg`} 
+                alt="Moon Sign" 
+                className="w-8 h-8"
+                style={{
+                  filter: themeColor.bg === "bg-amber-50" ? "brightness(0)" : "brightness(0) invert(1)"
+                }}
+              />
             </div>
           </div>
         </div>

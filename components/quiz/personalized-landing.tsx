@@ -87,19 +87,13 @@ export function PersonalizedLanding() {
     }
   }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
-  // Format date for book cover
+  // Format date for book cover (Day Month Year format)
   const formattedDate = useMemo(() => {
     if (state.birthDate?.year && state.birthDate?.month && state.birthDate?.day) {
-      const date = new Date(
-        Number(state.birthDate.year),
-        Number(state.birthDate.month) - 1,
-        Number(state.birthDate.day)
-      )
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
+      const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", {
         month: "long",
-        day: "numeric"
       })
+      return `${state.birthDate.day} ${month} ${state.birthDate.year}`
     }
     return ""
   }, [state.birthDate])

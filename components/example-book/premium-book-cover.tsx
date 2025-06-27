@@ -410,23 +410,21 @@ export function PremiumBookCover({
   // Format the displayed name
   const displayName = name || state.firstName || "YOUR NAME"
 
-  // Format birth date for display
+  // Format birth date for display (Day Month Year format)
   const displayBirthDate =
     birthDate ||
     (() => {
       if (chartData?.birthDetails?.date) {
-        return new Date(chartData.birthDetails.date).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        })
+        const date = new Date(chartData.birthDetails.date)
+        const month = date.toLocaleString("default", { month: "long" })
+        return `${date.getDate()} ${month} ${date.getFullYear()}`
       } else if (state.birthDate.month && state.birthDate.day && state.birthDate.year) {
         const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", {
           month: "long",
         })
-        return `${month} ${state.birthDate.day}, ${state.birthDate.year}`
+        return `${state.birthDate.day} ${month} ${state.birthDate.year}`
       } else if (isOliviaExample) {
-        return "December 6, 2021" // Example data
+        return "6 December 2021" // Example data
       }
       return "Your Birth Date"
     })()

@@ -267,7 +267,18 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
           {/* Moon */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
-              <img src={getZodiacSvg(moonSign)} alt={moonSign} width={32} height={32} className="w-8 h-8" style={{ objectFit: 'contain', transform: 'translateY(6%)' }} />
+              <img 
+                src={getZodiacSvg(moonSign)} 
+                alt={moonSign} 
+                width={32} 
+                height={32} 
+                className="w-8 h-8" 
+                style={{ 
+                  objectFit: 'contain', 
+                  transform: 'translateY(6%)',
+                  filter: 'brightness(0)'
+                }} 
+              />
             </div>
             <div>
               <div className="text-xs text-gray-500 font-medium">Moon</div>
@@ -306,7 +317,11 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
                   width={136}
                   height={136}
                   className="w-34 h-34"
-                  style={{ objectFit: 'contain', transform: 'translateY(6%)' }}
+                  style={{ 
+                    objectFit: 'contain', 
+                    transform: 'translateY(6%)',
+                    filter: 'brightness(0)'
+                  }}
                 />
               </div>
             </div>
@@ -317,7 +332,18 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
           {/* Sun */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
-              <img src={getZodiacSvg(sunSign)} alt={sunSign} width={32} height={32} className="w-8 h-8" style={{ objectFit: 'contain', transform: 'translateY(6%)' }} />
+              <img 
+                src={getZodiacSvg(sunSign)} 
+                alt={sunSign} 
+                width={32} 
+                height={32} 
+                className="w-8 h-8" 
+                style={{ 
+                  objectFit: 'contain', 
+                  transform: 'translateY(6%)',
+                  filter: 'brightness(0)'
+                }} 
+              />
             </div>
             <div>
               <div className="text-xs text-gray-500 font-medium">Sun</div>

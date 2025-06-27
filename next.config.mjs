@@ -1,5 +1,51 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Security headers configuration
+  async headers() {
+    return [
+      {
+        // Apply security headers to all routes
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Download-Options',
+            value: 'noopen'
+          },
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none'
+          },
+        ],
+      },
+      {
+        // Additional headers for API routes
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache'
+          },
+          {
+            key: 'Expires',
+            value: '0'
+          },
+          {
+            key: 'Surrogate-Control',
+            value: 'no-store'
+          }
+        ],
+      }
+    ]
+  },
+
   // Remove image optimization bypass for production
   images: {
     unoptimized: process.env.NODE_ENV === 'development',

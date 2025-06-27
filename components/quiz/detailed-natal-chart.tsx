@@ -14,14 +14,14 @@ export function DetailedNatalChart() {
     await fetchNatalChart()
   }
 
-  // Format birth date for display
+  // Format birth date for display (Day Month Year format)
   const formatBirthDate = () => {
     if (!state.birthDate.month || !state.birthDate.day || !state.birthDate.year) {
       return "Not provided"
     }
 
     const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", { month: "long" })
-    return `${month} ${state.birthDate.day}, ${state.birthDate.year}`
+    return `${state.birthDate.day} ${month} ${state.birthDate.year}`
   }
 
   // Format birth time for display

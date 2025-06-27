@@ -19,6 +19,12 @@ model QuizResponse {
   gender      String?
   createdAt   DateTime @default(now())
   coverDesign String?
+  session_id  String?
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([session_id])
+  @@index([userId])
 }
 
 model User {
@@ -28,6 +34,7 @@ model User {
   createdAt                DateTime                   @default(now())
   chartImages              ChartImage[]
   NatalChartInterpretation NatalChartInterpretation[]
+  quizResponses            QuizResponse[]
 }
 
 model ChartImage {
