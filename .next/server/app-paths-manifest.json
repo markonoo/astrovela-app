@@ -1,5 +1,0 @@
-{
-  "/api/security/monitoring/route": "app/api/security/monitoring/route.js",
-  "/test-monitoring/page": "app/test-monitoring/page.js",
-  "/dashboard/monitoring/page": "app/dashboard/monitoring/page.js"
-}
