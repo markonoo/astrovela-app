@@ -27,18 +27,25 @@ interface ShopifyProduct {
   priceRange: {
     minVariantPrice: {
       amount: string;
+      currencyCode: string;
+    };
+    maxVariantPrice: {
+      amount: string;
+      currencyCode: string;
     };
   };
-  variants: {
-    edges: Array<{
-      node: {
-        id: string;
-        price: {
-          amount: string;
-        };
-      };
-    }>;
-  };
+  variants: Array<{
+    id: string;
+    title: string;
+    price: string;
+    compareAtPrice: string | null;
+    availableForSale: boolean;
+  }>;
+  images: Array<{
+    id: string;
+    url: string;
+    altText: string | null;
+  }>;
 }
 
 interface SelectedOptions {
