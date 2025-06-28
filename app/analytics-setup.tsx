@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // import { trackWebVitals, monitorPageLoad, trackPageView } from '@/utils/performance';
 // import { initializeMarketingTracking, trackMarketingEvent, MarketingEvents } from '@/utils/marketing-tracking';
 import { usePathname } from 'next/navigation';
 
 /**
  * Analytics setup component - should be included in the root layout
- * TODO: Re-enable analytics after fixing module resolution
+ * Includes Vercel Analytics, Speed Insights, and custom tracking (when re-enabled)
  */
 export function AnalyticsSetup() {
   const pathname = usePathname();
@@ -96,6 +98,11 @@ export function AnalyticsSetup() {
     };
   }, []);
 
-  // This component doesn't render anything
-  return null;
+  // Return Vercel Analytics and Speed Insights components
+  return (
+    <>
+      <Analytics />
+      <SpeedInsights />
+    </>
+  );
 } 
