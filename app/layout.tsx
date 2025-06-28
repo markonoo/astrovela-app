@@ -3,7 +3,7 @@ import { QuizProvider } from "@/contexts/quiz-context"
 import { UserProvider } from "@/contexts/UserContext"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
-import { AnalyticsSetup } from './analytics-setup';
+// import { AnalyticsSetup } from './analytics-setup'; // Temporarily disabled for build fix
 
 export const metadata: Metadata = {
   title: {
@@ -87,7 +87,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://json.astrologyapi.com" />
       </head>
       <body className="bg-[#f7f7f7]">
-        <AnalyticsSetup />
+        {/* <AnalyticsSetup /> */}
         <UserProvider>
           <QuizProvider>
             {children}
