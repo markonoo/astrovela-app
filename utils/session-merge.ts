@@ -7,7 +7,18 @@ import { createClient } from '@supabase/supabase-js'
 import { env } from '@/utils/environment'
 import { migrateStorageFiles, updateChartImageUrls } from '@/utils/storage-migration'
 
-const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+// Lazy initialization of Supabase client to avoid build-time errors
+let supabase: ReturnType<typeof createClient> | null = null;
+
+function getSupabaseClient() {
+  if (!supabase) {
+    if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase configuration missing: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required');
+    }
+    supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  }
+  return supabase;
+}
 
 /**
  * Merge session data with a user account
@@ -30,7 +41,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 1. Update QuizResponse records
     try {
-      const { data: quizData, error: quizError } = await supabase
+      const { data: quizData, error: quizError } = await getSupabaseClient()
         .from('QuizResponse')
         .update({ 
           userId: userId,
@@ -52,7 +63,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 2. Update ChartImage records
     try {
-      const { data: chartData, error: chartError } = await supabase
+      const { data: chartData, error: chartError } = await getSupabaseClient()
         .from('ChartImage')
         .update({ 
           userId: userId,
@@ -75,7 +86,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 3. Update NatalChartInterpretation records
     try {
-      const { data: interpData, error: interpError } = await supabase
+      const { data: interpData, error: interpError } = await getSupabaseClient()
         .from('NatalChartInterpretation')
         .update({ 
           userId: userId,
@@ -173,19 +184,19 @@ export async function getSessionData(sessionId: string) {
   
   try {
     // Get QuizResponse data
-    const { data: quizData, error: quizError } = await supabase
+    const { data: quizData, error: quizError } = await getSupabaseClient()
       .from('QuizResponse')
       .select('id, email, firstName, lastName, createdAt')
       .eq('session_id', sessionId)
 
     // Get ChartImage data
-    const { data: chartData, error: chartError } = await supabase
+    const { data: chartData, error: chartError } = await getSupabaseClient()
       .from('ChartImage')
       .select('id, imageUrl, chartType, createdAt')
       .eq('session_id', sessionId)
 
     // Get NatalChartInterpretation data
-    const { data: interpData, error: interpError } = await supabase
+    const { data: interpData, error: interpError } = await getSupabaseClient()
       .from('NatalChartInterpretation')
       .select('id, sun_sign, moon_sign, created_at')
       .eq('session_id', sessionId)
@@ -237,7 +248,7 @@ export async function cleanupOldSessions(daysOld: number = 30) {
   
   try {
     // Clean up old QuizResponse records that still have session_id (not linked to users)
-    const { data: cleanedQuiz, error: quizError } = await supabase
+    const { data: cleanedQuiz, error: quizError } = await getSupabaseClient()
       .from('QuizResponse')
       .delete()
       .not('session_id', 'is', null)
@@ -246,7 +257,7 @@ export async function cleanupOldSessions(daysOld: number = 30) {
       .select('id')
 
     // Clean up old ChartImage records that still have session_id (not linked to users)  
-    const { data: cleanedChart, error: chartError } = await supabase
+    const { data: cleanedChart, error: chartError } = await getSupabaseClient()
       .from('ChartImage')
       .delete()
       .not('session_id', 'is', null)
@@ -255,7 +266,7 @@ export async function cleanupOldSessions(daysOld: number = 30) {
       .select('id')
 
     // Clean up old NatalChartInterpretation records that still have session_id (not linked to users)
-    const { data: cleanedInterp, error: interpError } = await supabase
+    const { data: cleanedInterp, error: interpError } = await getSupabaseClient()
       .from('NatalChartInterpretation')
       .delete()
       .not('session_id', 'is', null)
