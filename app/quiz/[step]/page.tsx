@@ -9,7 +9,7 @@ import { COLOR_SCHEMES, type ColorSchemeKey } from "@/utils/constants"
 
 const QuizStepPage = () => {
   const params = useParams()
-  const step = Number.parseInt(params.step as string)
+  const step = Number.parseInt((params?.step as string) || "1")
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
@@ -153,7 +153,7 @@ const QuizStepPage = () => {
                 }}
                 themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
                 selectedIcon={"natal-chart"}
-              />
+                formattedDate={formattedBirthDate}              />
             </div>
 
             <button onClick={handleSubmit} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mt-4">
@@ -177,7 +177,7 @@ const QuizStepPage = () => {
                 }}
                 themeColor={THEME_COLORS[formData.colorScheme as keyof typeof THEME_COLORS] || THEME_COLORS.cream}
                 selectedIcon={"natal-chart"}
-              />
+                formattedDate={formattedBirthDate}              />
             </div>
 
             <div className="text-center mb-6">

@@ -566,11 +566,11 @@ export class ShopifyAdminService {
         break;
     }
 
-    const periodOrders = orders.filter(order => 
+    const periodOrders = orders.filter((order: any) => 
       new Date(order.createdAt) >= startDate
     );
 
-    const totalRevenue = periodOrders.reduce((sum, order) => 
+    const totalRevenue = periodOrders.reduce((sum: number, order: any) => 
       sum + parseFloat(order.totalPriceSet.shopMoney.amount), 0
     );
 
@@ -581,8 +581,8 @@ export class ShopifyAdminService {
       currency: orders[0]?.totalPriceSet.shopMoney.currencyCode || 'USD',
       totalProducts: data.products.totalCount,
       totalCustomers: data.customers.totalCount,
-      paidOrders: periodOrders.filter(order => order.financialStatus === 'PAID').length,
-      fulfilledOrders: periodOrders.filter(order => order.fulfillmentStatus === 'FULFILLED').length,
+      paidOrders: periodOrders.filter((order: any) => order.financialStatus === 'PAID').length,
+      fulfilledOrders: periodOrders.filter((order: any) => order.fulfillmentStatus === 'FULFILLED').length,
     };
   }
 }

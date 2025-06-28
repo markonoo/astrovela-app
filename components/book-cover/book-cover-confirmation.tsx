@@ -8,12 +8,31 @@ import { useRouter } from "next/navigation"
 import { useChartImage } from "@/hooks/use-chart-image"
 
 export function BookCoverConfirmation() {
-  const { state, dispatch } = useQuiz()
+  const { state, setCurrentStep } = useQuiz()
   const router = useRouter()
   const [wheelChartSVG, setWheelChartSVG] = useState<string | null>(null)
-  const [chartUrl, setChartUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const { getChartImage } = useChartImage()
+
+  // Map quiz color schemes to premium book cover color schemes
+  const mapColorScheme = (scheme: string): "black" | "navy" | "green" | "burgundy" | "pink" => {
+    switch (scheme) {
+      case "purple":
+        return "navy"
+      case "cream":
+        return "pink"
+      case "black":
+        return "black"
+      case "navy":
+        return "navy"
+      case "green":
+        return "green"
+      case "burgundy":
+        return "burgundy"
+      default:
+        return "green"
+    }
+  }
 
   // Load the chart when the component mounts
   useEffect(() => {
@@ -37,10 +56,6 @@ export function BookCoverConfirmation() {
         const result = await getChartImage(formattedDate, state.birthTime, latitude, longitude)
 
         // Set the chart data
-        if (result.chartUrl) {
-          setChartUrl(result.chartUrl)
-        }
-
         if (result.svgContent) {
           setWheelChartSVG(result.svgContent)
         }
@@ -56,10 +71,8 @@ export function BookCoverConfirmation() {
 
   // Handle back button click
   const handleBack = () => {
-    dispatch({
-      type: "SET_STEP",
-      payload: "cover-customization",
-    })
+    // Go back to previous step
+    setCurrentStep(state.currentStep - 1)
   }
 
   // Handle continue button click
@@ -76,9 +89,14 @@ export function BookCoverConfirmation() {
       <div className="mb-8">
         <div className="w-full aspect-[3/4] max-w-md mx-auto">
           <PremiumBookCover
-            colorScheme={state.bookCover?.colorScheme || "green"}
-            cachedWheelChartSVG={wheelChartSVG}
-            cachedChartUrl={chartUrl}
+            colorScheme={mapColorScheme(state.coverColorScheme)}
+            name={`${state.firstName || ""} ${state.lastName || ""}`.trim() || "Your Name"}
+            birthDate={state.birthDate.year && state.birthDate.month && state.birthDate.day 
+              ? `${state.birthDate.month}/${state.birthDate.day}/${state.birthDate.year}`
+              : "Your Birth Date"
+            }
+            birthPlace={state.birthPlace || "Your Birth Place"}
+            initialChartSvg={wheelChartSVG || undefined}
             natalChart={state.natalChart}
           />
         </div>
@@ -96,4 +114,3 @@ export function BookCoverConfirmation() {
     </div>
   )
 }
-

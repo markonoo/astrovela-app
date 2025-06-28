@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from '@/utils/shopify-config';
+import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
 
 interface CheckoutLineItem {
   variantId: string;
   quantity: number;
+  sellingPlanId?: string;
 }
 
 interface CheckoutRequest {
   lineItems: CheckoutLineItem[];
   email?: string;
+  productHandle?: string;
   customerData?: {
     firstName?: string;
     lastName?: string;
@@ -28,104 +30,149 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Create checkout using Storefront API
-    const checkoutMutation = `
-      mutation checkoutCreate($input: CheckoutCreateInput!) {
-        checkoutCreate(input: $input) {
-          checkout {
+    // Since Storefront API is having access issues, create direct checkout URLs
+    // Get product information from Admin API first
+    const variantIds = body.lineItems.map(item => item.variantId);
+    
+    const variantQuery = `
+      query getVariants($ids: [ID!]!) {
+        nodes(ids: $ids) {
+          ... on ProductVariant {
             id
-            webUrl
-            totalPriceV2 {
-              amount
-              currencyCode
-            }
-            lineItems(first: 250) {
-              edges {
-                node {
-                  id
-                  title
-                  quantity
-                  variant {
+            title
+            price
+            product {
+              id
+              title
+              handle
+              onlineStoreUrl
+              sellingPlanGroups(first: 5) {
+                edges {
+                  node {
                     id
-                    title
-                    priceV2 {
-                      amount
-                      currencyCode
+                    name
+                    merchantCode
+                    sellingPlans(first: 5) {
+                      edges {
+                        node {
+                          id
+                          name
+                          options
+                          category
+                        }
+                      }
                     }
                   }
                 }
               }
             }
           }
-          checkoutUserErrors {
-            field
-            message
-          }
         }
       }
     `;
 
-    // Format line items for Shopify
-    const lineItems = body.lineItems.map(item => ({
-      variantId: item.variantId,
-      quantity: item.quantity
-    }));
-
-    const variables = {
-      input: {
-        lineItems,
-        email: body.email || body.customerData?.email,
-        customAttributes: body.customerData ? [
-          { key: "firstName", value: body.customerData.firstName || "" },
-          { key: "lastName", value: body.customerData.lastName || "" }
-        ] : []
-      }
-    };
-
-    const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
+    const adminEndpoint = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/admin/api/${SHOPIFY_CONFIG.ADMIN_API_VERSION}/graphql.json`;
+    
+    const variantResponse = await fetch(adminEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+        'X-Shopify-Access-Token': SHOPIFY_CONFIG.ADMIN_API_ACCESS_TOKEN,
       },
       body: JSON.stringify({
-        query: checkoutMutation,
-        variables
+        query: variantQuery,
+        variables: { ids: variantIds }
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (!variantResponse.ok) {
+      throw new Error(`HTTP ${variantResponse.status}: ${variantResponse.statusText}`);
     }
 
-    const data = await response.json();
+    const variantData = await variantResponse.json();
 
-    if (data.errors) {
-      throw new Error(`GraphQL errors: ${JSON.stringify(data.errors)}`);
+    if (variantData.errors) {
+      throw new Error(`GraphQL errors: ${JSON.stringify(variantData.errors)}`);
     }
 
-    if (data.data.checkoutCreate.checkoutUserErrors.length > 0) {
-      throw new Error(`Checkout errors: ${JSON.stringify(data.data.checkoutCreate.checkoutUserErrors)}`);
+    const variants = variantData.data.nodes;
+    
+    if (!variants || variants.length === 0) {
+      throw new Error('No valid variants found');
     }
 
-    const checkout = data.data.checkoutCreate.checkout;
+    // For single product checkout, create direct product URL with variant
+    const firstVariant = variants[0];
+    const firstLineItem = body.lineItems[0];
+    const quantity = firstLineItem.quantity;
+    
+    // Extract variant ID number from GID
+    const variantIdNumber = firstVariant.id.split('/').pop();
+    
+    // Create checkout URL with selling plan support
+    let checkoutUrl: string;
+    
+    if (firstLineItem.sellingPlanId) {
+      // Extract selling plan ID number from GID
+      const sellingPlanIdNumber = firstLineItem.sellingPlanId.split('/').pop();
+      
+      // For subscriptions, create cart URL with selling plan
+      checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${quantity}?selling_plan=${sellingPlanIdNumber}`;
+    } else {
+      // Regular one-time purchase
+      checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${quantity}`;
+    }
+    
+    // Alternative: Direct product page URL
+    const productUrl = firstVariant.product.onlineStoreUrl || 
+                      `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/products/${firstVariant.product.handle}?variant=${variantIdNumber}`;
+
+    // Get selling plan info if available
+    const sellingPlanGroups = firstVariant.product.sellingPlanGroups?.edges || [];
+    const availableSellingPlans = sellingPlanGroups.flatMap((group: any) => 
+      group.node.sellingPlans.edges.map((plan: any) => ({
+        id: plan.node.id,
+        name: plan.node.name,
+        options: plan.node.options,
+        category: plan.node.category,
+        groupName: group.node.name
+      }))
+    );
 
     return NextResponse.json({
       success: true,
       checkout: {
-        id: checkout.id,
-        webUrl: checkout.webUrl,
-        totalPrice: checkout.totalPriceV2,
-        lineItems: checkout.lineItems.edges.map((edge: any) => edge.node)
+        checkoutUrl: checkoutUrl,
+        productUrl: productUrl,
+        product: {
+          id: firstVariant.product.id,
+          title: firstVariant.product.title,
+          handle: firstVariant.product.handle,
+        },
+        variant: {
+          id: firstVariant.id,
+          title: firstVariant.title,
+          price: firstVariant.price
+        },
+        quantity: quantity,
+        sellingPlan: firstLineItem.sellingPlanId ? {
+          id: firstLineItem.sellingPlanId,
+          isSubscription: true
+        } : null,
+        availableSellingPlans: availableSellingPlans,
+        shopDomain: SHOPIFY_CONFIG.SHOP_DOMAIN
       }
     });
 
   } catch (error) {
     console.error('Checkout creation error:', error);
     
-    ErrorMonitor.captureError('checkout_creation_failed', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      endpoint: 'POST /api/shopify/checkout'
+    ErrorMonitor.captureError({
+      error: error instanceof Error ? error : new Error(String(error)),
+      context: { 
+        endpoint: 'POST /api/shopify/checkout' 
+      },
+      severity: 'high'
     });
 
     return NextResponse.json({

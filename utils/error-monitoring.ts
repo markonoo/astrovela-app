@@ -169,7 +169,7 @@ export class ErrorMonitor {
       // Import SecurityMonitor dynamically to avoid circular dependencies
       import('./security').then(({ SecurityMonitor }) => {
         SecurityMonitor.logEvent({
-          type: 'security_error',
+          type: 'suspicious_request',
           ip: 'client',
           path: context?.path || (typeof window !== 'undefined' ? window.location.pathname : 'unknown'),
           userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,

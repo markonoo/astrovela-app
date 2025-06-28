@@ -48,7 +48,7 @@ export function useChartImage() {
           hasSvgContent: !!result.svgContent,
           svgLength: result.svgContent ? result.svgContent.length : 0,
         })
-        return result
+        return { chartUrl: result.chartUrl, svgContent: result.svgContent || null }
       } catch (error) {
         console.error("Error fetching chart image:", error)
         setIsLoading(false)

@@ -93,7 +93,7 @@ export default function ThankYouPage() {
             }}
             themeColor={THEME_COLORS[state.coverColorScheme]}
             selectedIcon={"natal-chart"}
-          />
+            formattedDate={formattedBirthDate}          />
         </div>
       </div>
 

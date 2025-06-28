@@ -9,7 +9,7 @@ interface NatalChartProps {
 // Simple SVG natal chart component
 const NatalChart: React.FC<NatalChartProps> = ({ colorScheme }) => {
   // Get the color scheme, defaulting to 'default' if not found
-  const scheme = COLOR_SCHEMES[colorScheme as ColorSchemeKey] || COLOR_SCHEMES.default
+  const scheme = COLOR_SCHEMES[colorScheme as ColorSchemeKey] || COLOR_SCHEMES.green
   const textColor = scheme.textColor
 
   // Create zodiac symbols

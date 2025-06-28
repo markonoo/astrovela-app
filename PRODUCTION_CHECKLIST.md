@@ -50,7 +50,7 @@
 
 ### **7. Performance** 🟡 **MEDIUM PRIORITY**
 - [ ] **Enable image optimization** (remove `unoptimized: true`)
-- [ ] **Add bundle analyzer** (`ANALYZE=true npm run build`)
+- [ ] **Add bundle analyzer** (`ANALYZE=true  npm run build`)
 - [ ] **Optimize CSS and JavaScript**
 - [ ] **Add proper caching headers**
 

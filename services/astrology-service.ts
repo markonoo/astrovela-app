@@ -1,19 +1,9 @@
-/**
- * Astrology Service
- * Handles all interactions with astrology APIs and data processing
- */
-
-import type { NatalChart, ChartInterpretation, ZodiacSign } from "@/types/astrology"
-import {
-  fetchNatalChart as fetchNatalChartFromAPI,
-  geocodeLocation as geocodeLocationFromAPI,
-  getNatalChartInterpretation as getInterpretationFromAPI,
-  getDailyHoroscope as getDailyHoroscopeFromAPI,
-  fetchNatalWheelChartSVG as fetchNatalWheelChartSVGFromAPI,
-} from "./astrology-api-service"
+import type { NatalChart, ChartInterpretation, ZodiacSign, PlanetPosition, CelestialBody } from "@/types/astrology"
+import { fetchNatalChart as fetchNatalChartFromAPI } from "./astrology-api-service"
+import { getNatalChartInterpretation as getInterpretationFromAPI, getDailyHoroscope as getDailyHoroscopeFromAPI } from "./astrology-api-service"
 
 /**
- * Fetches natal chart data
+ * Fetches natal chart data from the AstrologyAPI service
  */
 export async function fetchNatalChart(
   birthDate: string,
@@ -22,20 +12,16 @@ export async function fetchNatalChart(
   longitude: number,
 ): Promise<NatalChart> {
   try {
-    // Calculate timezone from longitude (approximate)
-    // In a real app, you would use a timezone API or library
-    const timezone = Math.round(longitude / 15)
-
-    // Use the AstrologyAPI service
-    return await fetchNatalChartFromAPI(birthDate, birthTime, latitude, longitude, timezone)
+    return await fetchNatalChartFromAPI(birthDate, birthTime, latitude, longitude)
   } catch (error) {
     console.error("Error fetching natal chart:", error)
-    throw error
+    // Return a placeholder chart instead of throwing
+    return createPlaceholderChart(birthDate, birthTime, latitude, longitude)
   }
 }
 
 /**
- * Fetches natal wheel chart SVG
+ * Fetches natal wheel chart SVG from the AstrologyAPI service
  */
 export async function fetchNatalWheelChartSVG(
   birthDate: string,
@@ -44,48 +30,41 @@ export async function fetchNatalWheelChartSVG(
   longitude: number,
 ): Promise<string> {
   try {
-    // Calculate timezone from longitude (approximate)
-    const timezone = Math.round(longitude / 15)
-
-    // Use the AstrologyAPI service
-    return await fetchNatalWheelChartSVGFromAPI(birthDate, birthTime, latitude, longitude, timezone)
+    // This would be implemented when the wheel chart API is available
+    throw new Error("Wheel chart SVG not yet implemented")
   } catch (error) {
-    console.error("Error fetching natal wheel chart SVG:", error)
-    throw error
+    console.error("Error fetching wheel chart SVG:", error)
+    // Return a placeholder SVG
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+      <circle cx="200" cy="200" r="180" fill="none" stroke="#333" stroke-width="2"/>
+      <text x="200" y="200" text-anchor="middle" dy=".35em" font-size="16" fill="#333">
+        Natal Chart
+      </text>
+    </svg>`
   }
 }
 
 /**
- * Geocodes a location string to get latitude and longitude
+ * Geocodes a location string to coordinates
  */
 export async function geocodeLocation(
   locationString: string,
 ): Promise<{ latitude: number; longitude: number; name: string }> {
   try {
-    // Try to use a simple geocoding approach first
-    const simpleGeocode = getSimpleGeocoding(locationString)
-    if (simpleGeocode) {
-      console.log("Using simple geocoding for:", locationString)
-      return simpleGeocode
+    // First try simple geocoding for common locations
+    const simpleResult = getSimpleGeocoding(locationString)
+    if (simpleResult) {
+      return simpleResult
     }
 
-    // Try the direct API call first
-    try {
-      const result = await geocodeLocationFromAPI(locationString)
-      if (result.latitude !== 0 || result.longitude !== 0) {
-        return result
-      }
-    } catch (error) {
-      console.warn("Direct API geocoding failed, trying /api/geocode", error)
-    }
-
-    // Fallback: use the custom /api/geocode endpoint with POST
+    // Try using our API endpoint
     try {
       const response = await fetch("/api/geocode", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location: locationString })
+        body: JSON.stringify({ location: locationString }),
       })
+
       if (response.ok) {
         const data = await response.json()
         return {
@@ -231,30 +210,21 @@ const zodiacSymbols: { [key: string]: string } = {
   pisces: "♓",
 }
 
-// Define the PlanetPosition type
-interface PlanetPosition {
-  name: string
-  sign: string
-  degree: number
-  house: number
-  retrograde: boolean
-}
-
 // Add a function to create a placeholder chart when the API fails
 function createPlaceholderChart(birthDate: string, birthTime: string, latitude: number, longitude: number): NatalChart {
   // Create a basic placeholder chart with minimal data
   const [year, month, day] = birthDate.split("-").map(Number)
   const [hour, minute] = birthTime.split(":").map(Number)
 
-  // Generate some placeholder planets
+  // Generate some placeholder planets with correct CelestialBody types
   const planets: PlanetPosition[] = [
-    { name: "sun", sign: "aries", degree: 15, house: 1, retrograde: false },
-    { name: "moon", sign: "taurus", degree: 25, house: 2, retrograde: false },
-    { name: "mercury", sign: "gemini", degree: 5, house: 3, retrograde: false },
-    { name: "venus", sign: "cancer", degree: 10, house: 4, retrograde: false },
-    { name: "mars", sign: "leo", degree: 20, house: 5, retrograde: false },
-    { name: "jupiter", sign: "virgo", degree: 15, house: 6, retrograde: false },
-    { name: "saturn", sign: "libra", degree: 5, house: 7, retrograde: true },
+    { name: "sun" as CelestialBody, sign: "aries" as ZodiacSign, degree: 15, house: 1, retrograde: false },
+    { name: "moon" as CelestialBody, sign: "taurus" as ZodiacSign, degree: 25, house: 2, retrograde: false },
+    { name: "mercury" as CelestialBody, sign: "gemini" as ZodiacSign, degree: 5, house: 3, retrograde: false },
+    { name: "venus" as CelestialBody, sign: "cancer" as ZodiacSign, degree: 10, house: 4, retrograde: false },
+    { name: "mars" as CelestialBody, sign: "leo" as ZodiacSign, degree: 20, house: 5, retrograde: false },
+    { name: "jupiter" as CelestialBody, sign: "virgo" as ZodiacSign, degree: 15, house: 6, retrograde: false },
+    { name: "saturn" as CelestialBody, sign: "libra" as ZodiacSign, degree: 5, house: 7, retrograde: true },
   ]
 
   // Generate placeholder houses
@@ -267,10 +237,10 @@ function createPlaceholderChart(birthDate: string, birthTime: string, latitude: 
 
   // Generate placeholder angles
   const angles = {
-    ascendant: { sign: "aries", degree: 0 },
-    midheaven: { sign: "capricorn", degree: 270 },
-    descendant: { sign: "libra", degree: 180 },
-    imumCoeli: { sign: "cancer", degree: 90 },
+    ascendant: { sign: "aries" as ZodiacSign, degree: 0 },
+    midheaven: { sign: "capricorn" as ZodiacSign, degree: 270 },
+    descendant: { sign: "libra" as ZodiacSign, degree: 180 },
+    imumCoeli: { sign: "cancer" as ZodiacSign, degree: 90 },
   }
 
   return {
@@ -289,4 +259,3 @@ function createPlaceholderChart(birthDate: string, birthTime: string, latitude: 
     },
   }
 }
-

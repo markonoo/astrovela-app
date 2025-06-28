@@ -1,5 +1,5 @@
+import { QuizState } from "@/contexts/quiz-context"
 import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from "@/utils/shopify-config"
-import type { QuizState } from "@/contexts/quiz-context"
 import { ShopifyError, handleShopifyError, ShopifyErrorCodes } from "@/utils/shopify-error-handler"
 
 // Type definitions for Shopify responses
@@ -41,18 +41,25 @@ interface ShopifyProduct {
   priceRange: {
     minVariantPrice: {
       amount: string;
+      currencyCode: string;
+    };
+    maxVariantPrice: {
+      amount: string;
+      currencyCode: string;
     };
   };
-  variants: {
-    edges: Array<{
-      node: {
-        id: string;
-        price: {
-          amount: string;
-        };
-      };
-    }>;
-  };
+  variants: Array<{
+    id: string;
+    title: string;
+    price: string;
+    compareAtPrice: string | null;
+    availableForSale: boolean;
+  }>;
+  images: Array<{
+    id: string;
+    url: string;
+    altText: string | null;
+  }>;
 }
 
 interface CreateShopifyCheckoutProps {
@@ -64,76 +71,43 @@ interface CreateShopifyCheckoutProps {
   quizState: QuizState;
 }
 
-const getProductsQuery = `
-  query getProducts {
-    products(first: 10) {
-      edges {
-        node {
-          id
-          title
-          handle
-          description
-          priceRange {
-            minVariantPrice {
-              amount
-            }
-          }
-          variants(first: 1) {
-            edges {
-              node {
-                id
-                price {
-                  amount
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+// Helper function to get the base URL
+function getBaseUrl() {
+  if (typeof window !== 'undefined') {
+    // Client-side
+    return window.location.origin;
   }
-`;
+  // Server-side
+  return process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : 'http://localhost:3000';
+}
 
+// Use our working API endpoints instead of direct Storefront API calls
 export async function getShopifyProducts(): Promise<ShopifyProduct[]> {
   try {
-    if (!SHOPIFY_STOREFRONT_API_ENDPOINT || !SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
-      throw new ShopifyError(
-        "Shopify configuration is missing",
-        ShopifyErrorCodes.INVALID_CREDENTIALS,
-        500
-      );
-    }
-
-    const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_ACCESS_TOKEN,
-      },
-      body: JSON.stringify({
-        query: getProductsQuery,
-      }),
-    });
-
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/shopify/products`);
+    
     if (!response.ok) {
       throw new ShopifyError(
-        `Shopify API returned ${response.status}`,
+        `Products API returned ${response.status}`,
         ShopifyErrorCodes.UNKNOWN_ERROR,
         response.status
       );
     }
 
-    const { data }: ShopifyProductsResponse = await response.json();
+    const data = await response.json();
     
-    if (!data?.products?.edges) {
+    if (!data.success) {
       throw new ShopifyError(
-        "No products found in the store",
+        data.error || "Failed to fetch products",
         ShopifyErrorCodes.PRODUCT_NOT_FOUND,
         404
       );
     }
 
-    return data.products.edges.map(edge => edge.node);
+    return data.products || [];
   } catch (error: any) {
     throw handleShopifyError(error);
   }
@@ -157,7 +131,7 @@ export async function getProductVariantId(productType: "app" | "paperback" | "eb
       );
     }
 
-    if (!product.variants.edges[0]?.node.id) {
+    if (!product.variants[0]?.id) {
       throw new ShopifyError(
         `No variant found for product type: ${productType}`,
         ShopifyErrorCodes.VARIANT_NOT_FOUND,
@@ -165,26 +139,11 @@ export async function getProductVariantId(productType: "app" | "paperback" | "eb
       );
     }
 
-    return product.variants.edges[0].node.id;
+    return product.variants[0].id;
   } catch (error: any) {
     throw handleShopifyError(error);
   }
 }
-
-const checkoutCreateMutation = `
-  mutation checkoutCreate($input: CheckoutCreateInput!) {
-    checkoutCreate(input: $input) {
-      checkout {
-        id
-        webUrl
-      }
-      checkoutUserErrors {
-        message
-        field
-      }
-    }
-  }
-`;
 
 export async function createShopifyCheckout({
   selectedOptions,
@@ -206,7 +165,14 @@ export async function createShopifyCheckout({
         .filter(([_, isSelected]) => isSelected)
         .map(async ([type]) => {
           const variantId = await getProductVariantId(type as "app" | "paperback" | "ebook");
-          return { variantId, quantity: 1 };
+          const lineItem: any = { variantId, quantity: 1 };
+          
+          // Add selling plan for app subscription to enable monthly recurring billing
+          if (type === "app") {
+            lineItem.sellingPlanId = "gid://shopify/SellingPlan/710674514307";
+          }
+          
+          return lineItem;
         })
     );
 
@@ -218,54 +184,43 @@ export async function createShopifyCheckout({
       );
     }
 
-    const input = {
-      lineItems,
-      email: quizState.email,
-      customAttributes: [
-        { key: "firstName", value: quizState.firstName || "" },
-        { key: "lastName", value: quizState.lastName || "" },
-        {
-          key: "birthDate",
-          value: `${quizState.birthDate.month}/${quizState.birthDate.day}/${quizState.birthDate.year}`,
-        },
-        { key: "birthPlace", value: quizState.birthPlace || "" },
-        { key: "astrologyLevel", value: quizState.astrologyLevel || "" },
-        { key: "gender", value: quizState.gender || "" },
-      ],
-    };
-
-    const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
-      method: "POST",
+    // Use our working checkout API endpoint
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/shopify/checkout`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: checkoutCreateMutation,
-        variables: { input },
+        lineItems,
+        email: quizState.email,
+        customerData: {
+          firstName: quizState.firstName || "",
+          lastName: quizState.lastName || "",
+          email: quizState.email,
+        }
       }),
     });
 
     if (!response.ok) {
       throw new ShopifyError(
-        `Shopify API returned ${response.status}`,
+        `Checkout API returned ${response.status}`,
         ShopifyErrorCodes.UNKNOWN_ERROR,
         response.status
       );
     }
 
-    const { data }: ShopifyCheckoutResponse = await response.json();
+    const data = await response.json();
 
-    if (data?.checkoutCreate?.checkoutUserErrors?.length) {
-      const errors = data.checkoutCreate.checkoutUserErrors.map(error => error.message).join(", ");
+    if (!data.success) {
       throw new ShopifyError(
-        `Could not create checkout: ${errors}`,
+        data.error || "Failed to create checkout",
         ShopifyErrorCodes.CHECKOUT_CREATION_FAILED,
         400
       );
     }
 
-    const checkoutUrl = data?.checkoutCreate?.checkout?.webUrl;
+    const checkoutUrl = data.checkout?.checkoutUrl;
     if (!checkoutUrl) {
       throw new ShopifyError(
         "Could not retrieve checkout URL",

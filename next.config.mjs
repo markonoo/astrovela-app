@@ -46,26 +46,28 @@ const nextConfig = {
     ]
   },
 
-  // Remove image optimization bypass for production
+  // Image optimization configuration
   images: {
     unoptimized: process.env.NODE_ENV === 'development',
     domains: ['json.astrologyapi.com'], // Add allowed image domains
     formats: ['image/webp', 'image/avif'],
   },
   
-  // Server external packages (moved from experimental)
-  serverExternalPackages: ['@prisma/client'],
+  // External packages configuration (Next.js 14 compatible)
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client'],
+  },
   
   // Type checking
   typescript: {
-    // Temporarily disable type checking for debugging
-    ignoreBuildErrors: true 
+    // Enable type checking in production
+    ignoreBuildErrors: process.env.NODE_ENV === 'development'
   },
   
   // Linting
   eslint: {
-    // Temporarily disable linting for debugging
-    ignoreDuringBuilds: true
+    // Enable linting in production
+    ignoreDuringBuilds: process.env.NODE_ENV === 'development'
   },
 
   // Webpack configuration to handle Node.js modules in browser

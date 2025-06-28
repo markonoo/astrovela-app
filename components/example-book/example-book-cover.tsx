@@ -9,6 +9,26 @@ export function ExampleBookCover({ colorScheme = "green" }: { colorScheme?: stri
   const [currentColorScheme, setCurrentColorScheme] = useState(colorScheme)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Map color schemes to valid premium book cover color schemes
+  const mapColorScheme = (scheme: string): "black" | "navy" | "green" | "burgundy" | "pink" => {
+    switch (scheme) {
+      case "purple":
+        return "navy"
+      case "cream":
+        return "pink"
+      case "black":
+        return "black"
+      case "navy":
+        return "navy"
+      case "green":
+        return "green"
+      case "burgundy":
+        return "burgundy"
+      default:
+        return "green"
+    }
+  }
+
   // Update internal state when prop changes
   useEffect(() => {
     setCurrentColorScheme(colorScheme)
@@ -93,12 +113,11 @@ export function ExampleBookCover({ colorScheme = "green" }: { colorScheme?: stri
 
   return (
     <PremiumBookCover
-      colorScheme={currentColorScheme}
+      colorScheme={mapColorScheme(currentColorScheme)}
       name="Olivia"
       birthDate="December 6, 2021"
       birthPlace="Hamburg, Germany"
-      cachedWheelChartSVG={fallbackSVG}
+      initialChartSvg={fallbackSVG || undefined}
     />
   )
 }
-

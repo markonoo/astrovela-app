@@ -29,16 +29,25 @@ export function trackWebVitals() {
 
   try {
     // Try to import web-vitals dynamically
-    import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
+    import('web-vitals').then((webVitals) => {
+      const { onCLS, onFCP, onLCP, onTTFB } = webVitals;
+      
       // Cumulative Layout Shift
       onCLS(metric => {
         sendPerformanceMetric('CLS', metric);
       });
       
-      // First Input Delay
-      onFID(metric => {
-        sendPerformanceMetric('FID', metric);
-      });
+      // Interaction to Next Paint (replaces FID) - check if available
+      if ('onINP' in webVitals) {
+        (webVitals as any).onINP((metric: any) => {
+          sendPerformanceMetric('INP', metric);
+        });
+      } else if ('onFID' in webVitals) {
+        // Fallback to FID if INP not available
+        (webVitals as any).onFID((metric: any) => {
+          sendPerformanceMetric('FID', metric);
+        });
+      }
       
       // First Contentful Paint
       onFCP(metric => {

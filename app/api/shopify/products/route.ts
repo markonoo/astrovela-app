@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from '@/utils/shopify-config';
+import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
 
 export async function GET(request: NextRequest) {
@@ -7,10 +7,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const handles = searchParams.get('handles')?.split(',') || [];
     
-    // Query to get products with their variants  
+    // Use Admin API instead of Storefront API for better reliability
     const productsQuery = `
-      query getProducts {
-        products(first: 250${handles.length > 0 ? `, query: "handle:(${handles.join(' OR ')})"` : ''}) {
+      query getProducts($query: String) {
+        products(first: 250, query: $query) {
           edges {
             node {
               id
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
               description
               productType
               tags
-              priceRange {
+              priceRangeV2 {
                 minVariantPrice {
                   amount
                   currencyCode
@@ -34,14 +34,8 @@ export async function GET(request: NextRequest) {
                   node {
                     id
                     title
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    compareAtPrice {
-                      amount
-                      currencyCode
-                    }
+                    price
+                    compareAtPrice
                     availableForSale
                   }
                 }
@@ -61,15 +55,20 @@ export async function GET(request: NextRequest) {
       }
     `;
 
-    const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
+    const adminEndpoint = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/admin/api/${SHOPIFY_CONFIG.ADMIN_API_VERSION}/graphql.json`;
+    
+    // Build query string for handles
+    const queryString = handles.length > 0 ? `handle:${handles.join(' OR handle:')}` : "";
+    
+    const response = await fetch(adminEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+        'X-Shopify-Access-Token': SHOPIFY_CONFIG.ADMIN_API_ACCESS_TOKEN,
       },
       body: JSON.stringify({
         query: productsQuery,
-        variables: {}
+        variables: { query: queryString }
       })
     });
 
@@ -92,7 +91,10 @@ export async function GET(request: NextRequest) {
         description: product.description,
         productType: product.productType,
         tags: product.tags,
-        priceRange: product.priceRange,
+        priceRange: {
+          minVariantPrice: product.priceRangeV2?.minVariantPrice || { amount: "0", currencyCode: "EUR" },
+          maxVariantPrice: product.priceRangeV2?.maxVariantPrice || { amount: "0", currencyCode: "EUR" }
+        },
         variants: product.variants.edges.map((variantEdge: any) => variantEdge.node),
         images: product.images.edges.map((imageEdge: any) => imageEdge.node)
       };
@@ -141,7 +143,7 @@ export async function POST(request: NextRequest) {
           handle
           description
           productType
-          priceRange {
+          priceRangeV2 {
             minVariantPrice {
               amount
               currencyCode
@@ -156,14 +158,8 @@ export async function POST(request: NextRequest) {
               node {
                 id
                 title
-                price {
-                  amount
-                  currencyCode
-                }
-                compareAtPrice {
-                  amount
-                  currencyCode
-                }
+                price
+                compareAtPrice
                 availableForSale
               }
             }
@@ -172,11 +168,13 @@ export async function POST(request: NextRequest) {
       }
     `;
 
-    const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
+    const adminEndpoint = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/admin/api/${SHOPIFY_CONFIG.ADMIN_API_VERSION}/graphql.json`;
+    
+    const response = await fetch(adminEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+        'X-Shopify-Access-Token': SHOPIFY_CONFIG.ADMIN_API_ACCESS_TOKEN,
       },
       body: JSON.stringify({
         query: productQuery,
@@ -211,7 +209,7 @@ export async function POST(request: NextRequest) {
         handle: product.handle,
         description: product.description,
         productType: product.productType,
-        priceRange: product.priceRange,
+        priceRange: product.priceRangeV2,
         variant: product.variants.edges[0]?.node || null
       }
     });

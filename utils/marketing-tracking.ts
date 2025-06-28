@@ -216,7 +216,7 @@ function initializeGoogleAds(): void {
 function initializeTikTokPixel(): void {
   try {
     // Load TikTok Pixel
-    !(function (w: any, d: any, t: any) {
+    (function (w: any, d: any, t: any) {
       w.TiktokAnalyticsObject = t;
       var ttq = w[t] = w[t] || [];
       ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
@@ -262,12 +262,12 @@ function initializeTikTokPixel(): void {
  */
 function initializePinterestTag(): void {
   try {
-    !(function(e: any) {
-      if (!window.pintrk) {
-        window.pintrk = function() {
-          window.pintrk.queue.push(Array.prototype.slice.call(arguments));
+    (function(e: any) {
+      if (!(window as any).pintrk) {
+        (window as any).pintrk = function() {
+          (window as any).pintrk.queue.push(Array.prototype.slice.call(arguments));
         };
-        var n = window.pintrk;
+        var n = (window as any).pintrk;
         n.queue = [];
         n.version = "3.0";
         var t = document.createElement("script");
@@ -292,12 +292,12 @@ function initializePinterestTag(): void {
  */
 function initializeTwitterPixel(): void {
   try {
-    !(function(e: any, t: any, n: any, s: any, u: any, a: any) {
+    (function(e: any, t: any, n: any, s: any, u: any, a: any) {
       e.twq || (s = e.twq = function() {
         s.exe ? s.exe.apply(s, arguments) : s.queue.push(arguments);
       }, s.version = '1.1', s.queue = [], u = t.createElement(n), u.async = !0, u.src = '//static.ads-twitter.com/uwt.js',
       a = t.getElementsByTagName(n)[0], a.parentNode.insertBefore(u, a));
-    })(window, document, 'script');
+    })(window, document, 'script', undefined, undefined, undefined);
 
     (window as any).twq('init', TWITTER_PIXEL_ID);
     (window as any).twq('track', 'PageView');
