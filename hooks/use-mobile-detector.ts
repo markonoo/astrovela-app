@@ -4,11 +4,17 @@ import { useState, useEffect } from "react"
 
 export function useMobileDetector() {
   const [isMobile, setIsMobile] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    // Mark that we're now on the client
+    setIsClient(true)
+    
     // Function to check if the screen is mobile
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 768)
+      }
     }
 
     // Initial check
@@ -21,6 +27,7 @@ export function useMobileDetector() {
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
-  return isMobile
+  // Return false during SSR to prevent hydration mismatch
+  return isClient ? isMobile : false
 }
 
