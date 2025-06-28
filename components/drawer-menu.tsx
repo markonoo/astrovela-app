@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { X, Facebook, Instagram, BookCopy, Palette, RefreshCw, CreditCard } from "lucide-react"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
@@ -16,8 +16,16 @@ interface DrawerMenuProps {
 }
 
 export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Prevent scrolling when drawer is open
   useEffect(() => {
+    if (!isMounted) return
+    
     if (isOpen) {
       document.body.style.overflow = "hidden"
     } else {
@@ -27,10 +35,12 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
     return () => {
       document.body.style.overflow = "auto"
     }
-  }, [isOpen])
+  }, [isOpen, isMounted])
 
   // Handle escape key to close drawer
   useEffect(() => {
+    if (!isMounted) return
+    
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose()
@@ -39,7 +49,12 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
 
     window.addEventListener("keydown", handleEscape)
     return () => window.removeEventListener("keydown", handleEscape)
-  }, [onClose])
+  }, [onClose, isMounted])
+
+  // Don't render anything during SSR
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <>

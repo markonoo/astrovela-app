@@ -121,9 +121,16 @@ const initialState: QuizState = {
 const QuizContext = createContext<QuizContextType | undefined>(undefined)
 
 export function QuizProvider({ children }: { children: ReactNode }) {
+  const [isMounted, setIsMounted] = useState(false)
+  
   // Initialize state from storage or use default
-  const [state, setState] = useState<QuizState>(() => {
-    // This will only run on the client side
+  const [state, setState] = useState<QuizState>(initialState)
+
+  // Handle client-side mounting and state restoration
+  useEffect(() => {
+    setIsMounted(true)
+    
+    // Only access localStorage after mounting on client
     if (typeof window !== "undefined") {
       const savedData = getQuizData()
       const quizCompleted = isQuizCompleted()
@@ -131,22 +138,23 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       if (savedData) {
         // Always reset loading states when restoring from storage
         // Loading states should never persist across sessions
-        return { 
+        setState({ 
           ...savedData, 
           quizCompleted,
           isLoadingChart: false,  // Reset loading state
           chartError: null        // Clear any old errors
-        }
+        })
       }
     }
-    return initialState
-  })
+  }, [])
 
-  // Save state to storage whenever it changes
+  // Save state to storage whenever it changes (only after mounting)
   useEffect(() => {
-    // Save state on every change, not just when completed
-    saveQuizData(state)
-  }, [state])
+    if (isMounted) {
+      // Save state on every change, not just when completed
+      saveQuizData(state)
+    }
+  }, [state, isMounted])
 
   const setCurrentStep = (step: number) => {
     setState((prev) => ({ ...prev, currentStep: step }))
@@ -281,8 +289,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       return newState
     })
   }
-
-
 
   const resetQuiz = () => {
     // Clear all storage first

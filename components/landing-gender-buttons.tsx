@@ -2,15 +2,22 @@
 
 import { useRouter } from "next/navigation"
 import { useQuiz } from "@/contexts/quiz-context"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export function LandingGenderButtons() {
   const router = useRouter()
   const { setGender, setCurrentStep } = useQuiz()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [selectedButton, setSelectedButton] = useState<"male" | "female" | "other" | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleSelect = (gender: "male" | "female" | "non-binary") => {
+    if (!isMounted) return // Prevent action before client-side mounting
+    
     // Set visual indicator for which button was clicked
     setSelectedButton(gender === "non-binary" ? "other" : gender)
     setIsTransitioning(true)
@@ -26,6 +33,35 @@ export function LandingGenderButtons() {
       // Navigate to the quiz page
       router.push("/quiz")
     }, 300)
+  }
+
+  // Show loading state during SSR
+  if (!isMounted) {
+    return (
+      <div className="opacity-50">
+        <h3 className="text-[#28293d] font-medium mb-4">Start by selecting your gender:</h3>
+        <div className="flex flex-wrap gap-4">
+          <button
+            disabled
+            className="bg-[#000000] text-white px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed"
+          >
+            Male
+          </button>
+          <button
+            disabled
+            className="bg-[#f7c800] text-[#28293d] px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed"
+          >
+            Female
+          </button>
+          <button
+            disabled
+            className="bg-white text-[#28293d] px-8 py-3 rounded-full font-medium border border-[#8e909a] opacity-50 cursor-not-allowed"
+          >
+            Other
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
