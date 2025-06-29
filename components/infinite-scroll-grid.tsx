@@ -17,6 +17,7 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
   const [columnHeight, setColumnHeight] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const isMobile = useMobileDetector()
 
   useEffect(() => {
     setIsMounted(true)
@@ -31,17 +32,22 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
     }
   }, [isMounted])
 
+  // Mobile-responsive image dimensions
+  const imageWidth = isMobile ? 120 : 150
+  const imageHeight = isMobile ? 160 : 200
+  const gapClass = isMobile ? "gap-1.5" : "gap-2"
+
   // Show static content during SSR
   if (!isMounted) {
     return (
       <div className="overflow-hidden relative h-full">
-        <div className="flex flex-col gap-2 opacity-50">
+        <div className={`flex flex-col ${gapClass} opacity-50`}>
           {images.map((src, index) => (
             <div key={`loading-${index}`} className="rounded-lg overflow-hidden">
               <Image
                 src={src || "/placeholder.svg"}
-                width={150}
-                height={200}
+                width={imageWidth}
+                height={imageHeight}
                 alt={`Astrology book ${index + 1}`}
                 className="w-full h-auto"
               />
@@ -60,7 +66,7 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
     <div className="overflow-hidden relative h-full">
       <div
         ref={columnRef}
-        className={`flex flex-col gap-2 transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0"}`}
+        className={`flex flex-col ${gapClass} transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0"}`}
         style={{
           animation: isVisible ? `scroll ${animationDuration} linear ${animationDelay} infinite ${animationDirection}` : 'none',
           transform: isVisible ? "translateY(0)" : "translateY(-20px)",
@@ -71,8 +77,8 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
           <div key={`first-${index}`} className="rounded-lg overflow-hidden">
             <Image
               src={src || "/placeholder.svg"}
-              width={150}
-              height={200}
+              width={imageWidth}
+              height={imageHeight}
               alt={`Astrology book ${index + 1}`}
               className="w-full h-auto"
               priority={index < 2} // Prioritize first few images
@@ -85,8 +91,8 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
           <div key={`second-${index}`} className="rounded-lg overflow-hidden">
             <Image
               src={src || "/placeholder.svg"}
-              width={150}
-              height={200}
+              width={imageWidth}
+              height={imageHeight}
               alt={`Astrology book ${index + 1}`}
               className="w-full h-auto"
             />
@@ -106,18 +112,21 @@ export function InfiniteScrollGrid() {
     setIsMounted(true)
   }, [])
 
+  // Mobile-responsive gap
+  const gridGapClass = isMobile ? "gap-1.5" : "gap-2"
+
   // Show static grid during SSR to prevent hydration mismatch
   if (!isMounted) {
     return (
-      <div className="grid grid-cols-3 gap-2 h-full">
+      <div className={`grid grid-cols-3 ${gridGapClass} h-full`}>
         <div className="overflow-hidden relative h-full">
-          <div className="flex flex-col gap-2 opacity-50">
+          <div className={`flex flex-col ${gridGapClass} opacity-50`}>
             {imageData.column1.slice(0, 4).map((src, index) => (
               <div key={`static-1-${index}`} className="rounded-lg overflow-hidden">
                 <Image
                   src={src || "/placeholder.svg"}
-                  width={150}
-                  height={200}
+                  width={120}
+                  height={160}
                   alt={`Astrology book ${index + 1}`}
                   className="w-full h-auto"
                 />
@@ -126,13 +135,13 @@ export function InfiniteScrollGrid() {
           </div>
         </div>
         <div className="overflow-hidden relative h-full">
-          <div className="flex flex-col gap-2 opacity-50">
+          <div className={`flex flex-col ${gridGapClass} opacity-50`}>
             {imageData.column2.slice(0, 4).map((src, index) => (
               <div key={`static-2-${index}`} className="rounded-lg overflow-hidden">
                 <Image
                   src={src || "/placeholder.svg"}
-                  width={150}
-                  height={200}
+                  width={120}
+                  height={160}
                   alt={`Astrology book ${index + 1}`}
                   className="w-full h-auto"
                 />
@@ -141,13 +150,13 @@ export function InfiniteScrollGrid() {
           </div>
         </div>
         <div className="overflow-hidden relative h-full">
-          <div className="flex flex-col gap-2 opacity-50">
+          <div className={`flex flex-col ${gridGapClass} opacity-50`}>
             {imageData.column3.slice(0, 4).map((src, index) => (
               <div key={`static-3-${index}`} className="rounded-lg overflow-hidden">
                 <Image
                   src={src || "/placeholder.svg"}
-                  width={150}
-                  height={200}
+                  width={120}
+                  height={160}
                   alt={`Astrology book ${index + 1}`}
                   className="w-full h-auto"
                 />
@@ -159,12 +168,12 @@ export function InfiniteScrollGrid() {
     )
   }
 
-  // Adjust column speeds for mobile
-  const speedMultiplier = isMobile ? 0.7 : 1
+  // Adjust column speeds for mobile - slower on mobile for better UX
+  const speedMultiplier = isMobile ? 0.6 : 1
 
   return (
     <div
-      className="grid grid-cols-3 gap-2 h-full"
+      className={`grid grid-cols-3 ${gridGapClass} h-full`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       style={{ animationPlayState: isPaused ? "paused" : "running" }}
