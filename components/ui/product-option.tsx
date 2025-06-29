@@ -81,14 +81,14 @@ export function ProductOption({
 
           {/* Features */}
           <ul className="space-y-1">
-            {features.map((feature, index) => (
+                  {features.map((feature, index) => (
               <li key={index} className="flex items-start text-sm text-gray-600">
                 <span className="text-green-500 mr-2 flex-shrink-0 mt-0.5">✓</span>
                 <span className="leading-relaxed">{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
         {/* Selection Indicator */}
         <div className="flex-shrink-0 ml-2">
