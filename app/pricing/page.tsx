@@ -394,7 +394,7 @@ export default function PricingPage() {
 
           {/* Book Cover - Using the enhanced book cover component */}
           <div className="flex items-center justify-center mb-4 w-full">
-            <div className="w-[350px] h-[450px] flex items-center justify-center">
+            <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] h-auto aspect-[7/9] flex items-center justify-center">
               <BookCoverPreview
                 userInfo={{
                   firstName: state.firstName || "FIRST",

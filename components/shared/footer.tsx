@@ -1,63 +1,123 @@
+"use client"
+
 import Link from "next/link"
-import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
-import { navigationLinks } from "@/utils/navigation"
 
 export function Footer() {
   return (
-    <footer className="bg-gray-100 py-6">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-200 pt-6">
-          <div className="flex items-center justify-center mb-4 md:mb-0">
-            <AstrovelaIcon width={20} height={20} className="mr-2" />
-            <div className="flex flex-wrap gap-4 md:gap-6 text-sm text-[#8f90a6]">
-              {navigationLinks.map((link) => (
-                <Link key={link.path} href={link.path} className="hover:text-[#28293d]">
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+    <footer className="bg-gray-900 text-white py-8 px-4">
+      <div className="container mx-auto">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6">
+          {/* Company Info */}
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold">AstroVela</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Discover your cosmic blueprint with personalized astrology books and insights.
+            </p>
           </div>
 
-          <div className="flex items-center">
-            <div className="flex space-x-4 mr-4">
-              <a href="#" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-[#28293d] flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                  </svg>
-                </div>
+          {/* Quick Links */}
+          <div className="space-y-3">
+            <h4 className="font-medium text-base">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Get Your Book
+                </Link>
+              </li>
+              <li>
+                <Link href="/help-center" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Help Center
+                </Link>
+              </li>
+              <li>
+                <Link href="/reviews" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Reviews
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div className="space-y-3">
+            <h4 className="font-medium text-base">Legal</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-us" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Social Media */}
+          <div className="space-y-3">
+            <h4 className="font-medium text-base">Follow Us</h4>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Facebook"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
               </a>
-              <a href="#" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-[#28293d] flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
-                </div>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Instagram"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C3.851 14.893 3.29 13.742 3.29 12.445c0-1.297.561-2.448 1.836-3.323C6.001 8.147 7.152 7.586 8.449 7.586c1.297 0 2.448.561 3.323 1.536.875.975 1.436 2.126 1.436 3.323 0 1.297-.561 2.448-1.436 3.323-.875.975-2.026 1.536-3.323 1.536zm7.83-10.845h-1.297V4.846h1.297v1.297z"/>
+                </svg>
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Twitter"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
               </a>
             </div>
-            <span className="text-xs text-[#8f90a6]">© 2025 astrovela. All rights reserved.</span>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-700 pt-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+            <p className="text-gray-400 text-sm text-center sm:text-left">
+              © 2024 AstroVela. All rights reserved.
+            </p>
+            <div className="flex flex-wrap justify-center sm:justify-end gap-4 text-sm">
+              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                Privacy
+              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                Terms
+              </Link>
+              <Link href="/contact-us" className="text-gray-400 hover:text-white transition-colors">
+                Contact
+              </Link>
+            </div>
           </div>
         </div>
       </div>

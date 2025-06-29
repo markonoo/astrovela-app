@@ -39,23 +39,23 @@ export function LandingGenderButtons() {
   if (!isMounted) {
     return (
       <div className="opacity-50">
-        <h3 className="text-[#28293d] font-medium mb-4">Start by selecting your gender:</h3>
-        <div className="flex flex-wrap gap-4">
+        <h3 className="text-[#28293d] font-medium mb-4 text-base sm:text-lg">Start by selecting your gender:</h3>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
             disabled
-            className="bg-[#000000] text-white px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed"
+            className="bg-[#000000] text-white px-6 sm:px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed text-sm sm:text-base min-h-[44px]"
           >
             Male
           </button>
           <button
             disabled
-            className="bg-[#f7c800] text-[#28293d] px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed"
+            className="bg-[#f7c800] text-[#28293d] px-6 sm:px-8 py-3 rounded-full font-medium opacity-50 cursor-not-allowed text-sm sm:text-base min-h-[44px]"
           >
             Female
           </button>
           <button
             disabled
-            className="bg-white text-[#28293d] px-8 py-3 rounded-full font-medium border border-[#8e909a] opacity-50 cursor-not-allowed"
+            className="bg-white text-[#28293d] px-6 sm:px-8 py-3 rounded-full font-medium border border-[#8e909a] opacity-50 cursor-not-allowed text-sm sm:text-base min-h-[44px]"
           >
             Other
           </button>
@@ -66,11 +66,11 @@ export function LandingGenderButtons() {
 
   return (
     <div className={`transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}>
-      <h3 className="text-[#28293d] font-medium mb-4">Start by selecting your gender:</h3>
-      <div className="flex flex-wrap gap-4">
+      <h3 className="text-[#28293d] font-medium mb-4 text-base sm:text-lg">Start by selecting your gender:</h3>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <button
           onClick={() => handleSelect("male")}
-          className={`bg-[#000000] text-white px-8 py-3 rounded-full font-medium hover:opacity-90 transition-all ${
+          className={`bg-[#000000] text-white px-6 sm:px-8 py-3 rounded-full font-medium hover:opacity-90 transition-all text-sm sm:text-base min-h-[44px] ${
             selectedButton === "male" ? "transform scale-105" : ""
           }`}
         >
@@ -78,7 +78,7 @@ export function LandingGenderButtons() {
         </button>
         <button
           onClick={() => handleSelect("female")}
-          className={`bg-[#f7c800] text-[#28293d] px-8 py-3 rounded-full font-medium hover:opacity-90 transition-all ${
+          className={`bg-[#f7c800] text-[#28293d] px-6 sm:px-8 py-3 rounded-full font-medium hover:opacity-90 transition-all text-sm sm:text-base min-h-[44px] ${
             selectedButton === "female" ? "transform scale-105" : ""
           }`}
         >
@@ -86,7 +86,7 @@ export function LandingGenderButtons() {
         </button>
         <button
           onClick={() => handleSelect("non-binary")}
-          className={`bg-white text-[#28293d] px-8 py-3 rounded-full font-medium border border-[#8e909a] hover:bg-gray-50 transition-all ${
+          className={`bg-white text-[#28293d] px-6 sm:px-8 py-3 rounded-full font-medium border border-[#8e909a] hover:bg-gray-50 transition-all text-sm sm:text-base min-h-[44px] ${
             selectedButton === "other" ? "transform scale-105" : ""
           }`}
         >
