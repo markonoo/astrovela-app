@@ -149,7 +149,7 @@ export function BookCover({
         style={{ backgroundColor: colors.bgColor }}
       >
         {/* Decorative stars */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning={true}>
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
@@ -252,6 +252,7 @@ export function BookCover({
                 position: "relative",
                 zIndex: 10,
               }}
+              suppressHydrationWarning={true}
             />
               {/* Curved birth details */}
               <div
