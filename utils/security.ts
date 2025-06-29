@@ -147,11 +147,11 @@ export const SECURITY_HEADERS = {
   production: {
     'Content-Security-Policy': [
       "default-src 'self'",
-      "script-src 'self' https://vercel.live https://*.vercel-insights.com",
+      "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com 'sha256-Q+8tPsjVtiDsjF/Cv8FMOpg2Yg91oKFKDAJat1PPb2g=' 'sha256-Mgq/webJEDKjl/s+zE5KN4QqFqcn7raP8zWv+QPXpkk=' 'sha256-f6KRNHb+YxMSPbX3ckFHCX25G7orzQuKzyZzFlCTY08=' 'sha256-PX/ImfzL9pB/mht2tUzKipbj6N5n7PKz+HOjA/kGhho=' 'sha256-4Po4K452sleg1VMl/5klQ5WVFhpxeveCC1OzuAqIyX0=' 'sha256-IYQwQlCS7tlDdfed8qCp+uGm3rBPumW7jftgB2PJ+k0='",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: https: blob:",
+      "img-src 'self' data: https: blob: https://*.vercel-storage.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com",
+      "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
       "media-src 'self'",
       "object-src 'none'",
       "worker-src 'self' blob:",

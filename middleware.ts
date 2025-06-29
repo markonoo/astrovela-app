@@ -46,18 +46,18 @@ export function middleware(request: NextRequest) {
   const isDevelopment = process.env.NODE_ENV === 'development'
   const csp = [
     "default-src 'self'",
-    // Scripts: Allow self and necessary external scripts
+    // Scripts: Allow self, necessary external scripts, and specific hashes for Vercel Analytics
     isDevelopment 
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live" 
-      : "script-src 'self' https://vercel.live https://*.vercel-insights.com",
+      : "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com 'sha256-Q+8tPsjVtiDsjF/Cv8FMOpg2Yg91oKFKDAJat1PPb2g=' 'sha256-Mgq/webJEDKjl/s+zE5KN4QqFqcn7raP8zWv+QPXpkk=' 'sha256-f6KRNHb+YxMSPbX3ckFHCX25G7orzQuKzyZzFlCTY08=' 'sha256-PX/ImfzL9pB/mht2tUzKipbj6N5n7PKz+HOjA/kGhho=' 'sha256-4Po4K452sleg1VMl/5klQ5WVFhpxeveCC1OzuAqIyX0=' 'sha256-IYQwQlCS7tlDdfed8qCp+uGm3rBPumW7jftgB2PJ+k0='",
     // Styles: Allow self and inline styles (needed for dynamic theming)
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    // Images: Allow data URLs, HTTPS sources, and astrology API S3
-    "img-src 'self' data: https: blob: https://s3.ap-south-1.amazonaws.com",
+    // Images: Allow data URLs, HTTPS sources, and astrology API S3, plus Vercel storage
+    "img-src 'self' data: https: blob: https://s3.ap-south-1.amazonaws.com https://*.vercel-storage.com",
     // Fonts: Allow self, data URLs, and Google Fonts
     "font-src 'self' data: https://fonts.gstatic.com",
     // Connections: API endpoints and external services
-    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com",
+    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
     // Media: Self only
     "media-src 'self'",
     // Objects: None allowed
