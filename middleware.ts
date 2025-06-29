@@ -46,10 +46,10 @@ export function middleware(request: NextRequest) {
   const isDevelopment = process.env.NODE_ENV === 'development'
   const csp = [
     "default-src 'self'",
-    // Scripts: Allow self, necessary external scripts, and specific hashes for Vercel Analytics
+    // Scripts: Allow self, necessary external scripts, and unsafe-inline for Vercel Analytics
     isDevelopment 
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live" 
-      : "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com 'sha256-Q+8tPsjVtiDsjF/Cv8FMOpg2Yg91oKFKDAJat1PPb2g=' 'sha256-Mgq/webJEDKjl/s+zE5KN4QqFqcn7raP8zWv+QPXpkk=' 'sha256-f6KRNHb+YxMSPbX3ckFHCX25G7orzQuKzyZzFlCTY08=' 'sha256-PX/ImfzL9pB/mht2tUzKipbj6N5n7PKz+HOjA/kGhho=' 'sha256-4Po4K452sleg1VMl/5klQ5WVFhpxeveCC1OzuAqIyX0=' 'sha256-IYQwQlCS7tlDdfed8qCp+uGm3rBPumW7jftgB2PJ+k0='",
+      : "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
     // Styles: Allow self and inline styles (needed for dynamic theming)
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     // Images: Allow data URLs, HTTPS sources, and astrology API S3, plus Vercel storage
