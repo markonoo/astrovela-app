@@ -42,7 +42,10 @@ Sentry.init({
       if (
         message.includes('ResizeObserver loop limit exceeded') ||
         message.includes('Non-Error promise rejection captured') ||
-        message.includes('ChunkLoadError')
+        message.includes('ChunkLoadError') ||
+        message.includes('Failed to fetch') ||
+        message.includes('BreadcrumbsPluginFetchError') ||
+        message.includes('OpenTelemetry metrics')
       ) {
         return null;
       }

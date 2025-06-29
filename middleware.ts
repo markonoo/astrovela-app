@@ -57,15 +57,15 @@ export function middleware(request: NextRequest) {
     // Fonts: Allow self, data URLs, and Google Fonts
     "font-src 'self' data: https://fonts.gstatic.com",
     // Connections: API endpoints and external services
-    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
+    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://checkout.shopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com https://*.paypal.com",
     // Media: Self only
     "media-src 'self'",
     // Objects: None allowed
     "object-src 'none'",
     // Workers: Self only
     "worker-src 'self' blob:",
-    // Child frames: None
-    "child-src 'none'",
+    // Child frames: Allow Shopify checkout and PayPal
+    "child-src 'self' https://checkout.shopify.com https://*.paypal.com",
     // Frame ancestors: None
     "frame-ancestors 'none'",
     // Base URI: Self only
