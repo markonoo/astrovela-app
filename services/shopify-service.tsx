@@ -159,30 +159,53 @@ export async function createShopifyCheckout({
       );
     }
 
-    // Get line items for all selected products
-    const lineItems = await Promise.all(
-      Object.entries(selectedOptions)
-        .filter(([_, isSelected]) => isSelected)
-        .map(async ([type]) => {
-          const variantId = await getProductVariantId(type as "app" | "paperback" | "ebook");
-          const lineItem: any = { variantId, quantity: 1 };
-          
-          // Add selling plan for app subscription to enable monthly recurring billing
-          if (type === "app") {
-            lineItem.sellingPlanId = "gid://shopify/SellingPlan/710674514307";
-          }
-          
-          return lineItem;
-        })
-    );
+    // Determine which products to actually charge based on frontend pricing logic
+    const productsToCharge: Array<{type: string, variantId: string, sellingPlanId?: string}> = [];
+    
+    // Frontend pricing logic:
+    // - Only ebook: charge ebook ($49.99)
+    // - Only app: charge app ($30.99)
+    // - Paperback selected (with/without others): charge only paperback ($55.99) - others are "FREE"
+    // - App + ebook (no paperback): charge ebook ($49.99) - app is "FREE"
+    
+    if (selectedOptions.paperback) {
+      // Paperback bundle: only charge paperback, everything else is "FREE"
+      const paperbackVariantId = await getProductVariantId("paperback");
+      productsToCharge.push({ type: "paperback", variantId: paperbackVariantId });
+    } else if (selectedOptions.ebook && selectedOptions.app) {
+      // App + ebook (no paperback): charge ebook, app is "FREE"
+      const ebookVariantId = await getProductVariantId("ebook");
+      productsToCharge.push({ type: "ebook", variantId: ebookVariantId });
+    } else if (selectedOptions.ebook) {
+      // Only ebook
+      const ebookVariantId = await getProductVariantId("ebook");
+      productsToCharge.push({ type: "ebook", variantId: ebookVariantId });
+    } else if (selectedOptions.app) {
+      // Only app
+      const appVariantId = await getProductVariantId("app");
+      productsToCharge.push({ 
+        type: "app", 
+        variantId: appVariantId,
+        sellingPlanId: "gid://shopify/SellingPlan/710674514307" // Add selling plan for app subscription
+      });
+    }
 
-    if (lineItems.length === 0) {
+    if (productsToCharge.length === 0) {
       throw new ShopifyError(
         "At least one product must be selected",
         ShopifyErrorCodes.VALIDATION_ERROR,
         400
       );
     }
+
+    // Convert to line items format
+    const lineItems = productsToCharge.map(product => {
+      const lineItem: any = { variantId: product.variantId, quantity: 1 };
+      if (product.sellingPlanId) {
+        lineItem.sellingPlanId = product.sellingPlanId;
+      }
+      return lineItem;
+    });
 
     // Use our working checkout API endpoint
     const baseUrl = getBaseUrl();

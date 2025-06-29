@@ -101,33 +101,67 @@ export async function POST(request: NextRequest) {
       throw new Error('No valid variants found');
     }
 
-    // For single product checkout, create direct product URL with variant
-    const firstVariant = variants[0];
-    const firstLineItem = body.lineItems[0];
-    const quantity = firstLineItem.quantity;
-    
-    // Extract variant ID number from GID
-    const variantIdNumber = firstVariant.id.split('/').pop();
-    
-    // Create checkout URL with selling plan support
-    let checkoutUrl: string;
-    
-    if (firstLineItem.sellingPlanId) {
-      // Extract selling plan ID number from GID
-      const sellingPlanIdNumber = firstLineItem.sellingPlanId.split('/').pop();
-      
-      // For subscriptions, create cart URL with selling plan
-      checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${quantity}?selling_plan=${sellingPlanIdNumber}`;
-    } else {
-      // Regular one-time purchase
-      checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${quantity}`;
-    }
-    
-    // Alternative: Direct product page URL
-    const productUrl = firstVariant.product.onlineStoreUrl || 
-                      `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/products/${firstVariant.product.handle}?variant=${variantIdNumber}`;
+    // Process ALL line items instead of just the first one
+    const cartItems: string[] = [];
+    const processedProducts: any[] = [];
+    let totalPrice = 0;
 
-    // Get selling plan info if available
+    for (let i = 0; i < body.lineItems.length; i++) {
+      const lineItem = body.lineItems[i];
+      const variant = variants[i];
+      
+      if (!variant) {
+        console.warn(`No variant found for line item ${i}:`, lineItem);
+        continue;
+      }
+
+      // Extract variant ID number from GID
+      const variantIdNumber = variant.id.split('/').pop();
+      const quantity = lineItem.quantity;
+      
+      // Create cart item string for items[] array format
+      if (lineItem.sellingPlanId) {
+        // Extract selling plan ID number from GID
+        const sellingPlanIdNumber = lineItem.sellingPlanId.split('/').pop();
+        cartItems.push(`items[][id]=${variantIdNumber}&items[][quantity]=${quantity}&items[][selling_plan]=${sellingPlanIdNumber}`);
+      } else {
+        cartItems.push(`items[][id]=${variantIdNumber}&items[][quantity]=${quantity}`);
+      }
+
+      // Calculate price for this item
+      const itemPrice = parseFloat(variant.price) * quantity;
+      totalPrice += itemPrice;
+
+      // Store product info for response
+      processedProducts.push({
+        id: variant.product.id,
+        title: variant.product.title,
+        handle: variant.product.handle,
+        variant: {
+          id: variant.id,
+          title: variant.title,
+          price: variant.price
+        },
+        quantity: quantity,
+        sellingPlan: lineItem.sellingPlanId ? {
+          id: lineItem.sellingPlanId,
+          isSubscription: true
+        } : null,
+        itemTotal: itemPrice.toFixed(2)
+      });
+    }
+
+    if (cartItems.length === 0) {
+      throw new Error('No valid cart items could be processed');
+    }
+
+    // Create multi-product checkout URL using proper Shopify cart/add format
+    // Format: https://shop.myshopify.com/cart/clear?return_to=/cart/add?items[][id]=VARIANT&items[][quantity]=QTY&items[][selling_plan]=PLAN&return_to=/checkout
+    const cartItemsQuery = cartItems.join('&');
+    const checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/clear?return_to=/cart/add?${cartItemsQuery}&return_to=/checkout`;
+    
+    // Get selling plan info from first variant for backward compatibility
+    const firstVariant = variants[0];
     const sellingPlanGroups = firstVariant.product.sellingPlanGroups?.edges || [];
     const availableSellingPlans = sellingPlanGroups.flatMap((group: any) => 
       group.node.sellingPlans.edges.map((plan: any) => ({
@@ -143,24 +177,22 @@ export async function POST(request: NextRequest) {
       success: true,
       checkout: {
         checkoutUrl: checkoutUrl,
-        productUrl: productUrl,
-        product: {
-          id: firstVariant.product.id,
-          title: firstVariant.product.title,
-          handle: firstVariant.product.handle,
-        },
-        variant: {
-          id: firstVariant.id,
-          title: firstVariant.title,
-          price: firstVariant.price
-        },
-        quantity: quantity,
-        sellingPlan: firstLineItem.sellingPlanId ? {
-          id: firstLineItem.sellingPlanId,
-          isSubscription: true
-        } : null,
+        productUrl: firstVariant.product.onlineStoreUrl || 
+                   `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/products/${firstVariant.product.handle}`,
+        products: processedProducts,
+        totalItems: body.lineItems.length,
+        estimatedTotal: totalPrice.toFixed(2),
         availableSellingPlans: availableSellingPlans,
-        shopDomain: SHOPIFY_CONFIG.SHOP_DOMAIN
+        shopDomain: SHOPIFY_CONFIG.SHOP_DOMAIN,
+        // Legacy fields for backward compatibility
+        product: processedProducts[0] ? {
+          id: processedProducts[0].id,
+          title: processedProducts[0].title,
+          handle: processedProducts[0].handle,
+        } : null,
+        variant: processedProducts[0] ? processedProducts[0].variant : null,
+        quantity: processedProducts[0] ? processedProducts[0].quantity : 0,
+        sellingPlan: processedProducts[0] ? processedProducts[0].sellingPlan : null
       }
     });
 
