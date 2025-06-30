@@ -102,7 +102,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Process ALL line items instead of just the first one
-    const cartItems: string[] = [];
     const processedProducts: any[] = [];
     let totalPrice = 0;
 
@@ -115,21 +114,8 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // Extract variant ID number from GID
-      const variantIdNumber = variant.id.split('/').pop();
-      const quantity = lineItem.quantity;
-      
-      // Create cart item string for items[] array format
-      if (lineItem.sellingPlanId) {
-        // Extract selling plan ID number from GID
-        const sellingPlanIdNumber = lineItem.sellingPlanId.split('/').pop();
-        cartItems.push(`items[][id]=${variantIdNumber}&items[][quantity]=${quantity}&items[][selling_plan]=${sellingPlanIdNumber}`);
-      } else {
-        cartItems.push(`items[][id]=${variantIdNumber}&items[][quantity]=${quantity}`);
-      }
-
       // Calculate price for this item
-      const itemPrice = parseFloat(variant.price) * quantity;
+      const itemPrice = parseFloat(variant.price) * lineItem.quantity;
       totalPrice += itemPrice;
 
       // Store product info for response
@@ -142,7 +128,7 @@ export async function POST(request: NextRequest) {
           title: variant.title,
           price: variant.price
         },
-        quantity: quantity,
+        quantity: lineItem.quantity,
         sellingPlan: lineItem.sellingPlanId ? {
           id: lineItem.sellingPlanId,
           isSubscription: true
@@ -151,15 +137,59 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (cartItems.length === 0) {
-      throw new Error('No valid cart items could be processed');
+    if (processedProducts.length === 0) {
+      throw new Error('No valid products could be processed');
     }
 
-    // Create multi-product checkout URL using proper Shopify cart/add format
-    // Format: https://shop.myshopify.com/cart/clear?return_to=/cart/add?items[][id]=VARIANT&items[][quantity]=QTY&items[][selling_plan]=PLAN&return_to=/checkout
-    const cartItemsQuery = cartItems.join('&');
-    const checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/clear?return_to=/cart/add?${cartItemsQuery}&return_to=/checkout`;
+    // Create multi-product checkout URL using proper Shopify cart format
+    // For multiple products: https://shop.myshopify.com/cart/VARIANT1:QTY,VARIANT2:QTY?selling_plan=PLAN_ID
+    // For single product with selling plan: https://shop.myshopify.com/cart/VARIANT:QTY?selling_plan=PLAN_ID
     
+    let checkoutUrl: string;
+    
+    if (body.lineItems.length === 1) {
+      // Single product - use simple format
+      const lineItem = body.lineItems[0];
+      const variant = variants[0];
+      const variantIdNumber = variant.id.split('/').pop();
+      
+      if (lineItem.sellingPlanId) {
+        const sellingPlanIdNumber = lineItem.sellingPlanId.split('/').pop();
+        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}?selling_plan=${sellingPlanIdNumber}`;
+      } else {
+        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}`;
+      }
+    } else {
+      // Multiple products - use comma-separated format
+      const cartItemsForUrl: string[] = [];
+      let hasSellingPlan = false;
+      let sellingPlanId = '';
+      
+      for (let i = 0; i < body.lineItems.length; i++) {
+        const lineItem = body.lineItems[i];
+        const variant = variants[i];
+        
+        if (!variant) continue;
+        
+        const variantIdNumber = variant.id.split('/').pop();
+        cartItemsForUrl.push(`${variantIdNumber}:${lineItem.quantity}`);
+        
+        // For multiple products, use the first selling plan found
+        if (lineItem.sellingPlanId && !hasSellingPlan) {
+          hasSellingPlan = true;
+          sellingPlanId = lineItem.sellingPlanId.split('/').pop() || '';
+        }
+      }
+      
+      const cartPath = cartItemsForUrl.join(',');
+      
+      if (hasSellingPlan && sellingPlanId) {
+        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}?selling_plan=${sellingPlanId}`;
+      } else {
+        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}`;
+      }
+    }
+
     // Get selling plan info from first variant for backward compatibility
     const firstVariant = variants[0];
     const sellingPlanGroups = firstVariant.product.sellingPlanGroups?.edges || [];
