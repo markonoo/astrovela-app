@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 
 export function Footer() {
   return (
     <footer className="bg-gray-100 py-6 border-t border-gray-200">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center mb-4 md:mb-0">
+          <AstrovelaIcon width={20} height={20} className="mr-2" />
           <span className="font-bold text-gray-800 mr-2">AstroVela</span>
           <span className="text-gray-400 text-sm">© 2024 AstroVela. All rights reserved.</span>
         </div>
