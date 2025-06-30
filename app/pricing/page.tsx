@@ -472,15 +472,73 @@ export default function PricingPage() {
           onSelect={() => handleOptionSelect("ebook")}
         />
 
-        {/* Total Price Display */}
+        {/* Enhanced Total Price Display with Order Summary */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-3">
             <span className="font-medium">Total Price:</span>
             <span className="text-xl font-bold">${totalPrice.toFixed(2)}</span>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+          
+          {/* Order Summary - Show what's included */}
+          {(selectedOptions.app || selectedOptions.paperback || selectedOptions.ebook) && (
+            <div className="border-t pt-3 mt-3">
+              <h4 className="font-medium text-sm mb-2">Your order includes:</h4>
+              <div className="space-y-1 text-sm">
+                {selectedOptions.paperback && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">📖 Astrovela Paperback</span>
+                    <span className="font-medium">${getProductPrice("paperback-book") || "55.99"}</span>
+                  </div>
+                )}
+                {selectedOptions.ebook && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">📱 Astrovela Ebook</span>
+                    <span className={`font-medium ${isPaperback ? 'text-green-600' : ''}`}>
+                      {isPaperback ? "FREE" : `$${getProductPrice("ebook") || "49.99"}`}
+                    </span>
+                  </div>
+                )}
+                {selectedOptions.app && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">⭐ Astrovela App (1st month)</span>
+                    <span className={`font-medium ${(isPaperback || isOnlyEbook || isAppAndEbook) ? 'text-green-600' : ''}`}>
+                      {(isPaperback || isOnlyEbook || isAppAndEbook) ? "FREE" : `$${getProductPrice("app-subscription") || "30.99"}`}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Show savings when applicable */}
+                {isPaperback && (selectedOptions.ebook || selectedOptions.app) && (
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between items-center text-green-600 font-medium">
+                      <span>💰 Bundle Savings:</span>
+                      <span>
+                        ${((selectedOptions.ebook ? parseFloat(getProductPrice("ebook") || "49.99") : 0) + 
+                           (selectedOptions.app ? parseFloat(getProductPrice("app-subscription") || "30.99") : 0)).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                {isAppAndEbook && !selectedOptions.paperback && (
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between items-center text-green-600 font-medium">
+                      <span>💰 App included FREE:</span>
+                      <span>${getProductPrice("app-subscription") || "30.99"}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <p className="text-sm text-gray-500 mt-3">
             {selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook 
-              ? "All-inclusive package with best value!" 
+              ? `🎉 Best value! You save $${((parseFloat(getProductPrice("ebook") || "49.99") + parseFloat(getProductPrice("app-subscription") || "30.99"))).toFixed(2)} with this bundle!`
+              : selectedOptions.paperback && (selectedOptions.ebook || selectedOptions.app)
+              ? "🎁 Paperback includes free bonuses!"
+              : isAppAndEbook && !selectedOptions.paperback
+              ? "🎁 App included free with ebook!"
               : "Customize your package by selecting options above"}
           </p>
         </div>
@@ -497,7 +555,7 @@ export default function PricingPage() {
           </div>
         )}
 
-        {/* Order Button */}
+        {/* Enhanced Order Button */}
         <button
           onClick={handleOrderClick}
           disabled={
@@ -528,7 +586,18 @@ export default function PricingPage() {
           ) : orderSuccess ? (
             "Order Complete!"
           ) : (
-            "Order now"
+            <div className="flex flex-col items-center">
+              <span className="text-lg">Order now - ${totalPrice.toFixed(2)}</span>
+              {(selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook) && (
+                <span className="text-sm opacity-90">All 3 products included!</span>
+              )}
+              {(selectedOptions.paperback && (selectedOptions.ebook || selectedOptions.app) && !(selectedOptions.app && selectedOptions.ebook)) && (
+                <span className="text-sm opacity-90">Paperback + FREE bonus!</span>
+              )}
+              {(isAppAndEbook && !selectedOptions.paperback) && (
+                <span className="text-sm opacity-90">Ebook + FREE app!</span>
+              )}
+            </div>
           )}
         </button>
 

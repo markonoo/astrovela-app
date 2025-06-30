@@ -28,6 +28,9 @@ export function ProductOption({
   onSelect,
   saleTag,
 }: ProductOptionProps) {
+  // Show "INCLUDED" badge when price is FREE
+  const showIncludedBadge = price === "FREE" && isSelected;
+  
   return (
     <div
       className={cn(
@@ -42,6 +45,12 @@ export function ProductOption({
       {saleTag && (
         <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
           {saleTag}
+        </div>
+      )}
+      
+      {showIncludedBadge && (
+        <div className="absolute -top-2 -left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+          INCLUDED
         </div>
       )}
 
