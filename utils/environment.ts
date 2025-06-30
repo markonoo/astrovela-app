@@ -3,26 +3,27 @@
  * Simple and safe environment variable access for development and production
  */
 
-// Environment configuration with safe fallbacks
+// Environment configuration with NO hardcoded fallbacks for security
 export const env = {
   // Supabase
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   DATABASE_URL: process.env.DATABASE_URL || '',
   
-  // Astrology API (with development fallbacks)
-  USER_ID: process.env.USER_ID || '642085',
-  API_KEY: process.env.API_KEY || '13bfcdadccb0479d0210413485482bec21047ce0',
+  // Astrology API - NO FALLBACKS FOR SECURITY
+  USER_ID: process.env.USER_ID || '',
+  API_KEY: process.env.API_KEY || '',
   
-  // Shopify (try both NEXT_PUBLIC_ and regular versions)
+  // Shopify - NO FALLBACKS FOR SECURITY
   NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_ENDPOINT: 
     process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_ENDPOINT || 
     process.env.SHOPIFY_STOREFRONT_API_ENDPOINT || 
-    'https://0wbv78-wi.myshopify.com/api/2024-01/graphql.json',
+    '',
   NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN: 
     process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || 
     process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || 
-    '0d3432993f819b0edf650257875519f5',
+    '',
+  SHOPIFY_APP_SELLING_PLAN_ID: process.env.SHOPIFY_APP_SELLING_PLAN_ID || '',
   
   // App Config
   NODE_ENV: process.env.NODE_ENV || 'development'

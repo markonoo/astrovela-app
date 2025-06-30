@@ -1,6 +1,7 @@
 import { QuizState } from "@/contexts/quiz-context"
 import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from "@/utils/shopify-config"
 import { ShopifyError, handleShopifyError, ShopifyErrorCodes } from "@/utils/shopify-error-handler"
+import { env } from "@/utils/environment"
 
 // Type definitions for Shopify responses
 interface ShopifyCheckoutResponse {
@@ -186,7 +187,7 @@ export async function createShopifyCheckout({
       productsToCharge.push({ 
         type: "app", 
         variantId: appVariantId,
-        sellingPlanId: "gid://shopify/SellingPlan/710674514307" // Add selling plan for app subscription
+        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307" // Fallback for existing deployments
       });
     }
 

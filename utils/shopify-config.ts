@@ -3,7 +3,7 @@ export const SHOPIFY_CONFIG = {
   // Store domain (extracted from SHOPIFY_SHOP_URL or use direct domain)
   SHOP_DOMAIN: process.env.NEXT_PUBLIC_SHOPIFY_SHOP_DOMAIN || 
                (process.env.SHOPIFY_SHOP_URL ? new URL(process.env.SHOPIFY_SHOP_URL).hostname : "") ||
-               "3zpk1a-pb.myshopify.com",
+               "",
   
   // Admin API credentials (for backend operations)
   ADMIN_API_ACCESS_TOKEN: process.env.SHOPIFY_ADMIN_ACCESS_TOKEN || process.env.SHOPIFY_ACCESS_TOKEN || "",
@@ -12,7 +12,7 @@ export const SHOPIFY_CONFIG = {
   // Storefront API credentials (for customer-facing operations)
   STOREFRONT_ACCESS_TOKEN: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || 
                            process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || 
-                           "d9b7e592bcc477e33755d5ac0c6f0c10",
+                           "",
   STOREFRONT_API_VERSION: "2024-01",
   
   // Webhook configuration
@@ -42,7 +42,7 @@ export const SHOPIFY_STOREFRONT_ACCESS_TOKEN =
   process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || 
   process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ||
   SHOPIFY_CONFIG.STOREFRONT_ACCESS_TOKEN ||
-  "d9b7e592bcc477e33755d5ac0c6f0c10";
+  "";
 
 // Validate configuration
 export function validateShopifyConfig() {

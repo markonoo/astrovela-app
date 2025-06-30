@@ -1,12 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-// API configuration - using the provided credentials for testing
-const USER_ID = process.env.USER_ID || "642085"
-const API_KEY = process.env.API_KEY || "13bfcdadccb0479d0210413485482bec21047ce0"
+// API configuration - NO HARDCODED CREDENTIALS FOR SECURITY
+const USER_ID = process.env.USER_ID || ""
+const API_KEY = process.env.API_KEY || ""
 const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
 
 export async function GET() {
   try {
+    // Validate that credentials are provided
+    if (!USER_ID || !API_KEY) {
+      return NextResponse.json(
+        {
+          error: "Missing API credentials",
+          message: "USER_ID and API_KEY environment variables are required",
+          provided: {
+            USER_ID: !!USER_ID,
+            API_KEY: !!API_KEY
+          }
+        },
+        { status: 500 }
+      )
+    }
+
     // Create auth string and encode to base64
     const authString = `${USER_ID}:${API_KEY}`
     const base64Auth = Buffer.from(authString).toString("base64")
