@@ -8,7 +8,7 @@ import { isQuizCompleted } from "@/utils/storage"
 import { getZodiacSign } from "@/utils/zodiac"
 import { StarRating } from "@/components/ui/star-rating"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
-
+import { ProductOption } from "@/components/ui/product-option"
 import { PaymentMethods } from "@/components/ui/payment-methods"
 import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
@@ -103,65 +103,36 @@ export default function PricingPage() {
     return product.priceRange.minVariantPrice.amount
   }
 
-  // Calculate total price based on selected options
   const calculateTotalPrice = () => {
-    // Only ebook
-    if (selectedOptions.ebook && !selectedOptions.app && !selectedOptions.paperback) {
-      return 49.99;
+    let total = 0
+
+    if (selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) {
+      // Only app subscription selected
+      total += parseFloat(getProductPrice("app-subscription") || "30.99")
+    } else if (selectedOptions.ebook && !selectedOptions.paperback) {
+      // Ebook selected (app is free with ebook)
+      total += parseFloat(getProductPrice("ebook") || "49.99")
+    } else if (selectedOptions.paperback) {
+      // Paperback selected (app and ebook are free with paperback)
+      total += parseFloat(getProductPrice("paperback-book") || "55.99")
     }
-    // Only app
-    if (selectedOptions.app && !selectedOptions.ebook && !selectedOptions.paperback) {
-      return 30.99;
-    }
-    // Paperback selected (with or without others)
-    if (selectedOptions.paperback) {
-      return 55.99;
-    }
-    // App + ebook (no paperback)
-    if (selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback) {
-      return 49.99;
-    }
-    return 0;
+
+    return total
   }
 
   const totalPrice = calculateTotalPrice()
+  
+  // Helper variables for easier conditional checks
+  const isOnlyApp = selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook
+  const isOnlyEbook = selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app
+  const isPaperback = selectedOptions.paperback
+  const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback
 
-  // Helper for price display logic
-  const isOnlyEbook = selectedOptions.ebook && !selectedOptions.app && !selectedOptions.paperback;
-  const isOnlyApp = selectedOptions.app && !selectedOptions.ebook && !selectedOptions.paperback;
-  const isPaperback = selectedOptions.paperback;
-  const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback;
-
-  // Handle option selection
   const handleOptionSelect = (option: keyof SelectedOptions) => {
-    // Special handling for certain combinations
-    if (option === "paperback") {
-      // If turning paperback off, don't affect other options
-      if (selectedOptions.paperback) {
-        setSelectedOptions(prev => ({
-          ...prev,
-          paperback: false
-        }));
-      } else {
-        // If turning paperback on, keep others as they are
-        setSelectedOptions(prev => ({
-          ...prev,
-          paperback: true
-        }));
-      }
-    } else if (option === "ebook") {
-      // Handle ebook toggling
-      setSelectedOptions(prev => ({
-        ...prev,
-        ebook: !prev.ebook
-      }));
-    } else if (option === "app") {
-      // Handle app toggling
-      setSelectedOptions(prev => ({
-        ...prev,
-        app: !prev.app
-      }));
-    }
+    setSelectedOptions(prev => ({
+      ...prev,
+      [option]: !prev[option]
+    }))
   }
 
   // Handle client-side mounting to prevent hydration mismatches
@@ -198,11 +169,11 @@ export default function PricingPage() {
     return () => clearInterval(timer)
   }, [state, isMounted])
 
-  // Extract sun and moon signs - using useMemo to prevent infinite re-renders
+  // Extract sun and moon signs with better fallback logic
   const { extractedSunSign, extractedMoonSign } = useMemo(() => {
     console.log("🔍 PricingPage - state.sunSign:", state.sunSign, "state.moonSign:", state.moonSign)
     
-    // First, try to get from stored state (API interpretation data)
+    // First, try to use stored sun/moon signs
     if (state.sunSign && state.moonSign) {
       console.log("✅ PricingPage - Using stored signs:", state.sunSign, state.moonSign)
       return {
