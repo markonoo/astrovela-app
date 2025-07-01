@@ -607,17 +607,18 @@ export function QuizController() {
         // Greeting/intro step inspired by competitor screenshot
         return (
           <div className="flex flex-col items-center justify-center min-h-[400px] bg-astro-dark text-white rounded-xl p-8 shadow-lg mx-auto max-w-xl">
-            <h2 className="text-2xl font-bold mb-4 text-yellow-300 text-center">Welcome{state.firstName ? `, ${state.firstName}` : ""}!</h2>
+            <h2 className="text-2xl font-bold mb-4 text-yellow-300 text-center">🌟 Welcome to Astrovela</h2>
             <div className="bg-[#041c3c] rounded-lg p-6 mb-6 w-full">
-              <h3 className="text-lg font-semibold mb-4 text-yellow-200 text-center">Answer questions about life, relationships, and self-growth with Astrovela</h3>
+              <h3 className="text-lg font-semibold mb-4 text-yellow-200 text-center">Discover your unique path to love, purpose, and self-growth.</h3>
+              <p className="text-base mb-4 text-center text-yellow-100">Answer a few personalized questions and unlock insights written in your stars:</p>
               <ul className="text-base space-y-2 text-left">
-                <li>✨ What are my unique strengths and talents?</li>
-                <li>✨ How can I use my personal traits to achieve happiness & success?</li>
-                <li>✨ What's my true life purpose?</li>
-                <li>✨ What type of people am I compatible with?</li>
-                <li>✨ Who is my perfect partner?</li>
-                <li>✨ Who will I marry? When?</li>
-                <li>✨ What life challenges will I face?</li>
+                <li>✨ What are my unique strengths and hidden talents?</li>
+                <li>✨ How can I use my traits to create happiness and success?</li>
+                <li>✨ What is my true life purpose?</li>
+                <li>✨ What kind of people am I most compatible with?</li>
+                <li>✨ Who is my ideal partner?</li>
+                <li>✨ Who will I marry — and when?</li>
+                <li>✨ What major life challenges will I face?</li>
               </ul>
             </div>
             <button
@@ -653,7 +654,7 @@ export function QuizController() {
               <span className="text-yellow-300 text-2xl">★★★★★</span>
             </div>
             <div className="text-xl italic text-yellow-100 mb-2 font-medium max-w-xl text-center">{stepConfig.quote || "This book changed my life! The astrological insights were incredibly accurate and have helped me understand myself better."}</div>
-            <div className="text-base text-yellow-200 mb-4">Astrovela Reader</div>
+            <div className="text-base text-yellow-200 mb-4">Astrovela Customer</div>
             <button
               onClick={nextStep}
               className="px-12 py-4 bg-yellow-300 rounded-full text-gray-900 font-medium text-lg hover:bg-yellow-400 transition-colors shadow"

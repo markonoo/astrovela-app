@@ -94,7 +94,7 @@ export class ShopifyBundleDiscountManager {
 
       // Create discounts that don't exist
       for (const discount of bundleDiscounts) {
-        const exists = existingDiscounts.some(existing => 
+        const exists = existingDiscounts.some((existing: any) => 
           existing.title === discount.title
         );
         

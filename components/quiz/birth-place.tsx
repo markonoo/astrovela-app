@@ -11,6 +11,7 @@ export function BirthPlace() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Generate suggestions when user types
   useEffect(() => {
@@ -23,6 +24,21 @@ export function BirthPlace() {
       setShowSuggestions(false)
     }
   }, [placeInput])
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && 
+          inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -41,6 +57,7 @@ export function BirthPlace() {
     // Set coordinates to 0,0 as fallback (can be enhanced later)
     setBirthLocation(0, 0, formatted)
     setShowSuggestions(false)
+    setSuggestions([])
     if (inputRef.current) inputRef.current.blur()
   }
 
@@ -118,7 +135,7 @@ export function BirthPlace() {
         
         {/* Suggestions Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+          <div ref={dropdownRef} className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
             {suggestions.map((suggestion, index) => (
               <button
                 key={`${suggestion.city}-${suggestion.country}-${index}`}

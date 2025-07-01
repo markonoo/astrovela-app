@@ -2,7 +2,6 @@
 
 import { useQuiz } from "@/contexts/quiz-context"
 import { getZodiacSign, zodiacDescriptions } from "@/utils/zodiac"
-import { ZodiacIcon } from "./zodiac-icons"
 import { useEffect, useState } from "react"
 
 export function ZodiacDisplay() {
@@ -27,12 +26,27 @@ export function ZodiacDisplay() {
 
   const { title, description } = zodiacDescriptions[zodiacSign as keyof typeof zodiacDescriptions]
 
+  // Helper to get SVG file name for zodiac sign (matching profile page)
+  const getZodiacSvg = (sign: string) => {
+    return `/images/zodiac/${sign.toLowerCase()}.svg`
+  }
+
   return (
     <div className="relative w-full h-full text-white overflow-hidden">
       <div className="relative z-10 flex flex-col items-center justify-start min-h-[auto] px-4 pt-0 pb-8">
         <div className="w-full max-w-md text-center space-y-3 mt-6">
           <div className="flex justify-center">
-            <ZodiacIcon sign={zodiacSign as any} className="w-36 h-36" />
+            <div className="w-36 h-36 flex items-center justify-center">
+              <img
+                src={getZodiacSvg(zodiacSign)}
+                alt={zodiacSign}
+                className="w-36 h-36"
+                style={{ 
+                  objectFit: 'contain',
+                  filter: 'brightness(0) invert(1)'
+                }}
+              />
+            </div>
           </div>
 
           <h2 className="text-2xl font-bold text-yellow-300 mb-4">{title}</h2>

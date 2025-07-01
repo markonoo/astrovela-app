@@ -261,9 +261,9 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
       <h2 className="text-2xl font-bold mb-10 text-center">Your astrological profile</h2>
 
       {/* Circular profile display with central zodiac illustration and info bubbles */}
-      <div className="flex justify-center items-center mb-12 gap-12" style={{ minHeight: 420 }}>
+      <div className="flex flex-col lg:flex-row justify-center items-center mb-12 gap-8 lg:gap-12" style={{ minHeight: 420 }}>
         {/* Left column: Moon, Element, Birth place */}
-        <div className="flex flex-col justify-between h-[340px] min-w-[160px]">
+        <div className="flex flex-row lg:flex-col justify-between lg:justify-between lg:h-[340px] w-full lg:min-w-[160px] gap-4 lg:gap-0">
           {/* Moon */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">
@@ -307,16 +307,16 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
           </div>
         </div>
         {/* Center: Large zodiac sign in concentric circles */}
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center order-first lg:order-none">
           <div className="relative flex items-center justify-center">
-            <div className="rounded-full border-4 border-yellow-200 w-64 h-64 flex items-center justify-center shadow-lg" style={{ boxShadow: '0 0 32px 0 #ffe06655' }}>
-              <div className="rounded-full border-2 border-yellow-100 w-48 h-48 flex items-center justify-center bg-yellow-50">
+            <div className="rounded-full border-4 border-yellow-200 w-48 h-48 lg:w-64 lg:h-64 flex items-center justify-center shadow-lg" style={{ boxShadow: '0 0 32px 0 #ffe06655' }}>
+              <div className="rounded-full border-2 border-yellow-100 w-36 h-36 lg:w-48 lg:h-48 flex items-center justify-center bg-yellow-50">
                 <img
                   src={getZodiacSvg(zodiacSign)}
                   alt={zodiacSign}
                   width={136}
                   height={136}
-                  className="w-34 h-34"
+                  className="w-24 h-24 lg:w-34 lg:h-34"
                   style={{ 
                     objectFit: 'contain', 
                     transform: 'translateY(6%)',
@@ -328,7 +328,7 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
           </div>
         </div>
         {/* Right column: Sun, Time of birth, Date of birth */}
-        <div className="flex flex-col justify-between h-[340px] min-w-[160px]">
+        <div className="flex flex-row lg:flex-col justify-between lg:justify-between lg:h-[340px] w-full lg:min-w-[160px] gap-4 lg:gap-0">
           {/* Sun */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow">

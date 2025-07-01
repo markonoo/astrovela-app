@@ -13,6 +13,7 @@ import { supabase } from "@/lib/supabaseClient"
 import { v4 as uuidv4 } from 'uuid';
 import { safeGetSessionItem, safeSetSessionItem } from '@/utils/safe-storage';
 import { createClient } from '@supabase/supabase-js'
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 // Define the available theme colors
 export const THEME_COLORS = {
@@ -215,54 +216,56 @@ export function BookCoverDesigner() {
   }, [userInfo.dateOfBirth])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 items-start justify-center py-4">
-      {/* Left side - Book cover preview */}
-      <div className="w-full lg:w-1/2 flex justify-center items-center mb-4">
-        <div className="w-[350px] h-[450px]">
-          <BookCoverPreview
-            userInfo={userInfo}
-            themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
-            selectedIcon={selectedIcon}
-            customChartUrl={supabaseChartUrl}
-            isLoading={isLoading}
-            sunSign={finalSunSign}
-            moonSign={finalMoonSign}
-            formattedDate={formattedDate}
-          />
-        </div>
-      </div>
-
-      {/* Right side - Customization options */}
-      <div className="w-full lg:w-2/5 flex flex-col">
-        <div className="bg-white p-2 rounded-lg shadow-md flex flex-col gap-1.5">
-          <h2 className="text-base font-medium tracking-wider">Customize Your Cover</h2>
-          <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
-          <div className="mt-1">
-            <h3 className="text-sm font-medium tracking-wider">Choose a Chart</h3>
-            <IconSelector
-              icons={ICONS}
+    <ErrorBoundary>
+      <div className="flex flex-col lg:flex-row gap-4 items-start justify-center py-4">
+        {/* Left side - Book cover preview */}
+        <div className="w-full lg:w-1/2 flex justify-center items-center mb-4">
+          <div className="w-[350px] h-[450px]">
+            <BookCoverPreview
+              userInfo={userInfo}
+              themeColor={THEME_COLORS[selectedColor as keyof typeof THEME_COLORS]}
               selectedIcon={selectedIcon}
-              setSelectedIcon={handleIconSelect}
-              disabledIcons={!isCustomChartEnabled ? ["custom-natal-chart"] : []}
+              customChartUrl={supabaseChartUrl}
+              isLoading={isLoading}
+              sunSign={finalSunSign}
+              moonSign={finalMoonSign}
+              formattedDate={formattedDate}
             />
-            {!isCustomChartEnabled && (
-              <div className="text-xs text-red-500 mt-1">Fill all required fields to enable the custom natal chart.</div>
+          </div>
+        </div>
+
+        {/* Right side - Customization options */}
+        <div className="w-full lg:w-2/5 flex flex-col">
+          <div className="bg-white p-2 rounded-lg shadow-md flex flex-col gap-1.5">
+            <h2 className="text-base font-medium tracking-wider">Customize Your Cover</h2>
+            <UserInfoForm userInfo={userInfo} setUserInfo={setUserInfo} />
+            <div className="mt-1">
+              <h3 className="text-sm font-medium tracking-wider">Choose a Chart</h3>
+              <IconSelector
+                icons={ICONS}
+                selectedIcon={selectedIcon}
+                setSelectedIcon={handleIconSelect}
+                disabledIcons={!isCustomChartEnabled ? ["custom-natal-chart"] : []}
+              />
+              {!isCustomChartEnabled && (
+                <div className="text-xs text-red-500 mt-1">Fill all required fields to enable the custom natal chart.</div>
+              )}
+            </div>
+            <div className="mt-1">
+              <h3 className="text-sm font-medium tracking-wider">Choose the color</h3>
+              <ColorSelector selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
+            </div>
+            <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider text-sm mt-1 py-1.5">
+              Continue
+            </Button>
+            {isLoading && (
+              <div className="flex justify-center items-center mt-2">
+                <span className="loader mr-2" /> Loading chart data...
+              </div>
             )}
           </div>
-          <div className="mt-1">
-            <h3 className="text-sm font-medium tracking-wider">Choose the color</h3>
-            <ColorSelector selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
-          </div>
-          <Button onClick={handleSubmit} className="w-full bg-amber-400 hover:bg-amber-500 text-black tracking-wider text-sm mt-1 py-1.5">
-            Continue
-          </Button>
-          {isLoading && (
-            <div className="flex justify-center items-center mt-2">
-              <span className="loader mr-2" /> Loading chart data...
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   )
 }

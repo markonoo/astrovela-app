@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
+import Image from "next/image"
 import { Loader2 } from "lucide-react"
 import { sanitizeSvg, getFallbackChart, applySvgColorScheme, getColorScheme } from "@/utils/chart-utils"
 import { useZodiacSigns } from "@/hooks/use-zodiac-signs"
 import CurvedText from "../CurvedText"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 interface BookCoverProps {
   colorScheme?: string
@@ -140,13 +142,10 @@ export function BookCover({
   const finalMoonSign = moonSign || dbMoonSign || (isExample ? "taurus" : "gemini")
 
   return (
-    <div
-      className={`w-full h-full rounded-lg overflow-hidden shadow-xl transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"} ${className}`}
-      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-    >
+    <ErrorBoundary>
       <div
-        className="w-full h-full relative flex flex-col items-center justify-between p-6"
-        style={{ backgroundColor: colors.bgColor }}
+        className={`relative w-full h-full flex flex-col overflow-hidden ${className}`}
+                 style={{ backgroundColor: colors.bgColor }}
       >
         {/* Decorative stars */}
         <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning={true}>
@@ -306,7 +305,7 @@ export function BookCover({
           </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   )
 }
 

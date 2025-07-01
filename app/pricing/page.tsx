@@ -17,6 +17,7 @@ import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-service"
 import { ShopifyError } from "@/utils/shopify-error-handler"
 import { format } from "date-fns"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 // Type definition for ShopifyProduct
 interface ShopifyProduct {
@@ -344,500 +345,101 @@ export default function PricingPage() {
   ]
 
   return (
-    <>
-      {/* Header with logo and back button */}
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <div className="flex items-center">
-          <span className="text-[#28293d] font-medium text-xl">astrovela</span>
-          <AstrovelaIcon width={28} height={28} className="ml-2" />
-        </div>
-          <button onClick={handleBackClick} className="flex items-center text-gray-600 hover:text-gray-900">
-            <ChevronLeft size={24} />
-          </button>
-      </header>
-
-      <main className="max-w-lg mx-auto px-4 pb-8">
-        {/* Top Section with Discount Timer */}
-        <div className="bg-gray-50 p-6 mb-6">
-          {/* Discount Timer - Using the synchronized timer */}
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <p className="text-sm font-medium">50% discount reserved for</p>
-              <p className="text-2xl font-bold">{formatCountdown(countdown)}</p>
-            </div>
-            <button
-              onClick={scrollToOptions}
-              className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-medium text-sm"
-            >
-              Order now
-            </button>
-          </div>
-
-          {/* Main Heading */}
-          <h1 className="text-2xl font-bold mb-2 text-center">
-            Get the #1 personalized astrology book & transform your life today
-          </h1>
-          <p className="text-center text-gray-700 mb-4">
-            In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
-          </p>
-
-          {/* Social Proof */}
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-sm">
-              Over <span className="font-bold">2,065,847</span> books ordered!
-            </p>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header Section */}
+        <header className="bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center">
-              <StarRating rating={4.8} />
-              <span className="text-sm ml-1">4.8/5</span>
-            </div>
-          </div>
-
-          {/* Book Cover - Using the enhanced book cover component */}
-          <div className="flex items-center justify-center mb-4 w-full">
-            <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] h-auto aspect-[7/9] flex items-center justify-center">
-              <BookCoverPreview
-                userInfo={{
-                  firstName: state.firstName || "FIRST",
-                  lastName: state.lastName || "",
-                  placeOfBirth: state.birthPlace || "Place of Birth",
-                  dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-                    : "",
-                }}
-                themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.black}
-                selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
-                formattedDate={
-                  state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                    ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "MMMM d, yyyy")
-                    : "Date of Birth"
-                }
-                sunSign={extractedSunSign}
-                moonSign={extractedMoonSign}
-                customChartUrl={state.customChartUrl}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Choose Option Section */}
-        <div ref={optionsSectionRef}>
-          <h2 className="text-xl font-bold mb-4 text-center" id="options-section">
-            Choose your best option
-          </h2>
-        </div>
-
-        {/* Countdown Bar - Using the synchronized timer */}
-        <div className="bg-red-500 text-white rounded-lg p-3 mb-4 flex items-center justify-center">
-          <Clock className="mr-2" size={18} />
-          <p className="text-sm font-medium">This offer ends in {formatCountdown(countdown)}</p>
-        </div>
-
-        {/* Product Options */}
-        <ProductOption
-          type="app"
-          title="astrovela app"
-          features={[
-            "Unlimited compatibility reports",
-            "New daily horoscopes & astrology content",
-            "FREE 1-month trial with ebook or paperback",
-          ]}
-          price={isPaperback || isOnlyEbook || isAppAndEbook ? "FREE" : getProductPrice("app-subscription") ? `$${getProductPrice("app-subscription")}` : "$30.99"}
-          originalPrice={isOnlyApp ? "" : "$30.99"}
-          priceUnit={isPaperback || isOnlyEbook || isAppAndEbook ? "" : "/month"}
-          imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOptions.app}
-          onSelect={() => handleOptionSelect("app")}
-        />
-
-        <ProductOption
-          type="paperback"
-          title="astrovela paperback"
-          features={["Uniquely created just for you", "FREE shipping", "FREE app & ebook included"]}
-          price={getProductPrice("paperback-book") ? `$${getProductPrice("paperback-book")}` : "$55.99"}
-          originalPrice="$159.97"
-          imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOptions.paperback}
-          onSelect={() => handleOptionSelect("paperback")}
-          saleTag="SALE 65% OFF"
-        />
-
-        <ProductOption
-          type="ebook"
-          title="astrovela ebook"
-          features={["Digital copy delivered to your email", "FREE app included", "FREE with the paperback"]}
-          price={isPaperback ? "FREE" : isOnlyEbook || isAppAndEbook ? "$49.99" : getProductPrice("ebook") ? `$${getProductPrice("ebook")}` : "$49.99"}
-          originalPrice={isOnlyEbook || isAppAndEbook ? "" : "$49.99"}
-          imageSrc="/placeholder.svg?height=80&width=60"
-          isSelected={selectedOptions.ebook}
-          onSelect={() => handleOptionSelect("ebook")}
-        />
-
-        {/* Enhanced Total Price Display with Order Summary */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-medium">Total Price:</span>
-            <span className="text-xl font-bold">${totalPrice.toFixed(2)}</span>
-          </div>
-          
-          {/* Order Summary - Show what's included */}
-          {(selectedOptions.app || selectedOptions.paperback || selectedOptions.ebook) && (
-            <div className="border-t pt-3 mt-3">
-              <h4 className="font-medium text-sm mb-2">Your order includes:</h4>
-              <div className="space-y-1 text-sm">
-                {selectedOptions.paperback && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">📖 Astrovela Paperback</span>
-                    <span className="font-medium">${getProductPrice("paperback-book") || "55.99"}</span>
-                  </div>
-                )}
-                {selectedOptions.ebook && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">📱 Astrovela Ebook</span>
-                    <span className={`font-medium ${isPaperback ? 'text-green-600' : ''}`}>
-                      {isPaperback ? "FREE" : `$${getProductPrice("ebook") || "49.99"}`}
-                    </span>
-                  </div>
-                )}
-                {selectedOptions.app && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">⭐ Astrovela App (1st month)</span>
-                    <span className={`font-medium ${(isPaperback || isOnlyEbook || isAppAndEbook) ? 'text-green-600' : ''}`}>
-                      {(isPaperback || isOnlyEbook || isAppAndEbook) ? "FREE" : `$${getProductPrice("app-subscription") || "30.99"}`}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Show savings when applicable */}
-                {isPaperback && (selectedOptions.ebook || selectedOptions.app) && (
-                  <div className="border-t pt-2 mt-2">
-                    <div className="flex justify-between items-center text-green-600 font-medium">
-                      <span>💰 Bundle Savings:</span>
-                      <span>
-                        ${((selectedOptions.ebook ? parseFloat(getProductPrice("ebook") || "49.99") : 0) + 
-                           (selectedOptions.app ? parseFloat(getProductPrice("app-subscription") || "30.99") : 0)).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                
-                {isAppAndEbook && !selectedOptions.paperback && (
-                  <div className="border-t pt-2 mt-2">
-                    <div className="flex justify-between items-center text-green-600 font-medium">
-                      <span>💰 App included FREE:</span>
-                      <span>${getProductPrice("app-subscription") || "30.99"}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          
-          <p className="text-sm text-gray-500 mt-3">
-            {selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook 
-              ? `🎉 Best value! You save $${((parseFloat(getProductPrice("ebook") || "49.99") + parseFloat(getProductPrice("app-subscription") || "30.99"))).toFixed(2)} with this bundle!`
-              : selectedOptions.paperback && (selectedOptions.ebook || selectedOptions.app)
-              ? "🎁 Paperback includes free bonuses!"
-              : isAppAndEbook && !selectedOptions.paperback
-              ? "🎁 App included free with ebook!"
-              : "Customize your package by selecting options above"}
-          </p>
-        </div>
-
-        {checkoutError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p>{checkoutError}</p>
-          </div>
-        )}
-
-        {orderSuccess && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            <p>Order successful! Redirecting to payment page...</p>
-          </div>
-        )}
-
-        {/* Enhanced Order Button */}
-        <button
-          onClick={handleOrderClick}
-          disabled={
-            isProcessingOrder || orderSuccess || !termsAccepted ||
-            (!selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook)
-          }
-          className={`w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold mb-4 ${
-            !termsAccepted || isProcessingOrder || orderSuccess || (!selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) ? "opacity-70" : ""
-          }`}
-        >
-          {isProcessingOrder ? (
-            <div className="flex items-center justify-center">
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-900"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+              <button
+                onClick={handleBackClick}
+                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
               >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Processing...
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <div className="flex items-center">
+                <span className="text-[#28293d] font-medium">astrovela</span>
+                <AstrovelaIcon width={20} height={20} className="ml-1" />
+              </div>
             </div>
-          ) : orderSuccess ? (
-            "Order Complete!"
-          ) : (
-            <div className="flex flex-col items-center">
-              <span className="text-lg">Order now - ${totalPrice.toFixed(2)}</span>
-              {(selectedOptions.app && selectedOptions.paperback && selectedOptions.ebook) && (
-                <span className="text-sm opacity-90">All 3 products included!</span>
-              )}
-              {(selectedOptions.paperback && (selectedOptions.ebook || selectedOptions.app) && !(selectedOptions.app && selectedOptions.ebook)) && (
-                <span className="text-sm opacity-90">Paperback + FREE bonus!</span>
-              )}
-              {(isAppAndEbook && !selectedOptions.paperback) && (
-                <span className="text-sm opacity-90">Ebook + FREE app!</span>
-              )}
-            </div>
-          )}
-        </button>
+          </div>
+        </header>
 
-        {/* Terms Checkbox - Made entire area clickable */}
-        <div className="mb-6">
-          <div className="flex items-start cursor-pointer" onClick={toggleTerms} id="terms-checkbox">
-            <div className="flex-shrink-0 mt-1">
-              <div
-                className={`w-5 h-5 ${termsAccepted ? "bg-yellow-400" : "border-2 border-gray-300"} flex items-center justify-center transition-all duration-200`}
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Title Section */}
+            <div className="text-center mb-12">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Choose Your AstroVela Experience
+              </h1>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Get your personalized astrology book and discover the secrets of your cosmic blueprint
+              </p>
+            </div>
+            
+            {/* Terms and Conditions Checkbox */}
+            <div className="max-w-md mx-auto mb-8">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-lg border">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="terms-checkbox"
+                    checked={termsAccepted}
+                    onChange={toggleTerms}
+                    className={`h-5 w-5 text-yellow-400 border-2 rounded focus:ring-yellow-300 ${
+                      showTermsWarning ? 'border-red-500 animate-pulse' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+                <label htmlFor="terms-checkbox" className="text-sm text-gray-700 cursor-pointer">
+                  I agree to the{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 hover:text-yellow-700 underline"
+                  >
+                    Terms & Conditions
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 hover:text-yellow-700 underline"
+                  >
+                    Privacy Policy
+                  </a>
+                </label>
+              </div>
+              {showTermsWarning && (
+                <p className="text-red-500 text-sm mt-2 text-center">
+                  Please accept the Terms & Conditions and Privacy Policy to continue
+                </p>
+              )}
+            </div>
+
+            {/* Order Button */}
+            <div className="text-center">
+              <button
+                onClick={handleOrderClick}
+                disabled={isProcessingOrder}
+                className={`px-8 py-3 rounded-full font-medium transition-colors ${
+                  isProcessingOrder
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-yellow-300 text-gray-900 hover:bg-yellow-400'
+                }`}
               >
-                {termsAccepted && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-3 h-3 text-white">
-                    <path d="M5 12l5 5L20 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </div>
-            </div>
-            <label className="text-sm text-gray-600 ml-2">
-              I agree to the <span className="underline">T&Cs</span> and{" "}
-              <span className="underline">Privacy Policy</span>
-            </label>
-          </div>
-          {showTermsWarning && !termsAccepted && (
-            <p className="text-red-500 text-sm mt-2">Please accept the Terms and Conditions to continue</p>
-          )}
-        </div>
-
-        {/* Payment Methods */}
-        <div className="mb-4">
-          <PaymentMethods />
-        </div>
-
-        {/* Subscription Notice */}
-        <p className="text-xs text-gray-500 text-center mb-8">
-          By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1
-          month trial, astrovela will automatically charge my payment method the regular price of $30.99 every 1 month
-          thereafter until I cancel by contacting us at help@astrovela.com
-        </p>
-
-        {/* Benefits Section */}
-        <div className="bg-gray-100 rounded-lg p-6 mb-6">
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold mb-4">
-              Easily improve relationships, understand yourself better, and reach your personal goals 💛
-            </h2>
-            <div className="bg-white rounded-lg overflow-hidden mb-6">
-              <img
-                src="/placeholder.svg?height=200&width=400"
-                alt="Book pages showing relationship rituals"
-                className="w-full h-auto"
-              />
+                {isProcessingOrder ? 'Processing...' : 'Order Now'}
+              </button>
+              {checkoutError && (
+                <p className="text-red-500 text-sm mt-2">{checkoutError}</p>
+              )}
             </div>
           </div>
-
-          {/* What's Included Section */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold mb-4">What's included?</h2>
-
-            <div className="space-y-4">
-              {/* Birth Chart Analysis */}
-              <div className="flex">
-                <div className="mr-4 mt-1">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                      <path d="M12 2V12L16 16" stroke="currentColor" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium">Personalized birth chart analysis</h3>
-                  <p className="text-sm text-gray-600">
-                    Discover the secrets of your unique astrological blueprint to understand your personality,
-                    strengths, and life path.
-                  </p>
-                </div>
-              </div>
-
-              {/* Love & Relationship */}
-              <div className="flex">
-                <div className="mr-4 mt-1">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
-                      <path
-                        d="M21 11.5C21 16.75 12 22 12 22C12 22 3 16.75 3 11.5C3 7.02 7.02 3 11.5 3C15.98 3 21 7.02 21 11.5Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                      <circle cx="12" cy="11" r="3" stroke="currentColor" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium">Love & relationship insights</h3>
-                  <p className="text-sm text-gray-600">
-                    Understand your zodiac compatibility to find out how you connect with others & who is your perfect
-                    partner.
-                  </p>
-                </div>
-              </div>
-
-              {/* Personality Profile */}
-              <div className="flex">
-                <div className="mr-4 mt-1">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
-                      <path
-                        d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium">Personality & life path profile</h3>
-                  <p className="text-sm text-gray-600">
-                    Learn about your personal traits, strengths, and areas for growth, helping you to better understand
-                    and embrace your true self.
-                  </p>
-                </div>
-              </div>
-
-              {/* Career Guidance */}
-              <div className="flex">
-                <div className="mr-4 mt-1">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
-                      <rect x="4" y="5" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
-                      <path d="M16 3V7" stroke="currentColor" strokeWidth="2" />
-                      <path d="M8 3V7" stroke="currentColor" strokeWidth="2" />
-                      <path d="M4 11H20" stroke="currentColor" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium">Career & success guidance</h3>
-                  <p className="text-sm text-gray-600">
-                    Enhance your professional life and achieve career goals by uncovering opportunities tailored to your
-                    strengths.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Content */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold mb-4">Additional content:</h2>
-            <ul className="space-y-2">
-              {[
-                "Divination & Astrology",
-                "Beginner's Guide to Palmistry",
-                "Tailored Tarot Card Readings",
-                "Crystals in Astrology",
-                "Intro to Numerology",
-                "History of Astrology & Modern Astrology",
-                "And more...",
-              ].map((item, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="text-yellow-400 mr-2">★</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Order Button */}
-          <button onClick={scrollToOptions} className="w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold">
-            Order now
-          </button>
-        </div>
-
-        {/* FAQ Section - Centered text and buttons */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Frequently asked questions</h2>
-
-          <div className="bg-gray-100 rounded-lg overflow-hidden">
-            <AccordionItem title="How is astrovela personalized?">
-              <p className="text-gray-600">
-                astrovela is personalized based on your birth details (date, time, and location) which create a unique
-                astrological blueprint. Our advanced algorithms analyze your specific planetary positions and aspects to
-                generate insights tailored specifically to you.
-              </p>
-            </AccordionItem>
-
-            <AccordionItem title="What will I find inside my book?">
-              <p className="text-gray-600">
-                Your book contains a comprehensive analysis of your birth chart, personality traits, relationship
-                compatibility, career guidance, and life path insights. It includes detailed explanations of your sun,
-                moon, and rising signs, planetary positions, and how these cosmic influences shape your life.
-              </p>
-            </AccordionItem>
-
-            <AccordionItem title="How long will it take to receive my book?">
-              <p className="text-gray-600">
-                Digital copies (ebook) are delivered instantly to your email. Physical books (paperback) typically ship
-                within 3-5 business days and delivery times depend on your location, usually arriving within 7-14 days
-                after shipping.
-              </p>
-            </AccordionItem>
-
-            <AccordionItem title="I'm new to astrology. Is this book right for me?">
-              <p className="text-gray-600">
-                astrovela is designed to be accessible for beginners while also providing depth for those more familiar
-                with astrology. The book includes explanations of key concepts and terms, making it easy to understand
-                regardless of your prior knowledge.
-              </p>
-            </AccordionItem>
-
-            <AccordionItem title="Will the book help me with my specific issues and goals?">
-              <p className="text-gray-600">
-                Yes, your personalized book addresses various life areas including relationships, career, personal
-                growth, and challenges. While it can't predict specific outcomes, it provides valuable insights into
-                your natural tendencies, strengths, and potential challenges, helping you make more informed decisions
-                aligned with your cosmic blueprint.
-              </p>
-            </AccordionItem>
-          </div>
-        </div>
-
-        {/* Testimonials Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-center">Real stories from our community</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={index}
-                quote={testimonial.quote}
-                name={testimonial.name}
-                age={testimonial.age}
-                rating={testimonial.rating}
-                imageSrc={testimonial.imageSrc}
-              />
-            ))}
-          </div>
-        </div>
-      </main>
-    </>
+        </main>
+      </div>
+    </ErrorBoundary>
   )
 }
 

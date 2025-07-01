@@ -1,6 +1,7 @@
 import type React from "react"
 import { QuizProvider } from "@/contexts/quiz-context"
 import { UserProvider } from "@/contexts/UserContext"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { AnalyticsSetup } from './analytics-setup';
@@ -90,7 +91,9 @@ export default function RootLayout({
         <AnalyticsSetup />
         <UserProvider>
           <QuizProvider>
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </QuizProvider>
         </UserProvider>
       </body>
