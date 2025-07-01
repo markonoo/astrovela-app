@@ -212,7 +212,7 @@ export async function POST(request: Request) {
           sunSign = sunPlanet?.sign || null;
           moonSign = moonPlanet?.sign || null;
           
-          devLog('Extracted signs:', { sunSign, moonSign, sunPlanet, moonPlanet });
+          devLog('Extracted signs from API:', { sunSign, moonSign, sunPlanet, moonPlanet });
           
           if (session_id && interp) {
             devLog('Inserting comprehensive interpretation into Supabase for session:', session_id);
@@ -258,7 +258,79 @@ export async function POST(request: Request) {
           }
         } catch (apiError) {
           devError('Astrology API error:', apiError)
-          // Continue without sun/moon signs if API fails
+          devLog('API failed, calculating fallback sun and moon signs from birth data');
+          
+          // FALLBACK: Calculate sun and moon signs when API fails
+          try {
+            const { getZodiacSign } = await import("@/utils/zodiac");
+            
+            // Calculate sun sign from birth date
+            const calculatedSunSign = getZodiacSign(month, day);
+            
+            // Calculate moon sign using improved astronomical approximation
+            // This is still simplified but more accurate than the basic version
+            const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                                "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"];
+            
+            // More accurate moon sign calculation
+            const birthDate = new Date(year, month - 1, day, hour, min);
+            const birthTimestamp = birthDate.getTime();
+            
+            // Known new moon reference point (January 1, 2000, 18:14 UTC)
+            const referenceNewMoon = new Date(2000, 0, 6, 18, 14).getTime();
+            const lunarCycle = 29.53059 * 24 * 60 * 60 * 1000; // Lunar month in milliseconds
+            
+            // Calculate number of lunar cycles since reference point
+            const cyclesSinceReference = (birthTimestamp - referenceNewMoon) / lunarCycle;
+            
+            // Moon's position in its cycle (0-1, where 0 = new moon)
+            const moonPhase = cyclesSinceReference - Math.floor(cyclesSinceReference);
+            
+            // Convert moon phase to zodiac position
+            // Moon moves ~13.2 degrees per day, completing 360 degrees in ~27.3 days
+            const moonDegrees = (moonPhase * 360) % 360;
+            const moonSignIndex = Math.floor(moonDegrees / 30);
+            
+            // Add birth time adjustment (moon moves ~0.5 degrees per hour)
+            const hourAdjustment = (hour + min/60) * 0.5;
+            const adjustedMoonDegrees = (moonDegrees + hourAdjustment) % 360;
+            const finalMoonSignIndex = Math.floor(adjustedMoonDegrees / 30);
+            
+            const calculatedMoonSign = zodiacSigns[finalMoonSignIndex];
+            
+            sunSign = calculatedSunSign;
+            moonSign = calculatedMoonSign;
+            
+            devLog('Calculated fallback signs:', { sunSign, moonSign, moonDegrees: adjustedMoonDegrees, finalMoonSignIndex });
+            
+            // Store the calculated signs in Supabase for future reference
+            if (session_id) {
+              const fallbackInterpretationData = {
+                session_id,
+                chartImageId: chartImage.id,
+                sun_sign: sunSign,
+                moon_sign: moonSign,
+                created_at: new Date().toISOString(),
+                // Mark as calculated fallback
+                notes: 'Signs calculated as fallback due to API unavailability'
+              };
+              
+              const { error: supaError } = await supabaseAuth
+                .from('NatalChartInterpretation')
+                .insert([fallbackInterpretationData]);
+                
+              if (supaError) {
+                devError('Error inserting fallback interpretation into Supabase:', supaError)
+              } else {
+                devLog('Successfully inserted fallback interpretation data into Supabase')
+              }
+            }
+          } catch (fallbackError) {
+            devError('Error calculating fallback signs:', fallbackError);
+            // Ultimate fallback
+            sunSign = null;
+            moonSign = null;
+          }
         }
       } else {
         devLog('Invalid birth data values:', { day, month, year, hour, min, lat, lon })

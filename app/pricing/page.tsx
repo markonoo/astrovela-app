@@ -121,7 +121,7 @@ export default function PricingPage() {
   }
 
   const totalPrice = calculateTotalPrice()
-  
+
   // Helper variables for easier conditional checks
   const isOnlyApp = selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook
   const isOnlyEbook = selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app
@@ -129,8 +129,8 @@ export default function PricingPage() {
   const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback
 
   const handleOptionSelect = (option: keyof SelectedOptions) => {
-    setSelectedOptions(prev => ({
-      ...prev,
+        setSelectedOptions(prev => ({
+          ...prev,
       [option]: !prev[option]
     }))
   }
@@ -328,7 +328,7 @@ export default function PricingPage() {
 
   // Prevent hydration mismatch by ensuring client-side consistency
   if (!isMounted) {
-    return (
+  return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>
@@ -350,7 +350,7 @@ export default function PricingPage() {
                 className="mr-4 p-2 text-gray-600 hover:text-gray-900"
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
+          </button>
               <div className="flex items-center">
                 <span className="text-[#28293d] font-medium">astrovela</span>
                 <AstrovelaIcon width={20} height={20} className="ml-1" />
@@ -368,40 +368,40 @@ export default function PricingPage() {
               </div>
               <div className="text-2xl font-bold text-gray-900 mb-4">
                 {formatCountdown(countdown)}
-              </div>
-              <button 
-                onClick={scrollToOptions}
-                className="bg-yellow-300 text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-yellow-400 transition-colors"
-              >
-                Order now
-              </button>
             </div>
+            <button
+              onClick={scrollToOptions}
+                className="bg-yellow-300 text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-yellow-400 transition-colors"
+            >
+              Order now
+            </button>
+          </div>
 
-            {/* Main Heading */}
+          {/* Main Heading */}
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Get the #1 personalized astrology<br />
                 book & transform your life today
-              </h1>
+          </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
-                In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
-              </p>
+            In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
+          </p>
               <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                 <span>Over 2,065,847 books ordered!</span>
                 <div className="flex items-center gap-1">
-                  <StarRating rating={4.8} />
+              <StarRating rating={4.8} />
                   <span>4.8/5</span>
                 </div>
               </div>
-            </div>
+          </div>
 
             {/* Book Cover Preview */}
             <div className="flex justify-center mb-12">
               <div className="w-80 h-96">
-                <BookCoverPreview
-                  userInfo={{
+              <BookCoverPreview
+                userInfo={{
                     firstName: state.firstName || "Your Name",
-                    lastName: state.lastName || "",
+                  lastName: state.lastName || "",
                     dateOfBirth: state.birthDate.day && state.birthDate.month && state.birthDate.year
                       ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
                       : "01.07-14:10",
@@ -415,8 +415,8 @@ export default function PricingPage() {
                     ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
                     : "01.07-14:10"}
                 />
-              </div>
-            </div>
+          </div>
+        </div>
 
             {/* Product Selection */}
             <div className="text-center mb-8" ref={optionsSectionRef}>
@@ -427,8 +427,8 @@ export default function PricingPage() {
                 <div className="flex items-center justify-center gap-2 text-red-700 mb-1">
                   <Clock className="h-4 w-4" />
                   <span className="text-sm font-medium">This offer ends in {formatCountdown(countdown)}</span>
-                </div>
-              </div>
+          </div>
+        </div>
 
               {/* Product Cards */}
               <div className="space-y-4 max-w-2xl mx-auto">
@@ -444,9 +444,9 @@ export default function PricingPage() {
                         {selectedOptions.app && (
                           <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
+                  </svg>
+                )}
+              </div>
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">astrovela app</h3>
                         <ul className="text-sm text-gray-600 mt-1">
@@ -455,17 +455,17 @@ export default function PricingPage() {
                           <li>• FREE 1-month trial with ebook or paperback</li>
                         </ul>
                       </div>
-                    </div>
+            </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-green-600">
                         {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€30.99'}
-                      </div>
+          </div>
                       {(isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback)) && (
                         <div className="text-sm text-gray-500 line-through">€30.99</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+          )}
+        </div>
+            </div>
+          </div>
 
                 {/* Paperback Option */}
                 <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all relative ${
@@ -486,7 +486,7 @@ export default function PricingPage() {
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         )}
-                      </div>
+                </div>
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">astrovela paperback</h3>
                         <ul className="text-sm text-gray-600 mt-1">
@@ -494,8 +494,8 @@ export default function PricingPage() {
                           <li>• FREE shipping</li>
                           <li>• FREE app & ebook included</li>
                         </ul>
-                      </div>
-                    </div>
+                </div>
+              </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-green-600">€55.99</div>
                       <div className="text-sm text-gray-500 line-through">€159.97</div>
@@ -525,8 +525,8 @@ export default function PricingPage() {
                           <li>• FREE app included</li>
                           <li>• FREE with the paperback</li>
                         </ul>
-                      </div>
-                    </div>
+                </div>
+              </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-green-600">
                         {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€49.99'}
@@ -537,9 +537,9 @@ export default function PricingPage() {
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
-            </div>
-            
+
             {/* Terms and Conditions Checkbox */}
             <div className="max-w-md mx-auto mb-8">
               <div className="flex items-start gap-3 p-4 bg-white rounded-lg border">
@@ -598,12 +598,12 @@ export default function PricingPage() {
               {checkoutError && (
                 <p className="text-red-500 text-sm mt-2">{checkoutError}</p>
               )}
-            </div>
+          </div>
 
             {/* Payment Methods */}
             <div className="max-w-md mx-auto mb-12">
               <PaymentMethods />
-            </div>
+          </div>
 
             {/* Testimonials */}
             <div className="mb-12">
@@ -615,7 +615,7 @@ export default function PricingPage() {
                   <TestimonialCard key={index} {...testimonial} />
                 ))}
               </div>
-            </div>
+        </div>
 
             {/* FAQ Section */}
             <div className="mb-12">
@@ -625,21 +625,21 @@ export default function PricingPage() {
               <div className="max-w-3xl mx-auto space-y-4">
                 <AccordionItem title="What makes AstroVela different from other astrology apps?">
                   AstroVela provides deeply personalized insights based on your complete birth chart, not just your sun sign. Our advanced algorithms analyze over 50 astrological factors to create a truly unique experience for you.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem title="How accurate are the predictions?">
                   Our predictions are based on traditional astrological principles combined with modern data analysis. While astrology is not scientifically proven, thousands of users report finding value and accuracy in their personalized readings.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem title="Can I cancel my subscription anytime?">
                   Yes, you can cancel your app subscription at any time through your account settings. Your access will continue until the end of your current billing period.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem title="What if I'm not satisfied with my book?">
                   We offer a 30-day money-back guarantee. If you're not completely satisfied with your personalized astrology book, contact our support team for a full refund.
-                </AccordionItem>
-              </div>
-            </div>
+            </AccordionItem>
+          </div>
+        </div>
           </div>
         </main>
-      </div>
+        </div>
     </ErrorBoundary>
   )
 }

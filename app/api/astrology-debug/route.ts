@@ -1,46 +1,41 @@
-import { type NextRequest, NextResponse } from "next/server"
-
-// API configuration - NO HARDCODED CREDENTIALS FOR SECURITY
-const USER_ID = process.env.USER_ID || ""
-const API_KEY = process.env.API_KEY || ""
-const ASTROLOGY_API_BASE_URL = "https://json.astrologyapi.com/v1"
+import { NextResponse } from "next/server"
+import { env, devLog, devError } from "@/utils/environment"
 
 export async function GET() {
   try {
-    // Validate that credentials are provided
-    if (!USER_ID || !API_KEY) {
-      return NextResponse.json(
-        {
-          error: "Missing API credentials",
-          message: "USER_ID and API_KEY environment variables are required",
-          provided: {
-            USER_ID: !!USER_ID,
-            API_KEY: !!API_KEY
-          }
-        },
-        { status: 500 }
-      )
+    devLog("=== ASTROLOGY API DEBUG ===")
+    
+    // Check environment variables
+    const USER_ID = env.USER_ID
+    const API_KEY = env.API_KEY
+    
+    devLog("USER_ID:", USER_ID ? `Set (length: ${USER_ID.length})` : "Not set")
+    devLog("API_KEY:", API_KEY ? `Set (length: ${API_KEY.length})` : "Not set")
+    
+    if (!USER_ID || !API_KEY || USER_ID.length < 5 || API_KEY.length < 10) {
+      return NextResponse.json({
+        error: "API credentials not properly configured",
+        details: {
+          userIdLength: USER_ID?.length || 0,
+          apiKeyLength: API_KEY?.length || 0,
+          userIdSet: !!USER_ID,
+          apiKeySet: !!API_KEY,
+          message: "USER_ID and API_KEY environment variables are required for Astrology API"
+        }
+      }, { status: 400 })
     }
-
-    // Create auth string and encode to base64
+    
+    // Test API call with a simple planets request
     const authString = `${USER_ID}:${API_KEY}`
     const base64Auth = Buffer.from(authString).toString("base64")
-
-    // Headers with Basic Auth
-    const headers = {
-      Authorization: `Basic ${base64Auth}`,
-      "Content-Type": "application/json",
-    }
-
-    // Log the auth details (without exposing the full key)
-    console.log("Debug - Auth String Format:", `${USER_ID}:API_KEY`)
-    console.log("Debug - Headers:", {
-      Authorization: `Basic ${base64Auth.substring(0, 10)}...`,
-      "Content-Type": "application/json",
+    
+    devLog("Auth String Format:", `${USER_ID}:API_KEY`)
+    devLog("Headers:", {
+      Authorization: 'Basic ***',
+      'Content-Type': 'application/json'
     })
-
-    // Simple test data
-    const testData = {
+    
+    const requestBody = {
       day: 1,
       month: 1,
       year: 2000,
@@ -48,54 +43,75 @@ export async function GET() {
       min: 0,
       lat: 0,
       lon: 0,
-      tzone: 0,
+      tzone: 0
     }
-
-    console.log("Debug - Request Body:", testData)
-
-    // Make a simple API call to test connectivity
-    const response = await fetch(`${ASTROLOGY_API_BASE_URL}/planets`, {
+    
+    devLog("Request Body:", requestBody)
+    
+    const response = await fetch("https://json.astrologyapi.com/v1/planets", {
       method: "POST",
-      headers,
-      body: JSON.stringify(testData),
+      headers: {
+        "Authorization": `Basic ${base64Auth}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
     })
-
-    console.log("Debug - Response Status:", response.status, response.statusText)
-
-    // Get the raw response text
-    const rawResponseText = await response.text()
-    console.log("Debug - Raw Response (first 200 chars):", rawResponseText.substring(0, 200))
-
-    // Try to parse the response as JSON
-    let responseData
-    try {
-      responseData = JSON.parse(rawResponseText)
-      console.log("Debug - Response Keys:", Object.keys(responseData))
-    } catch (e) {
-      console.error("Debug - Failed to parse response as JSON:", e)
-      responseData = { error: "Failed to parse response as JSON", rawResponse: rawResponseText }
+    
+    devLog("Response Status:", response.status)
+    
+    const data = await response.json()
+    devLog("Raw Response (first 200 chars):", JSON.stringify(data).substring(0, 200))
+    
+    if (data.status === false) {
+      return NextResponse.json({
+        error: "API authentication failed",
+        details: {
+          apiMessage: data.msg,
+          userIdLength: USER_ID.length,
+          apiKeyLength: API_KEY.length,
+          responseStatus: response.status
+        }
+      }, { status: 401 })
     }
-
+    
+    if (!response.ok) {
+      return NextResponse.json({
+        error: "API request failed",
+        details: {
+          status: response.status,
+          statusText: response.statusText,
+          responseData: data
+        }
+      }, { status: response.status })
+    }
+    
+    // Extract sun and moon signs for testing
+    const sunPlanet = data.find((p: any) => p.name === "Sun")
+    const moonPlanet = data.find((p: any) => p.name === "Moon")
+    
+    devLog("Response Keys:", Object.keys(data))
+    
     return NextResponse.json({
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers),
-      data: responseData,
-      authDetails: {
-        userId: USER_ID,
-        keyLength: API_KEY.length,
-        base64AuthPrefix: base64Auth.substring(0, 10) + "...",
+      success: true,
+      message: "API credentials are working correctly",
+      testData: {
+        sunSign: sunPlanet?.sign,
+        moonSign: moonPlanet?.sign,
+        planetsCount: Array.isArray(data) ? data.length : 0,
+        samplePlanet: data[0]
       },
+      credentials: {
+        userIdLength: USER_ID.length,
+        apiKeyLength: API_KEY.length
+      }
     })
+    
   } catch (error) {
-    console.error("Debug API error:", error)
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "An unknown error occurred",
-        stack: error instanceof Error ? error.stack : undefined,
-      },
-      { status: 500 },
-    )
+    devError("Debug API error:", error)
+    return NextResponse.json({
+      error: "Debug test failed",
+      details: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 })
   }
 }
 
