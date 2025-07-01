@@ -366,89 +366,184 @@ export default function PricingPage() {
         </header>
 
         <main className="container mx-auto px-4 py-8">
-          <div className="max-w-6xl mx-auto">
-            {/* Title Section */}
-            <div className="text-center mb-12">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Choose Your AstroVela Experience
-              </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Get your personalized astrology book and discover the secrets of your cosmic blueprint
-              </p>
-            </div>
-
-            {/* Product Options */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8" ref={optionsSectionRef}>
-              {/* App Option */}
-              <ProductOption
-                type="app"
-                title="📱 AstroVela App"
-                features={["Daily personalized horoscopes", "Monthly insights", "Compatibility analysis"]}
-                price={isPaperback ? "FREE" : "€30.99"}
-                originalPrice={isPaperback ? "€30.99" : undefined}
-                priceUnit="/month"
-                imageSrc="/placeholder.svg"
-                isSelected={selectedOptions.app}
-                onSelect={() => handleOptionSelect("app")}
-                saleTag={isPaperback ? "INCLUDED" : undefined}
-              />
-
-              {/* eBook Option */}
-              <ProductOption
-                type="ebook"
-                title="📖 Digital eBook"
-                features={["Personalized astrology book", "Instant download", "PDF format"]}
-                price={(isPaperback || isAppAndEbook) ? "FREE" : "€49.99"}
-                originalPrice={(isPaperback || isAppAndEbook) ? "€49.99" : undefined}
-                imageSrc="/placeholder.svg"
-                isSelected={selectedOptions.ebook}
-                onSelect={() => handleOptionSelect("ebook")}
-                saleTag={(isPaperback || isAppAndEbook) ? "INCLUDED" : undefined}
-              />
-
-              {/* Paperback Option */}
-              <ProductOption
-                type="paperback"
-                title="📚 Premium Paperback"
-                features={["Physical printed book", "Premium binding", "Personalized cover", "Free shipping"]}
-                price="€55.99"
-                imageSrc="/placeholder.svg"
-                isSelected={selectedOptions.paperback}
-                onSelect={() => handleOptionSelect("paperback")}
-                saleTag="MOST POPULAR"
-              />
-            </div>
-
-            {/* Pricing Summary */}
-            <div className="max-w-md mx-auto mb-8 bg-white rounded-lg border p-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  €{totalPrice.toFixed(2)}
-                </div>
-                {(isPaperback || isAppAndEbook) && (
-                  <div className="text-sm text-green-600 mb-4">
-                    Save up to €49.99 with bundle pricing!
-                  </div>
-                )}
-                <div className="text-sm text-gray-600">
-                  {isPaperback && "Paperback + Free App + Free eBook"}
-                  {isAppAndEbook && !isPaperback && "eBook + Free App"}
-                  {isOnlyEbook && "Digital eBook Only"}
-                  {isOnlyApp && "App Subscription Only"}
-                </div>
+          <div className="max-w-4xl mx-auto">
+            {/* Countdown and Discount Header */}
+            <div className="text-center mb-6">
+              <div className="text-sm text-gray-600 mb-2">
+                50% discount reserved for
               </div>
-            </div>
-
-            {/* Countdown Timer */}
-            <div className="max-w-md mx-auto mb-8 bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-              <div className="flex items-center justify-center gap-2 text-red-700 mb-2">
-                <Clock className="h-4 w-4" />
-                <span className="text-sm font-medium">Limited Time Offer</span>
-              </div>
-              <div className="text-2xl font-bold text-red-800">
+              <div className="text-2xl font-bold text-gray-900 mb-4">
                 {formatCountdown(countdown)}
               </div>
-              <div className="text-sm text-red-600">Special pricing expires soon!</div>
+              <button 
+                onClick={scrollToOptions}
+                className="bg-yellow-300 text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-yellow-400 transition-colors"
+              >
+                Order now
+              </button>
+            </div>
+
+            {/* Main Heading */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Get the #1 personalized astrology<br />
+                book & transform your life today
+              </h1>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
+                In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
+              </p>
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                <span>Over 2,065,847 books ordered!</span>
+                <div className="flex items-center gap-1">
+                  <StarRating rating={4.8} />
+                  <span>4.8/5</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Book Cover Preview */}
+            <div className="flex justify-center mb-12">
+              <div className="w-80 h-96">
+                <BookCoverPreview
+                  userInfo={{
+                    firstName: state.firstName || "Your Name",
+                    lastName: state.lastName || "",
+                    dateOfBirth: state.birthDate.day && state.birthDate.month && state.birthDate.year
+                      ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
+                      : "01.07-14:10",
+                    placeOfBirth: state.birthPlace || "HAMBURG, GERMANY"
+                  }}
+                  themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.cream}
+                  selectedIcon="natal-chart"
+                  sunSign={extractedSunSign || "Virgo"}
+                  moonSign={extractedMoonSign || "Pisces"}
+                  formattedDate={state.birthDate.day && state.birthDate.month && state.birthDate.year
+                    ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
+                    : "01.07-14:10"}
+                />
+              </div>
+            </div>
+
+            {/* Product Selection */}
+            <div className="text-center mb-8" ref={optionsSectionRef}>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose your best option</h2>
+              
+              {/* Countdown Timer */}
+              <div className="max-w-md mx-auto mb-6 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                <div className="flex items-center justify-center gap-2 text-red-700 mb-1">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">This offer ends in {formatCountdown(countdown)}</span>
+                </div>
+              </div>
+
+              {/* Product Cards */}
+              <div className="space-y-4 max-w-2xl mx-auto">
+                {/* App Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedOptions.app ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("app")}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.app ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.app && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela app</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Unlimited compatibility reports</li>
+                          <li>• New daily horoscopes & astrology content</li>
+                          <li>• FREE 1-month trial with ebook or paperback</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">
+                        {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€30.99'}
+                      </div>
+                      {(isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback)) && (
+                        <div className="text-sm text-gray-500 line-through">€30.99</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Paperback Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all relative ${
+                  selectedOptions.paperback ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("paperback")}>
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span className="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
+                      SALE 65% OFF
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.paperback ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.paperback && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela paperback</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Uniquely created just for you</li>
+                          <li>• FREE shipping</li>
+                          <li>• FREE app & ebook included</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">€55.99</div>
+                      <div className="text-sm text-gray-500 line-through">€159.97</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ebook Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedOptions.ebook ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("ebook")}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.ebook ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.ebook && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela ebook</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Digital copy delivered to your email</li>
+                          <li>• FREE app included</li>
+                          <li>• FREE with the paperback</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">
+                        {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€49.99'}
+                      </div>
+                      {(isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback)) && (
+                        <div className="text-sm text-gray-500 line-through">€49.99</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Terms and Conditions Checkbox */}
@@ -533,7 +628,7 @@ export default function PricingPage() {
               <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
                 Frequently Asked Questions
               </h2>
-                             <div className="max-w-3xl mx-auto space-y-4">
+              <div className="max-w-3xl mx-auto space-y-4">
                 <AccordionItem title="What makes AstroVela different from other astrology apps?">
                   AstroVela provides deeply personalized insights based on your complete birth chart, not just your sun sign. Our advanced algorithms analyze over 50 astrological factors to create a truly unique experience for you.
                 </AccordionItem>

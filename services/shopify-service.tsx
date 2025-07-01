@@ -160,40 +160,48 @@ export async function createShopifyCheckout({
       );
     }
 
-    // NEW APPROACH: Send ALL selected products to Shopify, but adjust pricing
-    // This way customers see exactly what they selected (including free items)
-    const allSelectedProducts: Array<{type: string, variantId: string, sellingPlanId?: string, shouldCharge: boolean}> = [];
+    // FIXED APPROACH: Send only products that should be charged
+    // This ensures customers are only charged for what they should pay
+    const chargedProducts: Array<{type: string, variantId: string, sellingPlanId?: string}> = [];
     
-    // Add all selected products with pricing logic
-    if (selectedOptions.app) {
-      const appVariantId = await getProductVariantId("app");
-      allSelectedProducts.push({ 
-        type: "app", 
-        variantId: appVariantId,
-        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307",
-        shouldCharge: !selectedOptions.paperback && !selectedOptions.ebook // Only charge if it's the only item
-      });
-    }
-    
-    if (selectedOptions.ebook) {
-      const ebookVariantId = await getProductVariantId("ebook");
-      allSelectedProducts.push({ 
-        type: "ebook", 
-        variantId: ebookVariantId,
-        shouldCharge: !selectedOptions.paperback // Only charge if no paperback selected
-      });
-    }
+    // Bundle pricing logic:
+    // - Paperback selected: charge only paperback (€55.99)
+    // - App + Ebook (no paperback): charge only ebook (€49.99)  
+    // - Only App: charge app (€30.99)
+    // - Only Ebook: charge ebook (€49.99)
     
     if (selectedOptions.paperback) {
+      // Paperback bundle: charge only paperback, others are free
       const paperbackVariantId = await getProductVariantId("paperback");
-      allSelectedProducts.push({ 
+      chargedProducts.push({ 
         type: "paperback", 
-        variantId: paperbackVariantId,
-        shouldCharge: true // Always charge for paperback when selected
+        variantId: paperbackVariantId
+      });
+    } else if (selectedOptions.ebook && selectedOptions.app) {
+      // App + Ebook bundle: charge only ebook, app is free
+      const ebookVariantId = await getProductVariantId("ebook");
+      chargedProducts.push({ 
+        type: "ebook", 
+        variantId: ebookVariantId
+      });
+    } else if (selectedOptions.ebook) {
+      // Only ebook selected
+      const ebookVariantId = await getProductVariantId("ebook");
+      chargedProducts.push({ 
+        type: "ebook", 
+        variantId: ebookVariantId
+      });
+    } else if (selectedOptions.app) {
+      // Only app selected
+      const appVariantId = await getProductVariantId("app");
+      chargedProducts.push({ 
+        type: "app", 
+        variantId: appVariantId,
+        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307"
       });
     }
 
-    if (allSelectedProducts.length === 0) {
+    if (chargedProducts.length === 0) {
       throw new ShopifyError(
         "At least one product must be selected",
         ShopifyErrorCodes.VALIDATION_ERROR,
@@ -201,15 +209,11 @@ export async function createShopifyCheckout({
       );
     }
 
-    // Convert to line items format - send ALL products
-    const lineItems = allSelectedProducts.map(product => {
+    // Convert to line items format - send only charged products
+    const lineItems = chargedProducts.map(product => {
       const lineItem: any = { 
         variantId: product.variantId, 
-        quantity: 1,
-        // Add metadata to indicate pricing
-        properties: {
-          '_bundle_item': product.shouldCharge ? 'charged' : 'free'
-        }
+        quantity: 1
       };
       if (product.sellingPlanId) {
         lineItem.sellingPlanId = product.sellingPlanId;
@@ -228,10 +232,10 @@ export async function createShopifyCheckout({
         lineItems,
         email: quizState.email,
         bundlePricing: {
-          // Send pricing logic to checkout API
-          selectedProducts: allSelectedProducts.map(p => ({
+          // Send bundle information to checkout API
+          selectedProducts: chargedProducts.map((p: any) => ({
             type: p.type,
-            shouldCharge: p.shouldCharge
+            shouldCharge: true // Only charged products are sent now
           }))
         },
         customerData: {

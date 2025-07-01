@@ -43,7 +43,7 @@ export function ZodiacDisplay() {
                 className="w-[165px] h-[165px]"
                 style={{ 
                   objectFit: 'contain',
-                  filter: 'brightness(0) invert(1) sepia(1) saturate(1000%) hue-rotate(20deg)'
+                  filter: 'brightness(0) saturate(0) invert(1) sepia(1) saturate(1000%) hue-rotate(40deg) brightness(1.1)'
                 }}
               />
             </div>
