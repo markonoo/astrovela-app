@@ -36,14 +36,14 @@ export function ZodiacDisplay() {
       <div className="relative z-10 flex flex-col items-center justify-start min-h-[auto] px-4 pt-0 pb-8">
         <div className="w-full max-w-md text-center space-y-3 mt-6">
           <div className="flex justify-center">
-            <div className="w-36 h-36 flex items-center justify-center">
+            <div className="w-[165px] h-[165px] flex items-center justify-center">
               <img
                 src={getZodiacSvg(zodiacSign)}
                 alt={zodiacSign}
-                className="w-36 h-36"
+                className="w-[165px] h-[165px]"
                 style={{ 
                   objectFit: 'contain',
-                  filter: 'brightness(0) invert(1)'
+                  filter: 'brightness(0) invert(1) sepia(1) saturate(1000%) hue-rotate(20deg)'
                 }}
               />
             </div>

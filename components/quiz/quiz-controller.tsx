@@ -606,24 +606,37 @@ export function QuizController() {
       case "intro":
         // Greeting/intro step inspired by competitor screenshot
         return (
-          <div className="flex flex-col items-center justify-center min-h-[400px] bg-astro-dark text-white rounded-xl p-8 shadow-lg mx-auto max-w-xl">
-            <h2 className="text-2xl font-bold mb-4 text-yellow-300 text-center">🌟 Welcome to Astrovela</h2>
-            <div className="bg-[#041c3c] rounded-lg p-6 mb-6 w-full">
-              <h3 className="text-lg font-semibold mb-4 text-yellow-200 text-center">Discover your unique path to love, purpose, and self-growth.</h3>
-              <p className="text-base mb-4 text-center text-yellow-100">Answer a few personalized questions and unlock insights written in your stars:</p>
-              <ul className="text-base space-y-2 text-left">
-                <li>✨ What are my unique strengths and hidden talents?</li>
-                <li>✨ How can I use my traits to create happiness and success?</li>
-                <li>✨ What is my true life purpose?</li>
-                <li>✨ What kind of people am I most compatible with?</li>
-                <li>✨ Who is my ideal partner?</li>
-                <li>✨ Who will I marry — and when?</li>
-                <li>✨ What major life challenges will I face?</li>
-              </ul>
+          <div className="flex flex-col items-center justify-center min-h-[500px] bg-astro-dark text-white rounded-xl p-6 md:p-8 shadow-lg mx-auto max-w-2xl">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-yellow-300 text-center">🌟 Welcome to Astrovela</h2>
+            <div className="bg-[#041c3c] rounded-lg p-4 md:p-6 mb-6 w-full">
+              <h3 className="text-base md:text-lg font-semibold mb-4 text-yellow-200 text-center">Discover your unique path to love, purpose, and self-growth.</h3>
+              <p className="text-sm md:text-base mb-4 text-center text-yellow-100">Answer a few questions and unlock insights written in your stars:</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-300 text-lg flex-shrink-0 mt-0.5">✨</span>
+                  <span className="text-sm md:text-base text-yellow-100 leading-relaxed">Your unique strengths and hidden talents</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-300 text-lg flex-shrink-0 mt-0.5">✨</span>
+                  <span className="text-sm md:text-base text-yellow-100 leading-relaxed">How to create happiness and success</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-300 text-lg flex-shrink-0 mt-0.5">✨</span>
+                  <span className="text-sm md:text-base text-yellow-100 leading-relaxed">Your true life purpose</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-300 text-lg flex-shrink-0 mt-0.5">✨</span>
+                  <span className="text-sm md:text-base text-yellow-100 leading-relaxed">Your ideal partner and compatibility</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-300 text-lg flex-shrink-0 mt-0.5">✨</span>
+                  <span className="text-sm md:text-base text-yellow-100 leading-relaxed">Major life challenges and opportunities</span>
+                </div>
+              </div>
             </div>
             <button
               onClick={nextStep}
-              className="mt-6 px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors shadow"
+              className="mt-4 px-6 md:px-8 py-3 bg-yellow-300 rounded-full text-gray-900 font-medium hover:bg-yellow-400 transition-colors shadow text-sm md:text-base"
             >
               Let's go!
             </button>

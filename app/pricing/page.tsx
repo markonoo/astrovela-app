@@ -376,6 +376,80 @@ export default function PricingPage() {
                 Get your personalized astrology book and discover the secrets of your cosmic blueprint
               </p>
             </div>
+
+            {/* Product Options */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8" ref={optionsSectionRef}>
+              {/* App Option */}
+              <ProductOption
+                type="app"
+                title="📱 AstroVela App"
+                features={["Daily personalized horoscopes", "Monthly insights", "Compatibility analysis"]}
+                price={isPaperback ? "FREE" : "€30.99"}
+                originalPrice={isPaperback ? "€30.99" : undefined}
+                priceUnit="/month"
+                imageSrc="/placeholder.svg"
+                isSelected={selectedOptions.app}
+                onSelect={() => handleOptionSelect("app")}
+                saleTag={isPaperback ? "INCLUDED" : undefined}
+              />
+
+              {/* eBook Option */}
+              <ProductOption
+                type="ebook"
+                title="📖 Digital eBook"
+                features={["Personalized astrology book", "Instant download", "PDF format"]}
+                price={(isPaperback || isAppAndEbook) ? "FREE" : "€49.99"}
+                originalPrice={(isPaperback || isAppAndEbook) ? "€49.99" : undefined}
+                imageSrc="/placeholder.svg"
+                isSelected={selectedOptions.ebook}
+                onSelect={() => handleOptionSelect("ebook")}
+                saleTag={(isPaperback || isAppAndEbook) ? "INCLUDED" : undefined}
+              />
+
+              {/* Paperback Option */}
+              <ProductOption
+                type="paperback"
+                title="📚 Premium Paperback"
+                features={["Physical printed book", "Premium binding", "Personalized cover", "Free shipping"]}
+                price="€55.99"
+                imageSrc="/placeholder.svg"
+                isSelected={selectedOptions.paperback}
+                onSelect={() => handleOptionSelect("paperback")}
+                saleTag="MOST POPULAR"
+              />
+            </div>
+
+            {/* Pricing Summary */}
+            <div className="max-w-md mx-auto mb-8 bg-white rounded-lg border p-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">
+                  €{totalPrice.toFixed(2)}
+                </div>
+                {(isPaperback || isAppAndEbook) && (
+                  <div className="text-sm text-green-600 mb-4">
+                    Save up to €49.99 with bundle pricing!
+                  </div>
+                )}
+                <div className="text-sm text-gray-600">
+                  {isPaperback && "Paperback + Free App + Free eBook"}
+                  {isAppAndEbook && !isPaperback && "eBook + Free App"}
+                  {isOnlyEbook && "Digital eBook Only"}
+                  {isOnlyApp && "App Subscription Only"}
+                </div>
+              </div>
+            </div>
+
+            {/* Countdown Timer */}
+            <div className="max-w-md mx-auto mb-8 bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center gap-2 text-red-700 mb-2">
+                <Clock className="h-4 w-4" />
+                <span className="text-sm font-medium">Limited Time Offer</span>
+              </div>
+              <div className="text-2xl font-bold text-red-800">
+                {formatCountdown(countdown)}
+              </div>
+              <div className="text-sm text-red-600">Special pricing expires soon!</div>
+            </div>
             
             {/* Terms and Conditions Checkbox */}
             <div className="max-w-md mx-auto mb-8">
@@ -413,14 +487,14 @@ export default function PricingPage() {
                 </label>
               </div>
               {showTermsWarning && (
-                <p className="text-red-500 text-sm mt-2 text-center">
+                <p className="text-red-500 text-sm mt-2 text-center animate-shake">
                   Please accept the Terms & Conditions and Privacy Policy to continue
                 </p>
               )}
             </div>
 
             {/* Order Button */}
-            <div className="text-center">
+            <div className="text-center mb-12">
               <button
                 onClick={handleOrderClick}
                 disabled={isProcessingOrder}
@@ -435,6 +509,44 @@ export default function PricingPage() {
               {checkoutError && (
                 <p className="text-red-500 text-sm mt-2">{checkoutError}</p>
               )}
+            </div>
+
+            {/* Payment Methods */}
+            <div className="max-w-md mx-auto mb-12">
+              <PaymentMethods />
+            </div>
+
+            {/* Testimonials */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                What Our Customers Say
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {testimonials.map((testimonial, index) => (
+                  <TestimonialCard key={index} {...testimonial} />
+                ))}
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                Frequently Asked Questions
+              </h2>
+                             <div className="max-w-3xl mx-auto space-y-4">
+                <AccordionItem title="What makes AstroVela different from other astrology apps?">
+                  AstroVela provides deeply personalized insights based on your complete birth chart, not just your sun sign. Our advanced algorithms analyze over 50 astrological factors to create a truly unique experience for you.
+                </AccordionItem>
+                <AccordionItem title="How accurate are the predictions?">
+                  Our predictions are based on traditional astrological principles combined with modern data analysis. While astrology is not scientifically proven, thousands of users report finding value and accuracy in their personalized readings.
+                </AccordionItem>
+                <AccordionItem title="Can I cancel my subscription anytime?">
+                  Yes, you can cancel your app subscription at any time through your account settings. Your access will continue until the end of your current billing period.
+                </AccordionItem>
+                <AccordionItem title="What if I'm not satisfied with my book?">
+                  We offer a 30-day money-back guarantee. If you're not completely satisfied with your personalized astrology book, contact our support team for a full refund.
+                </AccordionItem>
+              </div>
             </div>
           </div>
         </main>
