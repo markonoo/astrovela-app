@@ -8,7 +8,7 @@ import { isQuizCompleted } from "@/utils/storage"
 import { getZodiacSign } from "@/utils/zodiac"
 import { StarRating } from "@/components/ui/star-rating"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
-import { ProductOption } from "@/components/ui/product-option"
+
 import { PaymentMethods } from "@/components/ui/payment-methods"
 import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
@@ -55,9 +55,13 @@ interface SelectedOptions {
   ebook: boolean
 }
 
+// Force client-side rendering to prevent hydration mismatches
+export const dynamic = 'force-dynamic'
+
 export default function PricingPage() {
   const { state } = useQuiz()
   const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
   const [hasQuizData, setHasQuizData] = useState(false)
   const [zodiacSign, setZodiacSign] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
@@ -160,7 +164,14 @@ export default function PricingPage() {
     }
   }
 
+  // Handle client-side mounting to prevent hydration mismatches
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
     // Check if we have any quiz data
     if (state.firstName || state.email || state.birthDate.month || isQuizCompleted()) {
       setHasQuizData(true)
@@ -185,7 +196,7 @@ export default function PricingPage() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [state])
+  }, [state, isMounted])
 
   // Extract sun and moon signs - using useMemo to prevent infinite re-renders
   const { extractedSunSign, extractedMoonSign } = useMemo(() => {
@@ -343,6 +354,18 @@ export default function PricingPage() {
       imageSrc: "/placeholder.svg?height=200&width=300",
     },
   ]
+
+  // Prevent hydration mismatch by ensuring client-side consistency
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <ErrorBoundary>
