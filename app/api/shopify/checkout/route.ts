@@ -12,6 +12,12 @@ interface CheckoutRequest {
   lineItems: CheckoutLineItem[];
   email?: string;
   productHandle?: string;
+  bundlePricing?: {
+    selectedProducts: Array<{
+      type: string;
+      shouldCharge: boolean;
+    }>;
+  };
   customerData?: {
     firstName?: string;
     lastName?: string;
@@ -101,7 +107,7 @@ export async function POST(request: NextRequest) {
       throw new Error('No valid variants found');
     }
 
-    // Process ALL line items instead of just the first one
+    // Process ALL line items and apply bundle pricing logic
     const processedProducts: any[] = [];
     let totalPrice = 0;
 
@@ -114,8 +120,22 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // Calculate price for this item
-      const itemPrice = parseFloat(variant.price) * lineItem.quantity;
+      // Determine if this product should be charged based on bundle pricing
+      let shouldCharge = true;
+      if (body.bundlePricing && body.bundlePricing.selectedProducts) {
+        // Map variant to product type
+        let productType = 'unknown';
+        if (variant.product.handle.includes('app')) productType = 'app';
+        else if (variant.product.handle.includes('ebook')) productType = 'ebook';
+        else if (variant.product.handle.includes('paperback')) productType = 'paperback';
+        
+        const pricingInfo = body.bundlePricing.selectedProducts.find(p => p.type === productType);
+        shouldCharge = pricingInfo ? pricingInfo.shouldCharge : true;
+      }
+
+      // Calculate price for this item (0 if it's a free bundle item)
+      const originalPrice = parseFloat(variant.price);
+      const itemPrice = shouldCharge ? originalPrice * lineItem.quantity : 0;
       totalPrice += itemPrice;
 
       // Store product info for response
@@ -126,14 +146,16 @@ export async function POST(request: NextRequest) {
         variant: {
           id: variant.id,
           title: variant.title,
-          price: variant.price
+          price: variant.price,
+          effectivePrice: shouldCharge ? variant.price : "0.00" // Show effective price
         },
         quantity: lineItem.quantity,
         sellingPlan: lineItem.sellingPlanId ? {
           id: lineItem.sellingPlanId,
           isSubscription: true
         } : null,
-        itemTotal: itemPrice.toFixed(2)
+        itemTotal: itemPrice.toFixed(2),
+        bundleStatus: shouldCharge ? 'paid' : 'free'
       });
     }
 
@@ -141,10 +163,11 @@ export async function POST(request: NextRequest) {
       throw new Error('No valid products could be processed');
     }
 
-    // Create multi-product checkout URL using proper Shopify cart format
-    // For multiple products: https://shop.myshopify.com/cart/VARIANT1:QTY,VARIANT2:QTY?selling_plan=PLAN_ID
-    // For single product with selling plan: https://shop.myshopify.com/cart/VARIANT:QTY?selling_plan=PLAN_ID
+    // For bundle pricing with free items, we'll send ALL products to cart
+    // and rely on automatic discounts to make bundle items free
+    // This is more reliable than draft orders for customer experience
     
+    // Create multi-product checkout URL using proper Shopify cart format
     let checkoutUrl: string;
     
     if (body.lineItems.length === 1) {
@@ -160,7 +183,7 @@ export async function POST(request: NextRequest) {
         checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}`;
       }
     } else {
-      // Multiple products - use comma-separated format
+      // Multiple products - send ALL items to cart
       const cartItemsForUrl: string[] = [];
       let hasSellingPlan = false;
       let sellingPlanId = '';
@@ -214,6 +237,7 @@ export async function POST(request: NextRequest) {
         estimatedTotal: totalPrice.toFixed(2),
         availableSellingPlans: availableSellingPlans,
         shopDomain: SHOPIFY_CONFIG.SHOP_DOMAIN,
+        orderType: 'regular_cart',
         // Legacy fields for backward compatibility
         product: processedProducts[0] ? {
           id: processedProducts[0].id,

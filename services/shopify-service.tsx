@@ -160,38 +160,40 @@ export async function createShopifyCheckout({
       );
     }
 
-    // Determine which products to actually charge based on frontend pricing logic
-    const productsToCharge: Array<{type: string, variantId: string, sellingPlanId?: string}> = [];
+    // NEW APPROACH: Send ALL selected products to Shopify, but adjust pricing
+    // This way customers see exactly what they selected (including free items)
+    const allSelectedProducts: Array<{type: string, variantId: string, sellingPlanId?: string, shouldCharge: boolean}> = [];
     
-    // Frontend pricing logic:
-    // - Only ebook: charge ebook ($49.99)
-    // - Only app: charge app ($30.99)
-    // - Paperback selected (with/without others): charge only paperback ($55.99) - others are "FREE"
-    // - App + ebook (no paperback): charge ebook ($49.99) - app is "FREE"
-    
-    if (selectedOptions.paperback) {
-      // Paperback bundle: only charge paperback, everything else is "FREE"
-      const paperbackVariantId = await getProductVariantId("paperback");
-      productsToCharge.push({ type: "paperback", variantId: paperbackVariantId });
-    } else if (selectedOptions.ebook && selectedOptions.app) {
-      // App + ebook (no paperback): charge ebook, app is "FREE"
-      const ebookVariantId = await getProductVariantId("ebook");
-      productsToCharge.push({ type: "ebook", variantId: ebookVariantId });
-    } else if (selectedOptions.ebook) {
-      // Only ebook
-      const ebookVariantId = await getProductVariantId("ebook");
-      productsToCharge.push({ type: "ebook", variantId: ebookVariantId });
-    } else if (selectedOptions.app) {
-      // Only app
+    // Add all selected products with pricing logic
+    if (selectedOptions.app) {
       const appVariantId = await getProductVariantId("app");
-      productsToCharge.push({ 
+      allSelectedProducts.push({ 
         type: "app", 
         variantId: appVariantId,
-        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307" // Fallback for existing deployments
+        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307",
+        shouldCharge: !selectedOptions.paperback && !selectedOptions.ebook // Only charge if it's the only item
+      });
+    }
+    
+    if (selectedOptions.ebook) {
+      const ebookVariantId = await getProductVariantId("ebook");
+      allSelectedProducts.push({ 
+        type: "ebook", 
+        variantId: ebookVariantId,
+        shouldCharge: !selectedOptions.paperback // Only charge if no paperback selected
+      });
+    }
+    
+    if (selectedOptions.paperback) {
+      const paperbackVariantId = await getProductVariantId("paperback");
+      allSelectedProducts.push({ 
+        type: "paperback", 
+        variantId: paperbackVariantId,
+        shouldCharge: true // Always charge for paperback when selected
       });
     }
 
-    if (productsToCharge.length === 0) {
+    if (allSelectedProducts.length === 0) {
       throw new ShopifyError(
         "At least one product must be selected",
         ShopifyErrorCodes.VALIDATION_ERROR,
@@ -199,9 +201,16 @@ export async function createShopifyCheckout({
       );
     }
 
-    // Convert to line items format
-    const lineItems = productsToCharge.map(product => {
-      const lineItem: any = { variantId: product.variantId, quantity: 1 };
+    // Convert to line items format - send ALL products
+    const lineItems = allSelectedProducts.map(product => {
+      const lineItem: any = { 
+        variantId: product.variantId, 
+        quantity: 1,
+        // Add metadata to indicate pricing
+        properties: {
+          '_bundle_item': product.shouldCharge ? 'charged' : 'free'
+        }
+      };
       if (product.sellingPlanId) {
         lineItem.sellingPlanId = product.sellingPlanId;
       }
@@ -218,6 +227,13 @@ export async function createShopifyCheckout({
       body: JSON.stringify({
         lineItems,
         email: quizState.email,
+        bundlePricing: {
+          // Send pricing logic to checkout API
+          selectedProducts: allSelectedProducts.map(p => ({
+            type: p.type,
+            shouldCharge: p.shouldCharge
+          }))
+        },
         customerData: {
           firstName: quizState.firstName || "",
           lastName: quizState.lastName || "",
