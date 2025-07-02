@@ -409,7 +409,18 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       if (wheelChartResult?.chartUrl) {
         chartUrlToStore = wheelChartResult.chartUrl
       } else if (wheelChartResult?.svgContent) {
-        chartUrlToStore = `data:image/svg+xml;base64,${btoa(wheelChartResult.svgContent)}`
+        // Safe base64 encoding that handles Unicode characters
+        try {
+          // Use TextEncoder to convert to UTF-8 bytes, then encode to base64
+          const encoder = new TextEncoder()
+          const utf8Bytes = encoder.encode(wheelChartResult.svgContent)
+          const base64String = btoa(String.fromCharCode(...utf8Bytes))
+          chartUrlToStore = `data:image/svg+xml;base64,${base64String}`
+        } catch (error) {
+          console.error("Error encoding SVG to base64:", error)
+          // Fallback: use URL encoding instead
+          chartUrlToStore = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(wheelChartResult.svgContent)}`
+        }
       } else if (typeof wheelChartResult === 'string') {
         // Handle case where the result is directly a URL string
         chartUrlToStore = wheelChartResult
