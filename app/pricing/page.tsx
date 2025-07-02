@@ -18,7 +18,6 @@ import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-se
 import { ShopifyError } from "@/utils/shopify-error-handler"
 import { format } from "date-fns"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
-import { Book, Users, Star, Compass } from "lucide-react"
 
 // Type definition for ShopifyProduct
 interface ShopifyProduct {
@@ -392,100 +391,8 @@ export default function PricingPage() {
                     ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
                     : "01.07-14:10"}
                 />
-                        </div>
+          </div>
         </div>
-
-            {/* Generated content section */}
-            <section className="bg-white rounded-lg shadow-sm p-8 mb-8">
-              <h2 className="text-2xl font-bold mb-6 text-center">Based on your details, we've generated:</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
-                    134+
-                  </div>
-                  <h3 className="font-medium mb-1">personalized pages</h3>
-                  <p className="text-sm text-gray-600">
-                    Detailed analysis of your birth chart, personality traits, and cosmic influences.
-                  </p>
-                </div>
-
-                <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
-                    50+
-                  </div>
-                  <h3 className="font-medium mb-1">compatibility insights</h3>
-                  <p className="text-sm text-gray-600">
-                    Learn how your chart interacts with others and what it means for your relationships.
-                  </p>
-                </div>
-
-                <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
-                    99%
-                  </div>
-                  <h3 className="font-medium mb-1">of content tailored to you</h3>
-                  <p className="text-sm text-gray-600">
-                    Custom insights based on your unique astrological profile and personal details.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* What's included section */}
-            <section className="bg-white rounded-lg shadow-sm p-8 mb-8">
-              <h2 className="text-2xl font-bold mb-6 text-center">What's included?</h2>
-
-              <div className="max-w-3xl mx-auto space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                    <Book size={20} className="text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Personalized birth chart analysis</h3>
-                    <p className="text-sm text-gray-600">
-                      Detailed interpretation of your sun, moon, rising signs, and planetary placements to easily improve relationships, understand yourself better, and navigate life's challenges.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                    <Users size={20} className="text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Love & relationship insights</h3>
-                    <p className="text-sm text-gray-600">
-                      Discover your compatibility with different signs and how your birth chart influences your relationships. Learn what attracts you to others and how to build stronger connections.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                    <Star size={20} className="text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Personality & life path profile</h3>
-                    <p className="text-sm text-gray-600">
-                      Insights into your strengths, challenges, and potential life paths based on your astrological makeup. Understand your true self and unlock your potential.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                    <Compass size={20} className="text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Career & success guidance</h3>
-                    <p className="text-sm text-gray-600">
-                      Professional insights based on your chart to help you make better career decisions and understand your natural talents and work preferences.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
 
             {/* Product Selection */}
             <div className="text-center mb-8" ref={optionsSectionRef}>
@@ -592,48 +499,236 @@ export default function PricingPage() {
                   className="w-full bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-medium hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isProcessingOrder ? "Processing..." : "Order Now"}
-        </button>
+                </button>
 
-                <PaymentMethods />
+                {/* Payment methods */}
+                <div className="flex justify-center mt-4">
+                  <img
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/only-payment-icons-Tlz7XpXRAYL3RvgV4LWPF2B2J7ck0L.webp"
+                    alt="Payment methods"
+                    className="h-8 w-auto"
+                  />
+                </div>
+
+                {selectedOptions.app && (
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at help@astrovela.com
+                  </p>
+                )}
               </div>
-        </div>
-
-            {/* Testimonials */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">What our customers say</h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                {testimonials.map((testimonial, index) => (
-                  <TestimonialCard key={index} {...testimonial} />
-                ))}
             </div>
-          </div>
+
+            {/* "Easily improve relationships" section */}
+            <section className="bg-gray-100 rounded-lg p-6 mb-8">
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold mb-4">Easily improve relationships, understand yourself better, and reach your personal goals 💛</h2>
+                <div className="bg-white rounded-lg overflow-hidden mb-6">
+                  <img src="/placeholder.svg?height=200&width=400" alt="Book pages showing relationship rituals" className="w-full h-auto" />
+                </div>
+              </div>
+
+              {/* What's included section */}
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-4">What's included?</h2>
+                <div className="space-y-4">
+                  <div className="flex">
+                    <div className="mr-4 mt-1">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"></circle>
+                          <path d="M12 2V12L16 16" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Personalized birth chart analysis</h3>
+                      <p className="text-sm text-gray-600">Discover the secrets of your unique astrological blueprint to understand your personality, strengths, and life path.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex">
+                    <div className="mr-4 mt-1">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
+                          <path d="M21 11.5C21 16.75 12 22 12 22C12 22 3 16.75 3 11.5C3 7.02 7.02 3 11.5 3C15.98 3 21 7.02 21 11.5Z" stroke="currentColor" strokeWidth="2"></path>
+                          <circle cx="12" cy="11" r="3" stroke="currentColor" strokeWidth="2"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Love & relationship insights</h3>
+                      <p className="text-sm text-gray-600">Understand your zodiac compatibility to find out how you connect with others & who is your perfect partner.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex">
+                    <div className="mr-4 mt-1">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
+                          <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" strokeWidth="2"></path>
+                          <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Personality & life path profile</h3>
+                      <p className="text-sm text-gray-600">Learn about your personal traits, strengths, and areas for growth, helping you to better understand and embrace your true self.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex">
+                    <div className="mr-4 mt-1">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-gray-700">
+                          <rect x="4" y="5" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2"></rect>
+                          <path d="M16 3V7" stroke="currentColor" strokeWidth="2"></path>
+                          <path d="M8 3V7" stroke="currentColor" strokeWidth="2"></path>
+                          <path d="M4 11H20" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Career & success guidance</h3>
+                      <p className="text-sm text-gray-600">Enhance your professional life and achieve career goals by uncovering opportunities tailored to your strengths.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional content section */}
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-4">Additional content:</h2>
+                <ul className="space-y-2">
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>Divination & Astrology</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>Beginner's Guide to Palmistry</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>Tailored Tarot Card Readings</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>Crystals in Astrology</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>Intro to Numerology</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>History of Astrology & Modern Astrology</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="text-yellow-400 mr-2">★</span>
+                    <span>And more...</span>
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                onClick={handleOrderClick}
+                className="w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold"
+              >
+                Order now
+              </button>
+            </section>
 
             {/* FAQ Section */}
-        <div className="mb-8">
-              <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Frequently Asked Questions</h2>
-              <div className="max-w-2xl mx-auto space-y-4">
-                <AccordionItem
-                  title="How accurate is my personalized astrology book?"
-                >
-                  Your book is created using your exact birth data (date, time, and location) to generate a highly accurate natal chart. This ensures the insights are specifically tailored to your unique astrological profile.
-            </AccordionItem>
-                <AccordionItem
-                  title="What's included in the app subscription?"
-                >
-                  The app includes unlimited compatibility reports, daily personalized horoscopes, monthly forecasts, and regular new astrology content. The first month is free when you purchase the ebook or paperback.
-            </AccordionItem>
-                <AccordionItem
-                  title="How long does shipping take?"
-                >
-                  Free shipping typically takes 7-14 business days worldwide. You'll receive tracking information once your order ships.
-            </AccordionItem>
-                <AccordionItem
-                  title="Can I get a refund if I'm not satisfied?"
-                >
-                  Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your purchase, contact our support team for a full refund.
-            </AccordionItem>
-          </div>
-        </div>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-6 text-center">Frequently asked questions</h2>
+              <div className="bg-gray-100 rounded-lg overflow-hidden">
+                <div className="border-b border-gray-200">
+                  <button className="flex justify-between items-center w-full py-4 px-4 text-left font-medium">
+                    <span className="flex-1">How is astrovela personalized?</span>
+                    <div className="w-8 h-8 rounded-full border border-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus h-4 w-4 text-yellow-400">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div className="border-b border-gray-200">
+                  <button className="flex justify-between items-center w-full py-4 px-4 text-left font-medium">
+                    <span className="flex-1">What will I find inside my book?</span>
+                    <div className="w-8 h-8 rounded-full border border-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus h-4 w-4 text-yellow-400">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div className="border-b border-gray-200">
+                  <button className="flex justify-between items-center w-full py-4 px-4 text-left font-medium">
+                    <span className="flex-1">How long will it take to receive my book?</span>
+                    <div className="w-8 h-8 rounded-full border border-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus h-4 w-4 text-yellow-400">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div className="border-b border-gray-200">
+                  <button className="flex justify-between items-center w-full py-4 px-4 text-left font-medium">
+                    <span className="flex-1">I'm new to astrology. Is this book right for me?</span>
+                    <div className="w-8 h-8 rounded-full border border-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus h-4 w-4 text-yellow-400">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div className="border-b border-gray-200">
+                  <button className="flex justify-between items-center w-full py-4 px-4 text-left font-medium">
+                    <span className="flex-1">Will the book help me with my specific issues and goals?</span>
+                    <div className="w-8 h-8 rounded-full border border-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus h-4 w-4 text-yellow-400">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonials Section */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold mb-4 text-center">Real stories from our community</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="bg-gray-100 rounded-lg overflow-hidden h-full flex flex-col">
+                    <div className="mb-3">
+                      <img src={testimonial.imageSrc} alt={`${testimonial.name}'s testimonial`} className="w-full h-auto" />
+                    </div>
+                    <div className="p-4 flex flex-col flex-1">
+                      <p className="text-gray-800 mb-3 text-sm">"{testimonial.quote}"</p>
+                      <div className="flex-1"></div>
+                      <div className="flex justify-between items-end mt-4">
+                        <div>
+                          <p className="font-medium text-sm">{testimonial.name}, {testimonial.age}</p>
+                          <StarRating rating={testimonial.rating} />
+                        </div>
+                        <div className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                          </svg>
+                          Verified
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </main>
         </div>
