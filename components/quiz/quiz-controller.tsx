@@ -28,23 +28,28 @@ function LoadingAnimation({ message, isStep12 = false }: { message: string; isSt
   
   // Animation to gradually increase the progress
   useEffect(() => {
-    // For step 12 (API call), make progress slower to match ~5 second duration
-    // For other steps, keep original ~3 second timing
-    const updateInterval = isStep12 ? 50 : 30; // 50ms for step 12, 30ms for others
-    const incrementAmount = isStep12 ? 1 : 1; // Same increment for both now
+    // Reset progress when component mounts or message changes
+    setProgress(0);
     
-    const interval = setInterval(() => {
+    // For step 12 (API call), make progress slower to match ~6 second duration
+    // For other steps, use faster timing for ~3 second duration
+    const duration = isStep12 ? 6000 : 3000; // Total duration in ms
+    const interval = 50; // Update every 50ms for smooth animation
+    const increment = (100 / duration) * interval; // Calculate increment per interval
+    
+    const timer = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
+        const newProgress = prev + increment;
+        if (newProgress >= 100) {
+          clearInterval(timer);
           return 100;
         }
-        return Math.min(prev + incrementAmount, 100);
+        return newProgress;
       });
-    }, updateInterval);
+    }, interval);
     
-    return () => clearInterval(interval);
-  }, [isStep12]);
+    return () => clearInterval(timer);
+  }, [isStep12, message]); // Re-run when message changes
   
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px] bg-transparent text-yellow-100 rounded-xl p-8 mx-auto max-w-xl">
@@ -72,7 +77,10 @@ function LoadingAnimation({ message, isStep12 = false }: { message: string; isSt
             strokeDasharray="283"
             strokeDashoffset={283 - (progress / 100) * 283}
             transform="rotate(-90 50 50)"
-            style={{ transition: 'stroke-dashoffset 0.1s ease-in-out' }}
+            style={{ 
+              transition: 'stroke-dashoffset 0.1s ease-out',
+              willChange: 'stroke-dashoffset'
+            }}
           />
           <text
             x="50"
@@ -475,26 +483,30 @@ export function QuizController() {
     setMounted(true)
   }, [])
 
-  // Trigger fetchNatalChart during the loading step (step 12) instead of zodiacResult step
+  // Refs for tracking API calls (to avoid multiple simultaneous calls)
   const hasStartedFetching = useRef(false)
-  const lastApiCallTime = useRef<number>(0)
+  const lastApiCallTime = useRef(0)
+
+  // Track the current step to reset fetch flag when leaving step 12
+  const previousStep = useRef(currentStep)
   
   useEffect(() => {
-    console.log('🔍 Simple debug - Current step:', currentStep)
-    
-    // Reset the flag when we're not on step 12
-    if (currentStep !== 12) {
+    // Reset fetch flag when moving away from step 12
+    if (previousStep.current === 12 && currentStep !== 12) {
+      console.log('🔄 Resetting fetch flag when leaving step 12')
       hasStartedFetching.current = false
-      return
     }
-    
-    // Add rate limiting: ensure at least 3 seconds between API calls
+    previousStep.current = currentStep
+  }, [currentStep])
+
+  // Smart natal chart fetching logic with better rate limiting and error handling
+  useEffect(() => {
     const now = Date.now()
     const timeSinceLastCall = now - lastApiCallTime.current
     const minInterval = 3000 // 3 seconds minimum between calls
     
     const makeApiCall = () => {
-      // Only trigger on step 12 (loading) if we have all birth data and haven't already started fetching
+      // Only trigger on step 12 (loading) if we have all birth data and conditions are met
       if (currentStep === 12 && 
           state.birthDate.year && state.birthDate.month && state.birthDate.day &&
           state.birthTime && state.birthPlace &&
@@ -514,7 +526,7 @@ export function QuizController() {
         
         // Add error handling to reset the flag if API fails
         fetchNatalChart().catch((error) => {
-          console.error('API call failed, resetting flag:', error)
+          console.error('❌ API call failed, resetting flag:', error)
           hasStartedFetching.current = false
         })
       } else if (currentStep === 12) {

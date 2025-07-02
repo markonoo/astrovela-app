@@ -109,9 +109,13 @@ export default function PricingPage() {
     if (selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) {
       // Only app subscription selected
       total += parseFloat(getProductPrice("app-subscription") || "30.99")
-    } else if (selectedOptions.ebook && !selectedOptions.paperback) {
-      // Ebook selected (app is free with ebook)
+    } else if (selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app) {
+      // Only ebook selected
       total += parseFloat(getProductPrice("ebook") || "49.99")
+    } else if (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) {
+      // Ebook + app bundle (special pricing)
+      total += parseFloat(getProductPrice("ebook") || "49.99")
+      // App is free with ebook
     } else if (selectedOptions.paperback) {
       // Paperback selected (app and ebook are free with paperback)
       total += parseFloat(getProductPrice("paperback-book") || "55.99")
@@ -127,6 +131,21 @@ export default function PricingPage() {
   const isOnlyEbook = selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app
   const isPaperback = selectedOptions.paperback
   const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback
+
+  // Pricing display logic helpers
+  const getEbookPrice = () => {
+    if (isPaperback) return "FREE" // Free with paperback
+    if (isOnlyEbook) return "€49.99" // Standalone ebook price
+    if (isAppAndEbook) return "€49.99" // Bundle price (app is free)
+    return "€49.99" // Default price
+  }
+
+  const getAppPrice = () => {
+    if (isPaperback) return "FREE" // Free with paperback
+    if (isAppAndEbook) return "FREE" // Free with ebook
+    if (isOnlyApp) return "€30.99" // Standalone app price
+    return "€30.99" // Default price
+  }
 
   const handleOptionSelect = (option: keyof SelectedOptions) => {
     setSelectedOptions(prev => ({
@@ -407,7 +426,7 @@ export default function PricingPage() {
                     "FREE with the paperback",
                     "Instant download"
                   ]}
-                  price={isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? "FREE" : "€49.99"}
+                  price={getEbookPrice()}
                   imageSrc="/placeholder.svg"
                   isSelected={selectedOptions.ebook}
                   onSelect={() => handleOptionSelect("ebook")}
@@ -423,7 +442,7 @@ export default function PricingPage() {
                     "FREE 1-month trial with ebook or paperback",
                     "Regular content updates"
                   ]}
-                  price={isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? "FREE" : "€30.99"}
+                  price={getAppPrice()}
                   priceUnit="/month"
                   imageSrc="/placeholder.svg"
                   isSelected={selectedOptions.app}
