@@ -501,20 +501,24 @@ export default function PricingPage() {
               <div className="max-w-2xl mx-auto space-y-4">
                 <AccordionItem
                   title="How accurate is my personalized astrology book?"
-                  content="Your book is created using your exact birth data (date, time, and location) to generate a highly accurate natal chart. This ensures the insights are specifically tailored to your unique astrological profile."
-                />
+                >
+                  Your book is created using your exact birth data (date, time, and location) to generate a highly accurate natal chart. This ensures the insights are specifically tailored to your unique astrological profile.
+                </AccordionItem>
                 <AccordionItem
                   title="What's included in the app subscription?"
-                  content="The app includes unlimited compatibility reports, daily personalized horoscopes, monthly forecasts, and regular new astrology content. The first month is free when you purchase the ebook or paperback."
-                />
+                >
+                  The app includes unlimited compatibility reports, daily personalized horoscopes, monthly forecasts, and regular new astrology content. The first month is free when you purchase the ebook or paperback.
+                </AccordionItem>
                 <AccordionItem
                   title="How long does shipping take?"
-                  content="Free shipping typically takes 7-14 business days worldwide. You'll receive tracking information once your order ships."
-                />
+                >
+                  Free shipping typically takes 7-14 business days worldwide. You'll receive tracking information once your order ships.
+                </AccordionItem>
                 <AccordionItem
                   title="Can I get a refund if I'm not satisfied?"
-                  content="Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your purchase, contact our support team for a full refund."
-                />
+                >
+                  Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your purchase, contact our support team for a full refund.
+                </AccordionItem>
               </div>
             </div>
           </div>
