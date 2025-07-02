@@ -18,6 +18,7 @@ import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-se
 import { ShopifyError } from "@/utils/shopify-error-handler"
 import { format } from "date-fns"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import { Book, Users, Star, Compass } from "lucide-react"
 
 // Type definition for ShopifyProduct
 interface ShopifyProduct {
@@ -148,8 +149,8 @@ export default function PricingPage() {
   }
 
   const handleOptionSelect = (option: keyof SelectedOptions) => {
-    setSelectedOptions(prev => ({
-      ...prev,
+        setSelectedOptions(prev => ({
+          ...prev,
       [option]: !prev[option]
     }))
   }
@@ -261,8 +262,8 @@ export default function PricingPage() {
     }
 
     // Clear any previous errors
-    setCheckoutError(null)
-    setIsProcessingOrder(true)
+        setCheckoutError(null)
+        setIsProcessingOrder(true)
 
     try {
       if (!selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) {
@@ -271,23 +272,23 @@ export default function PricingPage() {
 
       console.log("Creating checkout with selected options:", selectedOptions)
 
-      const checkoutUrl = await createShopifyCheckout({
-        selectedOptions,
+        const checkoutUrl = await createShopifyCheckout({
+          selectedOptions,
         quizState: state
-      })
-      
+        })
+
       if (checkoutUrl) {
         // Redirect to Shopify checkout
         window.location.href = checkoutUrl
       } else {
         throw new Error("Failed to create checkout URL. Please try again.")
       }
-    } catch (error) {
-      console.error("Checkout error:", error)
-      
-      if (error instanceof ShopifyError) {
+      } catch (error) {
+        console.error("Checkout error:", error)
+        
+        if (error instanceof ShopifyError) {
         setCheckoutError(`Checkout Error: ${error.message}`)
-      } else {
+        } else {
         setCheckoutError(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.")
       }
     } finally {
@@ -320,7 +321,7 @@ export default function PricingPage() {
 
   // Prevent hydration mismatch by ensuring client-side consistency
   if (!isMounted) {
-    return (
+  return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>
@@ -342,7 +343,7 @@ export default function PricingPage() {
                 className="mr-4 p-2 text-gray-600 hover:text-gray-900"
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
+          </button>
               <div className="flex items-center">
                 <span className="text-[#28293d] font-medium">astrovela</span>
                 <AstrovelaIcon width={20} height={20} className="ml-1" />
@@ -353,45 +354,138 @@ export default function PricingPage() {
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Main Heading */}
+          {/* Main Heading */}
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Get your personalized astrology book
-              </h1>
+          </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
                 Choose your perfect bundle and start your journey of self-discovery
               </p>
               <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                 <span>Over 2,065,847 books ordered!</span>
                 <div className="flex items-center gap-1">
-                  <StarRating rating={4.8} />
+              <StarRating rating={4.8} />
                   <span>4.8/5</span>
                 </div>
               </div>
-            </div>
+          </div>
 
             {/* Book Cover Preview */}
             <div className="flex justify-center mb-12">
               <div className="w-80 h-96">
-                <BookCoverPreview
-                  userInfo={{
+              <BookCoverPreview
+                userInfo={{
                     firstName: state.firstName || "Your Name",
-                    lastName: state.lastName || "",
+                  lastName: state.lastName || "",
                     dateOfBirth: state.birthDate.day && state.birthDate.month && state.birthDate.year
                       ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
                       : "01.07-14:10",
                     placeOfBirth: state.birthPlace || "HAMBURG, GERMANY"
                   }}
                   themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.cream}
-                  selectedIcon="natal-chart"
+                  selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
+                  customChartUrl={state.customChartUrl}
                   sunSign={extractedSunSign || "Virgo"}
                   moonSign={extractedMoonSign || "Pisces"}
                   formattedDate={state.birthDate.day && state.birthDate.month && state.birthDate.year
                     ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
                     : "01.07-14:10"}
                 />
+                        </div>
+        </div>
+
+            {/* Generated content section */}
+            <section className="bg-white rounded-lg shadow-sm p-8 mb-8">
+              <h2 className="text-2xl font-bold mb-6 text-center">Based on your details, we've generated:</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
+                    134+
+                  </div>
+                  <h3 className="font-medium mb-1">personalized pages</h3>
+                  <p className="text-sm text-gray-600">
+                    Detailed analysis of your birth chart, personality traits, and cosmic influences.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
+                    50+
+                  </div>
+                  <h3 className="font-medium mb-1">compatibility insights</h3>
+                  <p className="text-sm text-gray-600">
+                    Learn how your chart interacts with others and what it means for your relationships.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                  <div className="bg-yellow-300 text-yellow-800 font-bold text-2xl w-12 h-12 flex items-center justify-center rounded-lg mb-2 mx-auto">
+                    99%
+                  </div>
+                  <h3 className="font-medium mb-1">of content tailored to you</h3>
+                  <p className="text-sm text-gray-600">
+                    Custom insights based on your unique astrological profile and personal details.
+                  </p>
+                </div>
               </div>
-            </div>
+            </section>
+
+            {/* What's included section */}
+            <section className="bg-white rounded-lg shadow-sm p-8 mb-8">
+              <h2 className="text-2xl font-bold mb-6 text-center">What's included?</h2>
+
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                    <Book size={20} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Personalized birth chart analysis</h3>
+                    <p className="text-sm text-gray-600">
+                      Detailed interpretation of your sun, moon, rising signs, and planetary placements to easily improve relationships, understand yourself better, and navigate life's challenges.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                    <Users size={20} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Love & relationship insights</h3>
+                    <p className="text-sm text-gray-600">
+                      Discover your compatibility with different signs and how your birth chart influences your relationships. Learn what attracts you to others and how to build stronger connections.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                    <Star size={20} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Personality & life path profile</h3>
+                    <p className="text-sm text-gray-600">
+                      Insights into your strengths, challenges, and potential life paths based on your astrological makeup. Understand your true self and unlock your potential.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                    <Compass size={20} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">Career & success guidance</h3>
+                    <p className="text-sm text-gray-600">
+                      Professional insights based on your chart to help you make better career decisions and understand your natural talents and work preferences.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* Product Selection */}
             <div className="text-center mb-8" ref={optionsSectionRef}>
@@ -399,8 +493,8 @@ export default function PricingPage() {
               
               <div className="max-w-2xl mx-auto space-y-4">
                 {/* Paperback Option */}
-                <ProductOption
-                  type="paperback"
+        <ProductOption
+          type="paperback"
                   title="AstroVela Paperback Book"
                   features={[
                     "Uniquely created just for you",
@@ -411,14 +505,14 @@ export default function PricingPage() {
                   price={isPaperback ? "€55.99" : "€55.99"}
                   originalPrice="€159.97"
                   imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.paperback}
-                  onSelect={() => handleOptionSelect("paperback")}
-                  saleTag="SALE 65% OFF"
-                />
+          isSelected={selectedOptions.paperback}
+          onSelect={() => handleOptionSelect("paperback")}
+          saleTag="SALE 65% OFF"
+        />
 
                 {/* Ebook Option */}
-                <ProductOption
-                  type="ebook"
+        <ProductOption
+          type="ebook"
                   title="AstroVela eBook"
                   features={[
                     "Digital copy delivered to your email",
@@ -428,9 +522,9 @@ export default function PricingPage() {
                   ]}
                   price={getEbookPrice()}
                   imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.ebook}
-                  onSelect={() => handleOptionSelect("ebook")}
-                />
+          isSelected={selectedOptions.ebook}
+          onSelect={() => handleOptionSelect("ebook")}
+        />
 
                 {/* App Option */}
                 <ProductOption
@@ -448,15 +542,15 @@ export default function PricingPage() {
                   isSelected={selectedOptions.app}
                   onSelect={() => handleOptionSelect("app")}
                 />
-              </div>
+          </div>
 
               {/* Order Summary */}
               <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg border">
                 <div className="flex justify-between items-center text-lg font-bold mb-4">
                   <span>Total:</span>
                   <span>€{totalPrice.toFixed(2)}</span>
-                </div>
-                
+        </div>
+
                 {/* Terms and Conditions */}
                 <div className="flex items-start gap-3 mb-4">
                   <input
@@ -483,26 +577,26 @@ export default function PricingPage() {
                 {showTermsWarning && (
                   <div className="text-red-600 text-sm mb-4">
                     Please accept the terms and conditions to continue.
-                  </div>
-                )}
+          </div>
+        )}
 
                 {checkoutError && (
                   <div className="text-red-600 text-sm mb-4 p-3 bg-red-50 rounded">
                     {checkoutError}
-                  </div>
-                )}
+          </div>
+        )}
 
-                <button
-                  onClick={handleOrderClick}
+        <button
+          onClick={handleOrderClick}
                   disabled={isProcessingOrder}
                   className="w-full bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-medium hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isProcessingOrder ? "Processing..." : "Order Now"}
-                </button>
+        </button>
 
                 <PaymentMethods />
               </div>
-            </div>
+        </div>
 
             {/* Testimonials */}
             <div className="mb-8">
@@ -511,38 +605,38 @@ export default function PricingPage() {
                 {testimonials.map((testimonial, index) => (
                   <TestimonialCard key={index} {...testimonial} />
                 ))}
-              </div>
             </div>
+          </div>
 
             {/* FAQ Section */}
-            <div className="mb-8">
+        <div className="mb-8">
               <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Frequently Asked Questions</h2>
               <div className="max-w-2xl mx-auto space-y-4">
                 <AccordionItem
                   title="How accurate is my personalized astrology book?"
                 >
                   Your book is created using your exact birth data (date, time, and location) to generate a highly accurate natal chart. This ensures the insights are specifically tailored to your unique astrological profile.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem
                   title="What's included in the app subscription?"
                 >
                   The app includes unlimited compatibility reports, daily personalized horoscopes, monthly forecasts, and regular new astrology content. The first month is free when you purchase the ebook or paperback.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem
                   title="How long does shipping take?"
                 >
                   Free shipping typically takes 7-14 business days worldwide. You'll receive tracking information once your order ships.
-                </AccordionItem>
+            </AccordionItem>
                 <AccordionItem
                   title="Can I get a refund if I'm not satisfied?"
                 >
                   Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your purchase, contact our support team for a full refund.
-                </AccordionItem>
-              </div>
-            </div>
+            </AccordionItem>
+          </div>
+        </div>
           </div>
         </main>
-      </div>
+        </div>
     </ErrorBoundary>
   )
 }
