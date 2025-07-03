@@ -483,73 +483,115 @@ export function QuizController() {
     setMounted(true)
   }, [])
 
-  // Refs for tracking API calls (to avoid multiple simultaneous calls)
-  const hasStartedFetching = useRef(false)
-  const lastApiCallTime = useRef(0)
+  // Robust race condition prevention for API calls
+  const apiCallState = useRef({
+    isExecuting: false,
+    lastCallTime: 0,
+    requestId: 0,
+    abortController: null as AbortController | null
+  })
 
-  // Track the current step to reset fetch flag when leaving step 12
+  // Track step transitions to reset API state
   const previousStep = useRef(currentStep)
   
   useEffect(() => {
-    // Reset fetch flag when moving away from step 12
+    // Reset API state when moving away from step 12
     if (previousStep.current === 12 && currentStep !== 12) {
-      console.log('🔄 Resetting fetch flag when leaving step 12')
-      hasStartedFetching.current = false
+      console.log('🔄 Resetting API state when leaving step 12')
+      if (apiCallState.current.abortController) {
+        apiCallState.current.abortController.abort()
+      }
+      apiCallState.current = {
+        isExecuting: false,
+        lastCallTime: 0,
+        requestId: 0,
+        abortController: null
+      }
     }
     previousStep.current = currentStep
   }, [currentStep])
 
-  // Smart natal chart fetching logic with better rate limiting and error handling
+  // Race-condition protected natal chart fetching
   useEffect(() => {
-    const now = Date.now()
-    const timeSinceLastCall = now - lastApiCallTime.current
-    const minInterval = 3000 // 3 seconds minimum between calls
-    
-    const makeApiCall = () => {
-      // Only trigger on step 12 (loading) if we have all birth data and conditions are met
-      if (currentStep === 12 && 
-          state.birthDate.year && state.birthDate.month && state.birthDate.day &&
-          state.birthTime && state.birthPlace &&
-          !state.customChartUrl &&
-          !hasStartedFetching.current &&
-          !state.isLoadingChart) {
-        
-        console.log('✅ Simplified conditions met! Calling fetchNatalChart()')
-        console.log('Birth data:', {
-          date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
-          time: state.birthTime,
-          place: state.birthPlace
-        })
-        
-        hasStartedFetching.current = true
-        lastApiCallTime.current = Date.now()
-        
-        // Add error handling to reset the flag if API fails
-        fetchNatalChart().catch((error) => {
-          console.error('❌ API call failed, resetting flag:', error)
-          hasStartedFetching.current = false
-        })
-      } else if (currentStep === 12) {
-        console.log('❌ Step 12 but missing conditions:', {
+    // Only proceed if we're on step 12
+    if (currentStep !== 12) return
+
+    // Check if we have all required data
+    const hasAllData = state.birthDate.year && 
+                      state.birthDate.month && 
+                      state.birthDate.day &&
+                      state.birthTime && 
+                      state.birthPlace
+
+    if (!hasAllData || state.customChartUrl || state.isLoadingChart) {
+      if (currentStep === 12 && !hasAllData) {
+        console.log('❌ Step 12 but missing required data:', {
           hasBirthDate: !!(state.birthDate.year && state.birthDate.month && state.birthDate.day),
           hasTime: !!state.birthTime,
           hasPlace: !!state.birthPlace,
-          noCustomChart: !state.customChartUrl,
-          notAlreadyStarted: !hasStartedFetching.current,
-          notCurrentlyLoading: !state.isLoadingChart
+          hasCustomChart: !!state.customChartUrl,
+          isCurrentlyLoading: !!state.isLoadingChart
         })
       }
+      return
     }
-    
-    if (timeSinceLastCall >= minInterval) {
-      makeApiCall()
-    } else {
-      // Delay the API call to respect rate limiting
-      console.log(`⏳ Rate limiting: waiting ${minInterval - timeSinceLastCall}ms before next API call`)
-      const timeoutId = setTimeout(makeApiCall, minInterval - timeSinceLastCall)
-      return () => clearTimeout(timeoutId)
+
+    // Prevent multiple simultaneous calls
+    if (apiCallState.current.isExecuting) {
+      console.log('⚠️ API call already in progress, skipping duplicate request')
+      return
     }
-  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart])
+
+    // Rate limiting check
+    const now = Date.now()
+    const timeSinceLastCall = now - apiCallState.current.lastCallTime
+    const minInterval = 2000 // 2 seconds minimum between calls
+
+    if (timeSinceLastCall < minInterval) {
+      console.log(`⏳ Rate limiting: ${minInterval - timeSinceLastCall}ms remaining`)
+      return
+    }
+
+    // Execute the API call with proper protection
+    const executeApiCall = async () => {
+      const requestId = ++apiCallState.current.requestId
+      apiCallState.current.isExecuting = true
+      apiCallState.current.lastCallTime = now
+      apiCallState.current.abortController = new AbortController()
+
+      console.log(`🚀 Starting API call #${requestId}`)
+      console.log('Birth data:', {
+        date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
+        time: state.birthTime,
+        place: state.birthPlace
+      })
+
+      try {
+        await fetchNatalChart()
+        
+        // Check if this is still the current request (no newer requests)
+        if (requestId === apiCallState.current.requestId) {
+          console.log(`✅ API call #${requestId} completed successfully`)
+        } else {
+          console.log(`🔄 API call #${requestId} completed but superseded by newer request`)
+        }
+      } catch (error) {
+        // Only log error if this is still the current request
+        if (requestId === apiCallState.current.requestId) {
+          console.error(`❌ API call #${requestId} failed:`, error)
+        }
+      } finally {
+        // Only reset state if this is still the current request
+        if (requestId === apiCallState.current.requestId) {
+          apiCallState.current.isExecuting = false
+          apiCallState.current.abortController = null
+        }
+      }
+    }
+
+    executeApiCall()
+
+  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart, fetchNatalChart])
 
   // Get stepConfig first (needed for useEffect dependency)
   const stepConfig = quizSteps[currentStep - 1] // currentStep is 1-based

@@ -14,14 +14,25 @@ if (process.env.NODE_ENV === "development") {
 
 // Helper function to get or create persistent session ID
 const getOrCreateSessionId = (): string => {
-  if (typeof window === 'undefined') return `server_${Date.now()}`
+  if (typeof window === 'undefined') {
+    // Return a consistent server-side ID to prevent hydration mismatch
+    return 'server_session_pending'
+  }
   
   let sessionId = sessionStorage.getItem('astrovela_session_id')
   if (!sessionId) {
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    // Use crypto.randomUUID if available, otherwise fallback to timestamp + random
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      const uuid = window.crypto.randomUUID()
+      sessionId = `session_${uuid}`
+    } else {
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    }
     sessionStorage.setItem('astrovela_session_id', sessionId)
   }
-  return sessionId
+  
+  // Ensure we always return a valid string, never null/undefined
+  return sessionId || 'fallback_session_id'
 }
 
 type Gender = "male" | "female" | "non-binary" | null
@@ -345,7 +356,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     
     // Import services dynamically to avoid server-side issues
     const { geocodeLocation } = await import("@/services/astrology-service")
-    const { fetchNatalWheelChart } = await import("@/services/astrology-api-service")
     
     setState((prev) => ({ ...prev, isLoadingChart: true, chartError: null }))
     
@@ -394,28 +404,75 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         lon: location.longitude 
       })
       
-      // 1. Fetch natal wheel chart URL (AWS link) - using correct parameter format
-      const wheelChartResult = await fetchNatalWheelChart(
+      // 1. Fetch natal wheel chart URL via server-side API (fixes client-side env var issue)
+      console.log("🔄 Calling natal wheel chart API...", {
         birthDateStr,
-        birthTimeStr, 
-        location.latitude,
-        location.longitude,
-        1.0 // timezone
-      )
-      console.log("✅ Received wheel chart result:", wheelChartResult)
+        birthTimeStr,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        timezone: 1.0,
+        timestamp: new Date().toISOString()
+      })
+      
+      const wheelChartResponse = await fetch('/api/natal-wheel-chart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          birthDate: birthDateStr,
+          birthTime: birthTimeStr,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          timezone: 1.0
+        })
+      })
+      
+      if (!wheelChartResponse.ok) {
+        const errorText = await wheelChartResponse.text()
+        throw new Error(`Natal wheel chart API failed: ${wheelChartResponse.statusText} - ${errorText}`)
+      }
+      
+      const wheelChartResult = await wheelChartResponse.json()
+      
+      console.log("✅ Received wheel chart result:", {
+        hasResult: !!wheelChartResult,
+        hasChartUrl: !!(wheelChartResult as any)?.chartUrl,
+        hasSvgContent: !!(wheelChartResult as any)?.svgContent,
+        isStringResult: typeof wheelChartResult === 'string',
+        resultType: typeof wheelChartResult,
+        resultKeys: wheelChartResult && typeof wheelChartResult === 'object' ? Object.keys(wheelChartResult) : [],
+        
+        timestamp: new Date().toISOString()
+      })
       
       // Extract the chart URL or create data URL from SVG
+      console.log("🔗 Processing chart URL extraction...")
       let chartUrlToStore = null
-      if (wheelChartResult?.chartUrl) {
-        chartUrlToStore = wheelChartResult.chartUrl
-      } else if (wheelChartResult?.svgContent) {
+      if ((wheelChartResult as any)?.chartUrl) {
+        chartUrlToStore = (wheelChartResult as any).chartUrl
+        console.log("✅ Using external chart URL from API:", {
+          source: "API chartUrl field",
+          urlType: chartUrlToStore?.startsWith('http') ? "External HTTP URL" : "Other URL type",
+          urlLength: chartUrlToStore?.length || 0
+        })
+              } else if ((wheelChartResult as any)?.svgContent) {
+        console.log("🎨 Using fallback SVG content:", {
+          source: "API svgContent field (Fallback Mode)",
+          svgLength: (wheelChartResult as any).svgContent.length,
+          encodingMethod: "Base64"
+        })
         // Safe base64 encoding that handles Unicode characters
         try {
           // Use TextEncoder to convert to UTF-8 bytes, then encode to base64
           const encoder = new TextEncoder()
-          const utf8Bytes = encoder.encode(wheelChartResult.svgContent)
+          const utf8Bytes = encoder.encode((wheelChartResult as any).svgContent)
           const base64String = btoa(String.fromCharCode(...utf8Bytes))
           chartUrlToStore = `data:image/svg+xml;base64,${base64String}`
+          console.log("✅ Successfully encoded SVG to data URL:", {
+            dataUrlLength: chartUrlToStore.length,
+            dataUrlPrefix: chartUrlToStore.substring(0, 50) + "..."
+          })
         } catch (error) {
           console.error("Error encoding SVG to base64:", error)
           // Fallback: use URL encoding instead
