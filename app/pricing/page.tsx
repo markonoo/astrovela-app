@@ -10,7 +10,6 @@ import { StarRating } from "@/components/ui/star-rating"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { ProductOption } from "@/components/ui/product-option"
 import { PaymentMethods } from "@/components/ui/payment-methods"
-import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
@@ -20,6 +19,7 @@ import { format } from "date-fns"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { Button } from "@/components/ui/button"
 import { trackMarketingEvent } from "@/utils/marketing-tracking"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 
 // Force client-side rendering to prevent hydration mismatches
 export const dynamic = 'force-dynamic'
@@ -675,23 +675,33 @@ export default function PricingPage() {
             {/* FAQ Section - simplified */}
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-              <div className="max-w-3xl mx-auto space-y-4">
-                <AccordionItem
-                  title="How accurate is my personalized astrology book?"
-                  content="Your book is created using your exact birth date, time, and location to generate a precise natal chart. This ensures maximum accuracy in your astrological reading."
-                />
-                <AccordionItem
-                  title="When will I receive my book?"
-                  content="Digital books are delivered instantly to your email. Physical books are printed and shipped within 3-5 business days, with free worldwide shipping."
-                />
-                <AccordionItem
-                  title="What if I don't know my exact birth time?"
-                  content="While knowing your exact birth time provides the most accurate reading, we can still create a meaningful chart with just your birth date and location."
-                />
-                <AccordionItem
-                  title="Can I cancel my app subscription?"
-                  content="Yes, you can cancel your app subscription at any time by contacting us at help@astrovela.com before your next billing cycle."
-                />
+              <div className="max-w-3xl mx-auto">
+                <Accordion type="single" collapsible className="space-y-4">
+                  <AccordionItem value="accuracy">
+                    <AccordionTrigger>How accurate is my personalized astrology book?</AccordionTrigger>
+                    <AccordionContent>
+                      Your book is created using your exact birth date, time, and location to generate a precise natal chart. This ensures maximum accuracy in your astrological reading.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="delivery">
+                    <AccordionTrigger>When will I receive my book?</AccordionTrigger>
+                    <AccordionContent>
+                      Digital books are delivered instantly to your email. Physical books are printed and shipped within 3-5 business days, with free worldwide shipping.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="birth-time">
+                    <AccordionTrigger>What if I don't know my exact birth time?</AccordionTrigger>
+                    <AccordionContent>
+                      While knowing your exact birth time provides the most accurate reading, we can still create a meaningful chart with just your birth date and location.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="cancellation">
+                    <AccordionTrigger>Can I cancel my app subscription?</AccordionTrigger>
+                    <AccordionContent>
+                      Yes, you can cancel your app subscription at any time by contacting us at help@astrovela.com before your next billing cycle.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </section>
           </div>
