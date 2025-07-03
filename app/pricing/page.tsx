@@ -111,8 +111,7 @@ export default function PricingPage() {
       hasCustomChartUrl: !!state.customChartUrl,
       sunSign: state.sunSign,
       moonSign: state.moonSign,
-      selectedTheme: state.selectedTheme,
-      coverDesign: state.coverDesign
+      coverColorScheme: state.coverColorScheme
     })
 
     // DEBUG: Check if ProductOption features are properly defined
