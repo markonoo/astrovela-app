@@ -43,21 +43,24 @@ export function ZodiacDisplay() {
                 className="w-[165px] h-[165px]"
                 style={{ 
                   objectFit: 'contain',
-                  filter: 'brightness(0) saturate(0) invert(1) sepia(1) saturate(1000%) hue-rotate(20deg) brightness(1.2)'
+                  filter: 'brightness(0) saturate(0) invert(1) sepia(1) saturate(5000%) hue-rotate(10deg) brightness(1.1)',
                 }}
               />
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-orange-500 mb-4">{title}</h2>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#f7c800' }}>{title}</h2>
 
-          <p className="text-gray-200 mb-6">{description}</p>
+          <p className="text-lg font-semibold mb-2" style={{ color: '#f7c800' }}>{zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1)}</p>
+
+          <p className="text-base text-center text-gray-300 mb-6">{description}</p>
 
           {/* REMOVED: Loading spinner for chart generation */}
 
           <button
             onClick={nextStep}
-            className="w-full py-3 px-4 bg-orange-500 rounded-full text-white font-medium hover:bg-orange-600 transition-colors mt-8"
+            className="w-full py-3 px-4 rounded-full font-medium hover:brightness-110 transition-colors mt-8"
+            style={{ backgroundColor: '#f7c800', color: '#28293d' }}
           >
             Continue
           </button>
