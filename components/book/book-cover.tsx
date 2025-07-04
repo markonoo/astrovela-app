@@ -37,18 +37,12 @@ export function BookCover({
 }: BookCoverProps) {
   const [currentColorScheme, setCurrentColorScheme] = useState(colorScheme)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
   const [wheelChartSVG, setWheelChartSVG] = useState<string | null>(svgContent)
   const [isLoadingChart, setIsLoadingChart] = useState(false)
   const svgContainerRef = useRef<HTMLDivElement>(null)
 
   // Get color scheme details
   const colors = useMemo(() => getColorScheme(currentColorScheme), [currentColorScheme])
-
-  // Set mounted state after hydration
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
 
   // Update color scheme when prop changes
   useEffect(() => {
@@ -151,34 +145,26 @@ export function BookCover({
     <ErrorBoundary>
       <div
         className={`relative w-full h-full flex flex-col overflow-hidden ${className}`}
-        style={{ backgroundColor: colors.bgColor }}
+                 style={{ backgroundColor: colors.bgColor }}
       >
-        {/* Decorative stars - only render after mount to prevent hydration mismatch */}
-        {isMounted && (
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(20)].map((_, i) => {
-              // Deterministic positioning based on index
-              const seed = 12345 + i * 17
-              const seededRandom = (s: number) => ((s * 9301 + 49297) % 233280) / 233280
-              
-              return (
-                <div
-                  key={i}
-                  className="absolute transform"
-                  style={{
-                    top: `${seededRandom(seed) * 100}%`,
-                    left: `${seededRandom(seed + 1) * 100}%`,
-                    opacity: 0.4 + seededRandom(seed + 2) * 0.6,
-                    color: colors.accentColor,
-                    fontSize: `${0.5 + seededRandom(seed + 3) * 1}rem`,
-                  }}
-                >
-                  ✦
-                </div>
-              )
-            })}
-          </div>
-        )}
+        {/* Decorative stars */}
+        <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning={true}>
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute transform"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: 0.4 + Math.random() * 0.6,
+                color: colors.accentColor,
+                fontSize: `${0.5 + Math.random() * 1}rem`,
+              }}
+            >
+              ✦
+            </div>
+          ))}
+        </div>
 
         {/* Sun symbol at top */}
         <div className="w-full flex justify-center mb-2" style={{ color: colors.accentColor }}>

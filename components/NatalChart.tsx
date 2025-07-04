@@ -59,71 +59,71 @@ const NatalChart: React.FC<NatalChartProps> = ({ colorScheme, interactive = fals
 
   return (
     <ErrorBoundary>
-    <div className="w-full h-full flex items-center justify-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 800 800"
-        width="100%"
-        height="100%"
-        style={{ maxWidth: "100%", maxHeight: "100%" }}
-      >
-        {/* Outer circle */}
-        <circle cx="400" cy="400" r="350" fill="none" stroke={textColor} strokeWidth="2" />
+      <div className="w-full h-full flex items-center justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 800 800"
+          width="100%"
+          height="100%"
+          style={{ maxWidth: "100%", maxHeight: "100%" }}
+        >
+          {/* Outer circle */}
+          <circle cx="400" cy="400" r="350" fill="none" stroke={textColor} strokeWidth="2" />
 
-        {/* Inner circle */}
-        <circle cx="400" cy="400" r="300" fill="none" stroke={textColor} strokeWidth="1" />
+          {/* Inner circle */}
+          <circle cx="400" cy="400" r="300" fill="none" stroke={textColor} strokeWidth="1" />
 
-        {/* Zodiac divisions */}
-        {zodiacDivisions}
+          {/* Zodiac divisions */}
+          {zodiacDivisions}
 
-        {/* Zodiac symbols */}
-        {zodiacSymbols.map((sign, index) => {
-          const angle = (sign.angle * Math.PI) / 180
-          const x = 400 + 325 * Math.cos(angle)
-          const y = 400 + 325 * Math.sin(angle)
-          return (
-            <text
-              key={`zodiac-${index}`}
-              x={x}
-              y={y}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill={textColor}
-              fontSize="20"
-              fontFamily="Arial, sans-serif"
-            >
-              {sign.symbol}
-            </text>
-          )
-        })}
-
-        {/* Planet symbols */}
-        {planetSymbols.map((planet, index) => {
-          const angle = (planet.angle * Math.PI) / 180
-          const x = 400 + planet.distance * Math.cos(angle)
-          const y = 400 + planet.distance * Math.sin(angle)
-          return (
-            <g key={`planet-${index}`}>
-              <circle cx={x} cy={y} r="15" fill="none" stroke={textColor} strokeWidth="1" />
+          {/* Zodiac symbols */}
+          {zodiacSymbols.map((sign, index) => {
+            const angle = (sign.angle * Math.PI) / 180
+            const x = 400 + 325 * Math.cos(angle)
+            const y = 400 + 325 * Math.sin(angle)
+            return (
               <text
+                key={`zodiac-${index}`}
                 x={x}
                 y={y}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fill={textColor}
-                fontSize="16"
+                fontSize="20"
                 fontFamily="Arial, sans-serif"
               >
-                {planet.symbol}
+                {sign.symbol}
               </text>
-            </g>
-          )
-        })}
+            )
+          })}
 
-        {/* Center point */}
-        <circle cx="400" cy="400" r="5" fill={textColor} />
-      </svg>
-    </div>
+          {/* Planet symbols */}
+          {planetSymbols.map((planet, index) => {
+            const angle = (planet.angle * Math.PI) / 180
+            const x = 400 + planet.distance * Math.cos(angle)
+            const y = 400 + planet.distance * Math.sin(angle)
+            return (
+              <g key={`planet-${index}`}>
+                <circle cx={x} cy={y} r="15" fill="none" stroke={textColor} strokeWidth="1" />
+                <text
+                  x={x}
+                  y={y}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={textColor}
+                  fontSize="16"
+                  fontFamily="Arial, sans-serif"
+                >
+                  {planet.symbol}
+                </text>
+              </g>
+            )
+          })}
+
+          {/* Center point */}
+          <circle cx="400" cy="400" r="5" fill={textColor} />
+        </svg>
+      </div>
     </ErrorBoundary>
   )
 }

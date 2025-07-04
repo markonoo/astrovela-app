@@ -28,28 +28,23 @@ function LoadingAnimation({ message, isStep12 = false }: { message: string; isSt
   
   // Animation to gradually increase the progress
   useEffect(() => {
-    // Reset progress when component mounts or message changes
-    setProgress(0);
+    // For step 12 (API call), make progress slower to match ~5 second duration
+    // For other steps, keep original ~3 second timing
+    const updateInterval = isStep12 ? 50 : 30; // 50ms for step 12, 30ms for others
+    const incrementAmount = isStep12 ? 1 : 1; // Same increment for both now
     
-    // For step 12 (API call), make progress slower to match ~6 second duration
-    // For other steps, use faster timing for ~3 second duration
-    const duration = isStep12 ? 6000 : 3000; // Total duration in ms
-    const interval = 50; // Update every 50ms for smooth animation
-    const increment = (100 / duration) * interval; // Calculate increment per interval
-    
-    const timer = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress(prev => {
-        const newProgress = prev + increment;
-        if (newProgress >= 100) {
-          clearInterval(timer);
+        if (prev >= 100) {
+          clearInterval(interval);
           return 100;
         }
-        return newProgress;
+        return Math.min(prev + incrementAmount, 100);
       });
-    }, interval);
+    }, updateInterval);
     
-    return () => clearInterval(timer);
-  }, [isStep12, message]); // Re-run when message changes
+    return () => clearInterval(interval);
+  }, [isStep12]);
   
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px] bg-transparent text-yellow-100 rounded-xl p-8 mx-auto max-w-xl">
@@ -77,10 +72,7 @@ function LoadingAnimation({ message, isStep12 = false }: { message: string; isSt
             strokeDasharray="283"
             strokeDashoffset={283 - (progress / 100) * 283}
             transform="rotate(-90 50 50)"
-            style={{ 
-              transition: 'stroke-dashoffset 0.1s ease-out',
-              willChange: 'stroke-dashoffset'
-            }}
+            style={{ transition: 'stroke-dashoffset 0.1s ease-in-out' }}
           />
           <text
             x="50"
@@ -483,115 +475,69 @@ export function QuizController() {
     setMounted(true)
   }, [])
 
-  // Robust race condition prevention for API calls
-  const apiCallState = useRef({
-    isExecuting: false,
-    lastCallTime: 0,
-    requestId: 0,
-    abortController: null as AbortController | null
-  })
-
-  // Track step transitions to reset API state
-  const previousStep = useRef(currentStep)
+  // Trigger fetchNatalChart during the loading step (step 12) instead of zodiacResult step
+  const hasStartedFetching = useRef(false)
+  const lastApiCallTime = useRef<number>(0)
   
   useEffect(() => {
-    // Reset API state when moving away from step 12
-    if (previousStep.current === 12 && currentStep !== 12) {
-      console.log('🔄 Resetting API state when leaving step 12')
-      if (apiCallState.current.abortController) {
-        apiCallState.current.abortController.abort()
-      }
-      apiCallState.current = {
-        isExecuting: false,
-        lastCallTime: 0,
-        requestId: 0,
-        abortController: null
-      }
+    console.log('🔍 Simple debug - Current step:', currentStep)
+    
+    // Reset the flag when we're not on step 12
+    if (currentStep !== 12) {
+      hasStartedFetching.current = false
+      return
     }
-    previousStep.current = currentStep
-  }, [currentStep])
-
-  // Race-condition protected natal chart fetching
-  useEffect(() => {
-    // Only proceed if we're on step 12
-    if (currentStep !== 12) return
-
-    // Check if we have all required data
-    const hasAllData = state.birthDate.year && 
-                      state.birthDate.month && 
-                      state.birthDate.day &&
-                      state.birthTime && 
-                      state.birthPlace
-
-    if (!hasAllData || state.customChartUrl || state.isLoadingChart) {
-      if (currentStep === 12 && !hasAllData) {
-        console.log('❌ Step 12 but missing required data:', {
+    
+    // Add rate limiting: ensure at least 3 seconds between API calls
+    const now = Date.now()
+    const timeSinceLastCall = now - lastApiCallTime.current
+    const minInterval = 3000 // 3 seconds minimum between calls
+    
+    const makeApiCall = () => {
+      // Only trigger on step 12 (loading) if we have all birth data and haven't already started fetching
+      if (currentStep === 12 && 
+          state.birthDate.year && state.birthDate.month && state.birthDate.day &&
+          state.birthTime && state.birthPlace &&
+          !state.customChartUrl &&
+          !hasStartedFetching.current &&
+          !state.isLoadingChart) {
+        
+        console.log('✅ Simplified conditions met! Calling fetchNatalChart()')
+        console.log('Birth data:', {
+          date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
+          time: state.birthTime,
+          place: state.birthPlace
+        })
+        
+        hasStartedFetching.current = true
+        lastApiCallTime.current = Date.now()
+        
+        // Add error handling to reset the flag if API fails
+        fetchNatalChart().catch((error) => {
+          console.error('API call failed, resetting flag:', error)
+          hasStartedFetching.current = false
+        })
+      } else if (currentStep === 12) {
+        console.log('❌ Step 12 but missing conditions:', {
           hasBirthDate: !!(state.birthDate.year && state.birthDate.month && state.birthDate.day),
           hasTime: !!state.birthTime,
           hasPlace: !!state.birthPlace,
-          hasCustomChart: !!state.customChartUrl,
-          isCurrentlyLoading: !!state.isLoadingChart
+          noCustomChart: !state.customChartUrl,
+          notAlreadyStarted: !hasStartedFetching.current,
+          notCurrentlyLoading: !state.isLoadingChart
         })
       }
-      return
     }
-
-    // Prevent multiple simultaneous calls
-    if (apiCallState.current.isExecuting) {
-      console.log('⚠️ API call already in progress, skipping duplicate request')
-      return
+    
+    if (timeSinceLastCall >= minInterval) {
+      makeApiCall()
+    } else {
+      // Delay the API call to respect rate limiting
+      console.log(`⏳ Rate limiting: waiting ${minInterval - timeSinceLastCall}ms before next API call`)
+      const timeoutId = setTimeout(makeApiCall, minInterval - timeSinceLastCall)
+      return () => clearTimeout(timeoutId)
     }
-
-    // Rate limiting check
-    const now = Date.now()
-    const timeSinceLastCall = now - apiCallState.current.lastCallTime
-    const minInterval = 2000 // 2 seconds minimum between calls
-
-    if (timeSinceLastCall < minInterval) {
-      console.log(`⏳ Rate limiting: ${minInterval - timeSinceLastCall}ms remaining`)
-      return
-    }
-
-    // Execute the API call with proper protection
-    const executeApiCall = async () => {
-      const requestId = ++apiCallState.current.requestId
-      apiCallState.current.isExecuting = true
-      apiCallState.current.lastCallTime = now
-      apiCallState.current.abortController = new AbortController()
-
-      console.log(`🚀 Starting API call #${requestId}`)
-      console.log('Birth data:', {
-        date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
-        time: state.birthTime,
-        place: state.birthPlace
-      })
-
-      try {
-        await fetchNatalChart()
-        
-        // Check if this is still the current request (no newer requests)
-        if (requestId === apiCallState.current.requestId) {
-          console.log(`✅ API call #${requestId} completed successfully`)
-        } else {
-          console.log(`🔄 API call #${requestId} completed but superseded by newer request`)
-        }
-      } catch (error) {
-        // Only log error if this is still the current request
-        if (requestId === apiCallState.current.requestId) {
-          console.error(`❌ API call #${requestId} failed:`, error)
-        }
-      } finally {
-        // Only reset state if this is still the current request
-        if (requestId === apiCallState.current.requestId) {
-          apiCallState.current.isExecuting = false
-          apiCallState.current.abortController = null
-        }
-      }
-    }
-
-    executeApiCall()
-
-  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart, fetchNatalChart])
+  }, [currentStep, state.birthDate.year, state.birthDate.month, state.birthDate.day, state.birthTime, state.birthPlace, state.customChartUrl, state.isLoadingChart])
 
   // Get stepConfig first (needed for useEffect dependency)
   const stepConfig = quizSteps[currentStep - 1] // currentStep is 1-based

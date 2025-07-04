@@ -92,7 +92,7 @@ export default function RootLayout({
         <UserProvider>
           <QuizProvider>
             <ErrorBoundary>
-            {children}
+              {children}
             </ErrorBoundary>
           </QuizProvider>
         </UserProvider>

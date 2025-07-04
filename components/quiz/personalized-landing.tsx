@@ -324,7 +324,7 @@ export function PersonalizedLanding() {
           <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
             <div className="w-full md:w-1/3">
               <div className="rounded-lg overflow-hidden">
-                <img src="/placeholder.svg" alt="Astrologer" className="w-full h-auto" />
+                <img src="/placeholder.svg?height=300&width=300" alt="Astrologer" className="w-full h-auto" />
               </div>
             </div>
 

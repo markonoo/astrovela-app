@@ -26,36 +26,13 @@ const hasValidCredentials = () => {
 
 // Store authentication error status in session storage to avoid repeated failed attempts
 const setAuthError = (hasError: boolean) => {
-  if (hasError) {
-    // Set both the error flag and timestamp
-    safeSetSessionItem("astrology_api_auth_error", "true");
-    safeSetSessionItem("astrology_api_auth_error_timestamp", Date.now().toString());
-  } else {
-    safeRemoveSessionItem("astrology_api_auth_error");
-    safeRemoveSessionItem("astrology_api_auth_error_timestamp");
-  }
+  safeSetSessionItem("astrology_api_auth_error", hasError ? "true" : "false");
   devLog("Debug - Set Auth Error:", hasError);
 }
 
 // Check if we've already encountered an authentication error
 const hasAuthError = (): boolean => {
   const hasError = safeGetSessionItem("astrology_api_auth_error") === "true";
-  
-  if (hasError) {
-    // Check if error is older than 10 minutes - auto-clear if so
-    const errorTimestamp = safeGetSessionItem("astrology_api_auth_error_timestamp");
-    if (errorTimestamp) {
-      const errorTime = parseInt(errorTimestamp);
-      const tenMinutesAgo = Date.now() - (10 * 60 * 1000);
-      
-      if (errorTime < tenMinutesAgo) {
-        devLog("Debug - Auth error is old, auto-clearing");
-        clearAuthErrors();
-        return false;
-      }
-    }
-  }
-  
   devLog("Debug - Has Auth Error:", hasError);
   return hasError;
 }
@@ -63,94 +40,7 @@ const hasAuthError = (): boolean => {
 // Clear any stored authentication errors
 export const clearAuthErrors = () => {
   safeRemoveSessionItem("astrology_api_auth_error");
-  safeRemoveSessionItem("astrology_api_auth_error_timestamp");
   devLog("Debug - Cleared Auth Errors");
-}
-
-/**
- * Debug function to test API connectivity and credentials
- * Useful for troubleshooting issues
- */
-export const debugApiConnection = async () => {
-  devLog("🔍 Debug - Starting API connection test...")
-  
-  try {
-    // Clear any existing auth errors for this test
-    clearAuthErrors()
-    
-    // Check credentials
-    if (!hasValidCredentials()) {
-      devError("❌ Debug - No valid credentials found")
-      return {
-        success: false,
-        error: "No valid credentials",
-        details: {
-          hasUserId: !!USER_ID,
-          hasApiKey: !!API_KEY,
-          userIdLength: USER_ID.length,
-          apiKeyLength: API_KEY.length
-        }
-      }
-    }
-    
-    // Test with a simple planets call
-    const testData = {
-      day: 1,
-      month: 1,
-      year: 2000,
-      hour: 12,
-      min: 0,
-      lat: 0,
-      lon: 0,
-      tzone: 0,
-    }
-    
-    devLog("🔍 Debug - Testing planets endpoint with:", testData)
-    
-    const response = await fetch(`${ASTROLOGY_API_BASE_URL}/planets`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(testData),
-    })
-    
-    const data = await response.json()
-    
-    devLog("🔍 Debug - Response status:", response.status)
-    devLog("🔍 Debug - Response data keys:", Object.keys(data))
-    
-    if (data.status === false && data.msg) {
-      devError("❌ Debug - API error:", data.msg)
-      return {
-        success: false,
-        error: data.msg,
-        details: { responseStatus: response.status, data }
-      }
-    }
-    
-    if (!response.ok) {
-      devError("❌ Debug - HTTP error:", response.status, response.statusText)
-      return {
-        success: false,
-        error: `HTTP ${response.status}: ${response.statusText}`,
-        details: { responseStatus: response.status, data }
-      }
-    }
-    
-    devLog("✅ Debug - API connection successful!")
-    return {
-      success: true,
-      message: "API connection working",
-      details: { responseStatus: response.status, planetsCount: data.length || 0 }
-    }
-    
-  } catch (error) {
-    devError("❌ Debug - Connection test failed:", error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-      details: { error }
-    }
-  }
 }
 
 /**

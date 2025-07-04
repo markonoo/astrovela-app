@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       const originalPrice = parseFloat(variant.price);
       const itemPrice = shouldCharge ? originalPrice * lineItem.quantity : 0;
       totalPrice += itemPrice;
-    
+
       // Store product info for response
       processedProducts.push({
         id: variant.product.id,

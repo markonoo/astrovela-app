@@ -10,6 +10,7 @@ import { StarRating } from "@/components/ui/star-rating"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
 import { ProductOption } from "@/components/ui/product-option"
 import { PaymentMethods } from "@/components/ui/payment-methods"
+import { AccordionItem } from "@/components/ui/accordion-item"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
@@ -17,16 +18,6 @@ import { createShopifyCheckout, getShopifyProducts } from "@/services/shopify-se
 import { ShopifyError } from "@/utils/shopify-error-handler"
 import { format } from "date-fns"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
-import { Button } from "@/components/ui/button"
-import { trackMarketingEvent } from "@/utils/marketing-tracking"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
-
-// Force client-side rendering to prevent hydration mismatches
-export const dynamic = 'force-dynamic'
-
-// Add version debugging for cache-busting
-const PRICING_PAGE_VERSION = "v2.1.1-features-fix"
-const LAST_UPDATED = "2025-01-07-hotfix"
 
 // Type definition for ShopifyProduct
 interface ShopifyProduct {
@@ -59,10 +50,13 @@ interface ShopifyProduct {
 }
 
 interface SelectedOptions {
-  app: boolean;
-  paperback: boolean;
-  ebook: boolean;
+  app: boolean
+  paperback: boolean
+  ebook: boolean
 }
+
+// Force client-side rendering to prevent hydration mismatches
+export const dynamic = 'force-dynamic'
 
 export default function PricingPage() {
   const { state } = useQuiz()
@@ -72,10 +66,10 @@ export default function PricingPage() {
   const [zodiacSign, setZodiacSign] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showTermsWarning, setShowTermsWarning] = useState(false)
-  const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 28 })
+  const [countdown, setCountdown] = useState({ minutes: 14, seconds: 54 })
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
-    app: false,
-    paperback: false,
+    app: true,
+    paperback: true,
     ebook: true
   })
   const [isProcessingOrder, setIsProcessingOrder] = useState(false)
@@ -86,120 +80,8 @@ export default function PricingPage() {
   const [productError, setProductError] = useState<string | null>(null)
 
   const optionsSectionRef = useRef<HTMLDivElement>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Initialize page logging - runs only once
-  useEffect(() => {
-    console.log("🛒 Pricing Page Initialized:", {
-      version: PRICING_PAGE_VERSION,
-      lastUpdated: LAST_UPDATED,
-      timestamp: new Date().toISOString(),
-      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'Server',
-      viewport: typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : 'Unknown',
-      cacheTimestamp: Date.now() // Add cache-busting timestamp
-    })
-    
-    setIsMounted(true)
-    
-    // Debug quiz state - only once on mount
-    console.log("🛒 Pricing Page - Quiz State:", {
-      isQuizCompleted: isQuizCompleted(),
-      firstName: state.firstName,
-      lastName: state.lastName,
-      email: state.email,
-      hasNatalChart: !!state.natalChart,
-      hasCustomChartUrl: !!state.customChartUrl,
-      sunSign: state.sunSign,
-      moonSign: state.moonSign,
-      coverColorScheme: state.coverColorScheme
-    })
-
-    // DEBUG: Check if ProductOption features are properly defined
-    console.log("🛒 Pricing Page - Features Debug:", {
-      appFeatures: [
-        "Unlimited compatibility reports",
-        "New daily horoscopes & astrology content", 
-        "FREE 1-month trial with ebook or paperback"
-      ],
-      paperbackFeatures: [
-        "Uniquely created just for you",
-        "FREE shipping",
-        "FREE app & ebook included"
-      ],
-      ebookFeatures: [
-        "Digital copy delivered to your email",
-        "FREE app included",
-        "FREE with the paperback"
-      ],
-      timestamp: new Date().toISOString()
-    })
-  }, []) // Empty dependency array - runs only once
-
-  // Debug selected options only when they change
-  useEffect(() => {
-    console.log("🛒 Pricing Page - Product Selection:", {
-      selectedOptions,
-      totalProducts: Object.values(selectedOptions).filter(Boolean).length,
-      selectedProductNames: Object.entries(selectedOptions)
-        .filter(([, selected]) => selected)
-        .map(([name]) => name)
-    })
-  }, [selectedOptions]) // Only when selectedOptions changes
-
-  // Check if quiz is completed - only run once
-  useEffect(() => {
-    console.log("🛒 Pricing Page - Access Check:", {
-      isQuizCompleted: isQuizCompleted(),
-      redirecting: !isQuizCompleted() ? "YES - to /quiz" : "NO - access granted"
-    })
-
-    if (!isQuizCompleted()) {
-      router.push("/quiz")
-      return
-    }
-    
-    // Set quiz data and zodiac sign
-    const hasData = isQuizCompleted()
-    setHasQuizData(hasData)
-
-    if (hasData && state.birthDate.month && state.birthDate.day) {
-      const sign = getZodiacSign(Number.parseInt(state.birthDate.month), Number.parseInt(state.birthDate.day))
-      setZodiacSign(sign)
-    }
-  }, [router, state.birthDate.month, state.birthDate.day]) // Specific dependencies
-
-  // Initialize countdown timer - only once
-  useEffect(() => {
-    console.log("🛒 Pricing Page - Timer Started:", {
-      initialTime: `${timeLeft.minutes}:${timeLeft.seconds.toString().padStart(2, '0')}`,
-      startTimestamp: new Date().toISOString()
-    })
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 }
-        } else if (prev.minutes > 0) {
-          return { minutes: prev.minutes - 1, seconds: 59 }
-        } else {
-          // Timer expired - reset instead of logging every second
-          return { minutes: 14, seconds: 59 }
-        }
-      })
-    }, 1000)
-
-    return () => {
-      if (timerRef.current) {
-        console.log("🛒 Pricing Page - Timer Cleanup:", {
-          cleanupAt: new Date().toISOString()
-        })
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
-    }
-  }, []) // Empty dependency array - timer should only be set once
-
-  // Fetch Shopify products on mount - only once
+  // Fetch Shopify products on mount
   useEffect(() => {
     setProductLoading(true)
     getShopifyProducts()
@@ -211,7 +93,7 @@ export default function PricingPage() {
         setProductError(error.message || "Failed to load product data.")
         setProductLoading(false)
       })
-  }, []) // Empty dependency array
+  }, [])
 
   // Helper to get product price by handle
   const getProductPrice = (handle: string) => {
@@ -227,13 +109,9 @@ export default function PricingPage() {
     if (selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) {
       // Only app subscription selected
       total += parseFloat(getProductPrice("app-subscription") || "30.99")
-    } else if (selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app) {
-      // Only ebook selected
+    } else if (selectedOptions.ebook && !selectedOptions.paperback) {
+      // Ebook selected (app is free with ebook)
       total += parseFloat(getProductPrice("ebook") || "49.99")
-    } else if (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) {
-      // Ebook + app bundle (special pricing)
-      total += parseFloat(getProductPrice("ebook") || "49.99")
-      // App is free with ebook
     } else if (selectedOptions.paperback) {
       // Paperback selected (app and ebook are free with paperback)
       total += parseFloat(getProductPrice("paperback-book") || "55.99")
@@ -250,117 +128,214 @@ export default function PricingPage() {
   const isPaperback = selectedOptions.paperback
   const isAppAndEbook = selectedOptions.app && selectedOptions.ebook && !selectedOptions.paperback
 
-  // Pricing display logic helpers
-  const getEbookPrice = () => {
-    if (isPaperback) return "FREE" // Free with paperback
-    if (isOnlyEbook) return "€49.99" // Standalone ebook price
-    if (isAppAndEbook) return "€49.99" // Bundle price (app is free)
-    return "€49.99" // Default price
+  const handleOptionSelect = (option: keyof SelectedOptions) => {
+        setSelectedOptions(prev => ({
+          ...prev,
+      [option]: !prev[option]
+    }))
   }
 
-  const getAppPrice = () => {
-    if (isPaperback) return "FREE" // Free with paperback
-    if (isAppAndEbook) return "FREE" // Free with ebook
-    if (isOnlyApp) return "€30.99" // Standalone app price
-    return "€30.99" // Default price
-  }
+  // Handle client-side mounting to prevent hydration mismatches
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-  // Handle option selection with debugging
-  const handleOptionSelect = (option: string) => {
-    console.log("🛒 Pricing Page - Product Selection Changed:", {
-      option,
-      previousState: selectedOptions,
-      action: selectedOptions[option as keyof typeof selectedOptions] ? "DESELECT" : "SELECT"
-    })
+  useEffect(() => {
+    if (!isMounted) return
 
-    setSelectedOptions(prev => {
-      const newState = {
-        ...prev,
-        [option]: !prev[option as keyof typeof prev]
-      }
-      
-      console.log("🛒 Pricing Page - New Selection State:", {
-        newState,
-        totalSelected: Object.values(newState).filter(Boolean).length
+    // Check if we have any quiz data
+    if (state.firstName || state.email || state.birthDate.month || isQuizCompleted()) {
+      setHasQuizData(true)
+    }
+
+    // Get zodiac sign
+    if (state.birthDate.month && state.birthDate.day) {
+      const sign = getZodiacSign(Number.parseInt(state.birthDate.month), Number.parseInt(state.birthDate.day))
+      setZodiacSign(sign)
+    }
+
+    // Countdown timer - now synchronized for both timers
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        } else if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+        return prev
       })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [state, isMounted])
+
+  // Extract sun and moon signs with better fallback logic
+  const { extractedSunSign, extractedMoonSign } = useMemo(() => {
+    console.log("🔍 PricingPage - state.sunSign:", state.sunSign, "state.moonSign:", state.moonSign)
+    
+    // First, try to use stored sun/moon signs
+    if (state.sunSign && state.moonSign) {
+      console.log("✅ PricingPage - Using stored signs:", state.sunSign, state.moonSign)
+      return {
+        extractedSunSign: state.sunSign,
+        extractedMoonSign: state.moonSign
+      }
+    }
+
+    // Second, try to get from natal chart data
+    if (state.natalChart?.planets) {
+      const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
+      const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
       
-      return newState
-    })
-  }
+      if (sunPlanet && moonPlanet) {
+        console.log("⚡ PricingPage - Using natal chart signs:", sunPlanet.sign, moonPlanet.sign)
+        return {
+          extractedSunSign: sunPlanet.sign,
+          extractedMoonSign: moonPlanet.sign
+        }
+      }
+    }
+
+    // Third, if no natal chart data, calculate sun sign from birth date and use fallback moon sign
+    if (state.birthDate?.month && state.birthDate?.day) {
+      const calculatedSunSign = getZodiacSign(
+        Number.parseInt(state.birthDate.month), 
+        Number.parseInt(state.birthDate.day)
+      )
+      
+      // Use a contrasting moon sign as fallback
+      const zodiacSigns = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", 
+                          "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"]
+      const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
+      const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
+      
+      console.log("🔄 PricingPage - Using calculated fallback signs:", calculatedSunSign, zodiacSigns[moonIndex])
+      return {
+        extractedSunSign: calculatedSunSign,
+        extractedMoonSign: zodiacSigns[moonIndex]
+      }
+    }
+
+    // Ultimate fallback
+    console.log("❌ PricingPage - Using ultimate fallback")
+    return {
+      extractedSunSign: null,
+      extractedMoonSign: null
+    }
+  }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
   const handleBackClick = () => {
+    // Navigate back to the personalized landing page
     router.back()
   }
 
   const scrollToOptions = () => {
-    optionsSectionRef.current?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    })
+    if (optionsSectionRef.current) {
+      optionsSectionRef.current.scrollIntoView({ behavior: "smooth" })
+    }
   }
 
-  // Handle checkout with fixed analytics tracking
-  const handleCheckout = async () => {
-    const selectedProducts = Object.entries(selectedOptions)
-      .filter(([, selected]) => selected)
-      .map(([name]) => name)
-
-    console.log("🛒 Pricing Page - Checkout Initiated:", {
-      version: PRICING_PAGE_VERSION,
-      selectedProducts,
-      productCount: selectedProducts.length,
-      userInfo: {
-        firstName: state.firstName,
-        lastName: state.lastName,
-        email: state.email
-      },
-      timestamp: new Date().toISOString(),
-      timeRemaining: `${timeLeft.minutes}:${timeLeft.seconds.toString().padStart(2, '0')}`
-    })
-
-    if (selectedProducts.length === 0) {
-      console.log("⚠️ Pricing Page - Checkout Error:", {
-        error: "No products selected",
-        selectedOptions
-      })
-      alert("Please select at least one product.")
-      return
+  // Toggle terms acceptance
+  const toggleTerms = () => {
+    setTermsAccepted(!termsAccepted)
+    if (showTermsWarning) {
+      setShowTermsWarning(false)
     }
+  }
 
-    try {
-      // Track analytics with correct function name
-      await trackMarketingEvent({
-        event_name: 'checkout_initiated',
-        value: totalPrice,
-        currency: 'EUR',
-        content_ids: selectedProducts,
-        content_type: 'product',
-        custom_data: {
-          products: selectedProducts,
-          product_count: selectedProducts.length,
-          page_version: PRICING_PAGE_VERSION
+  const handleOrderClick = async () => {
+    if (!termsAccepted) {
+      setShowTermsWarning(true)
+      // Highlight the terms checkbox with a shake animation
+      const termsElement = document.getElementById("terms-checkbox")
+      if (termsElement) {
+        termsElement.classList.add("animate-shake")
+        setTimeout(() => {
+          termsElement.classList.remove("animate-shake")
+        }, 500)
+      }
+    } else {
+      try {
+        // Reset any previous errors
+        setCheckoutError(null)
+
+        // Show loading state
+        setIsProcessingOrder(true)
+
+        // Create Shopify checkout
+        const checkoutUrl = await createShopifyCheckout({
+          selectedOptions,
+          quizState: state,
+        })
+
+        // Redirect to Shopify checkout
+        window.location.href = checkoutUrl
+      } catch (error) {
+        console.error("Checkout error:", error)
+        
+        // Handle specific error types
+        if (error instanceof ShopifyError) {
+          switch (error.code) {
+            case 'VALIDATION_ERROR':
+              setCheckoutError(error.message)
+              break
+            case 'NETWORK_ERROR':
+              setCheckoutError('Network error. Please check your internet connection and try again.')
+              break
+            case 'PRODUCT_NOT_FOUND':
+            case 'VARIANT_NOT_FOUND':
+              setCheckoutError('Product configuration error. Please try again later.')
+              break
+            case 'CHECKOUT_CREATION_FAILED':
+              setCheckoutError('Unable to create checkout. Please try again.')
+              break
+            default:
+              setCheckoutError('An unexpected error occurred. Please try again.')
+          }
+        } else {
+          setCheckoutError('An unexpected error occurred. Please try again.')
         }
-      })
-
-      console.log("🛒 Pricing Page - Redirecting to Payment:", {
-        destination: "/payment",
-        selectedProducts,
-        analyticsTracked: true
-      })
-
-      router.push("/payment")
-    } catch (error) {
-      console.error("❌ Pricing Page - Checkout Error:", {
-        error: error instanceof Error ? error.message : error,
-        selectedProducts,
-        timestamp: new Date().toISOString()
-      })
+        
+        setIsProcessingOrder(false)
+      }
     }
   }
 
-  // Don't render anything until mounted to prevent hydration issues
+  // Format countdown time
+  const formatCountdown = (time: { minutes: number; seconds: number }) => {
+    return `${time.minutes}:${time.seconds < 10 ? "0" : ""}${time.seconds}`
+  }
+
+  // Testimonials data
+  const testimonials = [
+    {
+      quote:
+        "Total game-changer. It gave me the understanding I needed about my crush I had for past 5 months. I finally got the hope back that there's a chance. We'll see how it goes.",
+      name: "Rachel W.",
+      age: 31,
+      rating: 5,
+      imageSrc: "/placeholder.svg?height=200&width=300",
+    },
+    {
+      quote:
+        "I got astrovela book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives.",
+      name: "Sarah J.",
+      age: 29,
+      rating: 5,
+      imageSrc: "/placeholder.svg?height=200&width=300",
+    },
+  ]
+
+  // Prevent hydration mismatch by ensuring client-side consistency
   if (!isMounted) {
-    return null
+  return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -375,338 +350,296 @@ export default function PricingPage() {
                 className="mr-4 p-2 text-gray-600 hover:text-gray-900"
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
+          </button>
               <div className="flex items-center">
                 <span className="text-[#28293d] font-medium">astrovela</span>
                 <AstrovelaIcon width={20} height={20} className="ml-1" />
               </div>
-            </div>
-            
-            {/* Countdown Timer in Header */}
-            <div className="flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-              <Clock className="h-4 w-4 mr-2" />
-              <span>50% discount reserved for {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              <button 
-                onClick={scrollToOptions}
-                className="ml-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold hover:bg-yellow-300 transition-colors"
-              >
-                Order now
-              </button>
             </div>
           </div>
         </header>
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            {/* Main Heading */}
+            {/* Countdown and Discount Header */}
+            <div className="text-center mb-6">
+              <div className="text-sm text-gray-600 mb-2">
+                50% discount reserved for
+              </div>
+              <div className="text-2xl font-bold text-gray-900 mb-4">
+                {formatCountdown(countdown)}
+            </div>
+            <button
+              onClick={scrollToOptions}
+                className="bg-yellow-300 text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-yellow-400 transition-colors"
+            >
+              Order now
+            </button>
+          </div>
+
+          {/* Main Heading */}
             <div className="text-center mb-8">
-              <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-                Get the #1 personalized astrology<br />book & transform your life today
-              </h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Get the #1 personalized astrology<br />
+                book & transform your life today
+          </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
-                In-depth reading of your unique birth chart to help you<br />achieve self-growth and happy relationships
-              </p>
+            In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
+          </p>
               <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                 <span>Over 2,065,847 books ordered!</span>
                 <div className="flex items-center gap-1">
-                  <StarRating rating={4.8} />
+              <StarRating rating={4.8} />
                   <span>4.8/5</span>
                 </div>
               </div>
-            </div>
+          </div>
 
             {/* Book Cover Preview */}
-            {hasQuizData && state.customChartUrl && (
-              <div className="flex justify-center mb-12">
-                <div className="w-full max-w-md">
-                  <BookCoverPreview
-                    userInfo={{
-                      firstName: state.firstName || "Your Name",
-                      lastName: state.lastName || "",
-                      placeOfBirth: state.birthPlace || "Your Birth Place", 
-                      dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                        ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, '0')}-${state.birthDate.day.padStart(2, '0')}`
-                        : ""
-                    }}
-                    themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
-                    selectedIcon="custom-natal-chart"
-                    customChartUrl={state.customChartUrl}
-                    isLoading={false}
-                    sunSign={state.sunSign || zodiacSign}
-                    moonSign={state.moonSign}
-                    formattedDate={state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                      ? format(
-                          new Date(
-                            parseInt(state.birthDate.year),
-                            parseInt(state.birthDate.month) - 1,
-                            parseInt(state.birthDate.day)
-                          ),
-                          "dd MMMM yyyy"
-                        )
-                      : ""
-                    }
-                  />
-                </div>
-              </div>
-            )}
+            <div className="flex justify-center mb-12">
+              <div className="w-80 h-96">
+              <BookCoverPreview
+                userInfo={{
+                    firstName: state.firstName || "Your Name",
+                  lastName: state.lastName || "",
+                    dateOfBirth: state.birthDate.day && state.birthDate.month && state.birthDate.year
+                      ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
+                      : "01.07-14:10",
+                    placeOfBirth: state.birthPlace || "HAMBURG, GERMANY"
+                  }}
+                  themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.cream}
+                  selectedIcon="natal-chart"
+                  sunSign={extractedSunSign || "Virgo"}
+                  moonSign={extractedMoonSign || "Pisces"}
+                  formattedDate={state.birthDate.day && state.birthDate.month && state.birthDate.year
+                    ? format(new Date(Number(state.birthDate.year), Number(state.birthDate.month) - 1, Number(state.birthDate.day)), "dd.MM.yyyy")
+                    : "01.07-14:10"}
+                />
+          </div>
+        </div>
 
-            {/* Choose Your Best Option Section */}
+            {/* Product Selection */}
             <div className="text-center mb-8" ref={optionsSectionRef}>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose your best option</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose your best option</h2>
               
-              {/* Countdown Banner */}
-              <div className="bg-red-500 text-white py-3 px-6 rounded-lg mb-6 flex items-center justify-center">
-                <Clock className="h-5 w-5 mr-2" />
-                <span className="font-medium">This offer ends in {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              </div>
-              
-              <div className="max-w-2xl mx-auto space-y-4">
-                {/* App Subscription Option */}
-                <ProductOption
-                  type="app"
-                  title="astrovela app"
-                  features={[
-                    "Unlimited compatibility reports",
-                    "New daily horoscopes & astrology content",
-                    "FREE 1-month trial with ebook or paperback"
-                  ]}
-                  price="FREE"
-                  originalPrice="€30.99"
-                  imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.app}
-                  onSelect={() => handleOptionSelect("app")}
-                  saleTag="INCLUDED"
-                />
+              {/* Countdown Timer */}
+              <div className="max-w-md mx-auto mb-6 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                <div className="flex items-center justify-center gap-2 text-red-700 mb-1">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">This offer ends in {formatCountdown(countdown)}</span>
+          </div>
+        </div>
 
-                {/* Paperback Option */}
-                <ProductOption
-                  type="paperback"
-                  title="astrovela paperback"
-                  features={[
-                    "Uniquely created just for you",
-                    "FREE shipping",
-                    "FREE app & ebook included"
-                  ]}
-                  price="€55.99"
-                  originalPrice="€169.97"
-                  imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.paperback}
-                  onSelect={() => handleOptionSelect("paperback")}
-                  saleTag="SALE 65% OFF"
-                />
-
-                {/* Ebook Option */}
-                <ProductOption
-                  type="ebook"
-                  title="astrovela ebook"
-                  features={[
-                    "Digital copy delivered to your email",
-                    "FREE app included",
-                    "FREE with the paperback"
-                  ]}
-                  price="FREE"
-                  originalPrice="€49.99"
-                  imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.ebook}
-                  onSelect={() => handleOptionSelect("ebook")}
-                  saleTag="INCLUDED"
-                />
-              </div>
-            </div>
-
-            {/* Order Summary */}
-            <div className="max-w-md mx-auto mb-8 p-6 bg-white rounded-lg border">
-              <div className="flex justify-between items-center text-lg font-bold mb-4">
-                <span>Total:</span>
-                <span>€{totalPrice.toFixed(2)}</span>
-              </div>
-
-              {/* Terms and Conditions */}
-              <div className="mb-4">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(e) => {
-                      setTermsAccepted(e.target.checked)
-                      if (e.target.checked) setShowTermsWarning(false)
-                    }}
-                    className="mt-1 h-4 w-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400"
-                  />
-                  <span className="text-sm text-gray-600">
-                    I accept the{" "}
-                    <button className="text-yellow-600 hover:underline">
-                      Terms & Conditions
-                    </button>{" "}
-                    and{" "}
-                    <button className="text-yellow-600 hover:underline">
-                      Privacy Policy
-                    </button>
-                  </span>
-                </label>
-                
-                {showTermsWarning && (
-                  <p className="text-red-500 text-sm mt-2">
-                    Please accept the terms and conditions to continue.
-                  </p>
+              {/* Product Cards */}
+              <div className="space-y-4 max-w-2xl mx-auto">
+                {/* App Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedOptions.app ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("app")}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.app ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.app && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 )}
               </div>
-
-              {/* Checkout Error */}
-              {checkoutError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-700 text-sm">{checkoutError}</p>
-                </div>
-              )}
-
-              {/* Order Button */}
-              <button
-                onClick={handleCheckout}
-                disabled={isProcessingOrder}
-                className="w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isProcessingOrder ? "Processing..." : "Order Now"}
-              </button>
-
-              <div className="flex justify-center mt-4">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/only-payment-icons-Tlz7XpXRAYL3RvgV4LWPF2B2J7ck0L.webp"
-                  alt="Payment methods"
-                  className="h-8 w-auto"
-                />
-              </div>
-
-              {selectedOptions.app && (
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at help@astrovela.com
-                </p>
-              )}
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela app</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Unlimited compatibility reports</li>
+                          <li>• New daily horoscopes & astrology content</li>
+                          <li>• FREE 1-month trial with ebook or paperback</li>
+                        </ul>
+                      </div>
             </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">
+                        {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€30.99'}
+          </div>
+                      {(isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback)) && (
+                        <div className="text-sm text-gray-500 line-through">€30.99</div>
+          )}
+        </div>
+            </div>
+          </div>
 
-            {/* "Easily improve relationships" section - simplified */}
-            <section className="bg-gray-100 rounded-lg p-8 mb-8">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold mb-4">Easily improve relationships, understand yourself better, and reach your personal goals 💛</h2>
+                {/* Paperback Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all relative ${
+                  selectedOptions.paperback ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("paperback")}>
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <span className="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
+                      SALE 65% OFF
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.paperback ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.paperback && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela paperback</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Uniquely created just for you</li>
+                          <li>• FREE shipping</li>
+                          <li>• FREE app & ebook included</li>
+                        </ul>
+                </div>
               </div>
-
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                {/* Left side - What's included */}
-                <div>
-                  <h3 className="text-xl font-bold mb-4">What's included?</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <span className="text-gray-900 font-bold text-sm">1</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Personalized birth chart analysis</h4>
-                        <p className="text-sm text-gray-600">Discover the secrets of your unique astrological blueprint to understand your personality, strengths, and life path.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <span className="text-gray-900 font-bold text-sm">2</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Relationship compatibility insights</h4>
-                        <p className="text-sm text-gray-600">Learn how to improve your relationships and find your perfect match using astrological wisdom.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <span className="text-gray-900 font-bold text-sm">3</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Personal growth guidance</h4>
-                        <p className="text-sm text-gray-600">Unlock your potential and overcome challenges with personalized astrological advice.</p>
-                      </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">€55.99</div>
+                      <div className="text-sm text-gray-500 line-through">€159.97</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Right side - Additional content list */}
-                <div>
-                  <h3 className="text-xl font-bold mb-4">Additional content:</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>Divination & Astrology</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>Beginner's Guide to Palmistry</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>Tailored Tarot Card Readings</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>Crystals in Astrology</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>Intro to Numerology</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>History of Astrology & Modern Astrology</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-yellow-400 mr-2">★</span>
-                      <span>And more...</span>
-                    </li>
-                  </ul>
+                {/* Ebook Option */}
+                <div className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedOptions.ebook ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'
+                }`} onClick={() => handleOptionSelect("ebook")}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                        selectedOptions.ebook ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'
+                      }`}>
+                        {selectedOptions.ebook && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">astrovela ebook</h3>
+                        <ul className="text-sm text-gray-600 mt-1">
+                          <li>• Digital copy delivered to your email</li>
+                          <li>• FREE app included</li>
+                          <li>• FREE with the paperback</li>
+                        </ul>
+                </div>
+              </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">
+                        {isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) ? 'FREE' : '€49.99'}
+                      </div>
+                      {(isPaperback || (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback)) && (
+                        <div className="text-sm text-gray-500 line-through">€49.99</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
                 </div>
               </div>
 
-              <div className="text-center mt-8">
-                <button
-                  onClick={handleCheckout}
-                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors"
-                >
-                  Order now
-                </button>
+            {/* Terms and Conditions Checkbox */}
+            <div className="max-w-md mx-auto mb-8">
+              <div className="flex items-start gap-3 p-4 bg-white rounded-lg border">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="terms-checkbox"
+                    checked={termsAccepted}
+                    onChange={toggleTerms}
+                    className={`h-5 w-5 text-yellow-400 border-2 rounded focus:ring-yellow-300 ${
+                      showTermsWarning ? 'border-red-500 animate-pulse' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+                <label htmlFor="terms-checkbox" className="text-sm text-gray-700 cursor-pointer">
+                  I agree to the{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 hover:text-yellow-700 underline"
+                  >
+                    Terms & Conditions
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-yellow-600 hover:text-yellow-700 underline"
+                  >
+                    Privacy Policy
+                  </a>
+                </label>
               </div>
-            </section>
+              {showTermsWarning && (
+                <p className="text-red-500 text-sm mt-2 text-center animate-shake">
+                  Please accept the Terms & Conditions and Privacy Policy to continue
+                </p>
+              )}
+            </div>
 
-            {/* FAQ Section - simplified */}
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-              <div className="max-w-3xl mx-auto">
-                <Accordion type="single" collapsible className="space-y-4">
-                  <AccordionItem value="accuracy">
-                    <AccordionTrigger>How accurate is my personalized astrology book?</AccordionTrigger>
-                    <AccordionContent>
-                      Your book is created using your exact birth date, time, and location to generate a precise natal chart. This ensures maximum accuracy in your astrological reading.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="delivery">
-                    <AccordionTrigger>When will I receive my book?</AccordionTrigger>
-                    <AccordionContent>
-                      Digital books are delivered instantly to your email. Physical books are printed and shipped within 3-5 business days, with free worldwide shipping.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="birth-time">
-                    <AccordionTrigger>What if I don't know my exact birth time?</AccordionTrigger>
-                    <AccordionContent>
-                      While knowing your exact birth time provides the most accurate reading, we can still create a meaningful chart with just your birth date and location.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="cancellation">
-                    <AccordionTrigger>Can I cancel my app subscription?</AccordionTrigger>
-                    <AccordionContent>
-                      Yes, you can cancel your app subscription at any time by contacting us at help@astrovela.com before your next billing cycle.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+            {/* Order Button */}
+            <div className="text-center mb-12">
+              <button
+                onClick={handleOrderClick}
+                disabled={isProcessingOrder}
+                className={`px-8 py-3 rounded-full font-medium transition-colors ${
+                  isProcessingOrder
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-yellow-300 text-gray-900 hover:bg-yellow-400'
+                }`}
+              >
+                {isProcessingOrder ? 'Processing...' : 'Order Now'}
+              </button>
+              {checkoutError && (
+                <p className="text-red-500 text-sm mt-2">{checkoutError}</p>
+              )}
+          </div>
+
+            {/* Payment Methods */}
+            <div className="max-w-md mx-auto mb-12">
+              <PaymentMethods />
+          </div>
+
+            {/* Testimonials */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                What Our Customers Say
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {testimonials.map((testimonial, index) => (
+                  <TestimonialCard key={index} {...testimonial} />
+                ))}
               </div>
-            </section>
+        </div>
+
+            {/* FAQ Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                Frequently Asked Questions
+              </h2>
+              <div className="max-w-3xl mx-auto space-y-4">
+                <AccordionItem title="What makes AstroVela different from other astrology apps?">
+                  AstroVela provides deeply personalized insights based on your complete birth chart, not just your sun sign. Our advanced algorithms analyze over 50 astrological factors to create a truly unique experience for you.
+            </AccordionItem>
+                <AccordionItem title="How accurate are the predictions?">
+                  Our predictions are based on traditional astrological principles combined with modern data analysis. While astrology is not scientifically proven, thousands of users report finding value and accuracy in their personalized readings.
+            </AccordionItem>
+                <AccordionItem title="Can I cancel my subscription anytime?">
+                  Yes, you can cancel your app subscription at any time through your account settings. Your access will continue until the end of your current billing period.
+            </AccordionItem>
+                <AccordionItem title="What if I'm not satisfied with my book?">
+                  We offer a 30-day money-back guarantee. If you're not completely satisfied with your personalized astrology book, contact our support team for a full refund.
+            </AccordionItem>
+          </div>
+        </div>
           </div>
         </main>
-      </div>
+        </div>
     </ErrorBoundary>
   )
 }

@@ -6,7 +6,7 @@ export default function QuizPage() {
   return (
     <QuizProvider>
       <ErrorBoundary>
-      <QuizController />
+        <QuizController />
       </ErrorBoundary>
     </QuizProvider>
   )

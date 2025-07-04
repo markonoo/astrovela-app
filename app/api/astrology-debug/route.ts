@@ -28,13 +28,13 @@ export async function GET() {
     // Test API call with a simple planets request
     const authString = `${USER_ID}:${API_KEY}`
     const base64Auth = Buffer.from(authString).toString("base64")
-
+    
     devLog("Auth String Format:", `${USER_ID}:API_KEY`)
     devLog("Headers:", {
       Authorization: 'Basic ***',
       'Content-Type': 'application/json'
     })
-
+    
     const requestBody = {
       day: 1,
       month: 1,
@@ -45,9 +45,9 @@ export async function GET() {
       lon: 0,
       tzone: 0
     }
-
+    
     devLog("Request Body:", requestBody)
-
+    
     const response = await fetch("https://json.astrologyapi.com/v1/planets", {
       method: "POST",
       headers: {
@@ -56,9 +56,9 @@ export async function GET() {
       },
       body: JSON.stringify(requestBody)
     })
-
+    
     devLog("Response Status:", response.status)
-
+    
     const data = await response.json()
     devLog("Raw Response (first 200 chars):", JSON.stringify(data).substring(0, 200))
     
@@ -90,7 +90,7 @@ export async function GET() {
     const moonPlanet = data.find((p: any) => p.name === "Moon")
     
     devLog("Response Keys:", Object.keys(data))
-
+    
     return NextResponse.json({
       success: true,
       message: "API credentials are working correctly",
