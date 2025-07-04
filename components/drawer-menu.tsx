@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { X, Facebook, Instagram, BookCopy, Palette, RefreshCw, CreditCard } from "lucide-react"
+import { X, Facebook, Instagram, BookCopy, Palette, RefreshCw, DollarSign } from "lucide-react"
 import AstrovelaIcon from "@/components/icons/AstrovelaIcon"
 import AuthForm from "@/components/AuthForm"
 
@@ -119,15 +119,15 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
                   </Link>
                 </li>
 
-                {/* Add Payment Page link */}
+                {/* Add Pricing Page link */}
                 <li>
                   <Link
-                    href="/payment"
+                    href="/pricing"
                     className="flex items-center py-2 text-[#28293d] hover:text-[#f7c800] transition-colors"
                     onClick={onClose}
                   >
-                    <CreditCard className="h-5 w-5 mr-3 text-[#f7c800]" />
-                    <span>Payment</span>
+                    <DollarSign className="h-5 w-5 mr-3 text-[#f7c800]" />
+                    <span>Pricing Page</span>
                   </Link>
                 </li>
 
