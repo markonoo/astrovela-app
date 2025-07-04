@@ -406,8 +406,8 @@ export default function PricingPage() {
         errorMessage = error.message
         console.error("❌ Shopify Error Details:", {
           code: error.code,
-          statusCode: error.statusCode,
-          originalError: error.originalError
+          status: error.status,
+          details: error.details
         })
       } else if (error instanceof Error) {
         // Check for specific error types
