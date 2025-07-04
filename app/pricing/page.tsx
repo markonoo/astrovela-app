@@ -668,20 +668,20 @@ export default function PricingPage() {
                 <TestimonialCard
                   name="Sarah M."
                   rating={5}
-                  text="This book completely changed my perspective on life! The personalized insights were incredibly accurate and helped me understand myself better."
-                  date="2 weeks ago"
+                  quote="This book completely changed my perspective on life! The personalized insights were incredibly accurate and helped me understand myself better."
+                  imageSrc="/placeholder.svg"
                 />
                 <TestimonialCard
                   name="Michael R."
                   rating={5}
-                  text="I was skeptical at first, but the level of detail in my personalized book blew me away. It's like having a personal astrologer!"
-                  date="1 month ago"
+                  quote="I was skeptical at first, but the level of detail in my personalized book blew me away. It's like having a personal astrologer!"
+                  imageSrc="/placeholder.svg"
                 />
                 <TestimonialCard
                   name="Emma L."
                   rating={5}
-                  text="The relationship compatibility section saved my marriage. We finally understand each other's needs and communicate better."
-                  date="3 weeks ago"
+                  quote="The relationship compatibility section saved my marriage. We finally understand each other's needs and communicate better."
+                  imageSrc="/placeholder.svg"
                 />
               </div>
               
