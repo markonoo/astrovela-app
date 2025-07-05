@@ -438,59 +438,79 @@ export default function PricingPage() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
-        {/* Header Section */}
-        <header className="bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <button
-                onClick={handleBackClick}
-                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
+        {/* Header Section - Elegant Design */}
+        <header className="bg-white shadow-sm">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              {/* Left side - Back button and logo */}
               <div className="flex items-center">
-                <span className="text-[#28293d] font-medium">astrovela</span>
-                <AstrovelaIcon width={20} height={20} className="ml-1" />
+                <button
+                  onClick={handleBackClick}
+                  className="mr-3 p-1.5 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <div className="flex items-center">
+                  <span className="text-[#28293d] font-medium text-lg">astrovela</span>
+                  <AstrovelaIcon width={24} height={24} className="ml-1" />
+                </div>
               </div>
-            </div>
-            
-            {/* Countdown Timer in Header */}
-            <div className="flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-              <Clock className="h-4 w-4 mr-2" />
-              <span>50% discount reserved for {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              <button 
-                onClick={scrollToOptions}
-                className="ml-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold hover:bg-yellow-300 transition-colors"
-              >
-                Order now
-              </button>
+              
+              {/* Right side - Timer and button */}
+              <div className="flex items-center gap-3">
+                {/* Timer */}
+                <div className="flex items-center text-red-600 font-medium">
+                  <Clock className="h-4 w-4 mr-1.5" />
+                  <span className="text-sm">{timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                </div>
+                
+                {/* Order button */}
+                <button 
+                  onClick={scrollToOptions}
+                  className="bg-yellow-400 text-gray-900 px-6 py-2 rounded-full text-sm font-semibold hover:bg-yellow-500 transition-colors shadow-sm"
+                >
+                  Order now
+                </button>
+              </div>
             </div>
           </div>
         </header>
 
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto">
-            {/* Main Heading */}
+            {/* Elegant Hero Section */}
             <div className="text-center mb-8">
-              <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-                Get the #1 personalized astrology<br />book & transform your life today
+              {/* Timer Banner */}
+              <div className="inline-flex items-center bg-red-50 text-red-600 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <Clock className="h-4 w-4 mr-2" />
+                <span>50% off discount reserved for {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
+              </div>
+              
+              {/* Main Heading */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                Get the #1 personalized astrology<br />
+                book & transform your life today
               </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
-                In-depth reading of your unique birth chart to help you<br />achieve self-growth and happy relationships
+              
+              <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
               </p>
-              <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-                <span>Over 2,065,847 books ordered!</span>
-                <div className="flex items-center gap-1">
+              
+              {/* Social Proof */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-600">
+                <div className="flex items-center gap-2">
                   <StarRating rating={4.8} />
-                  <span>4.8/5</span>
+                  <span className="font-medium">4.8/5</span>
                 </div>
+                <span className="hidden sm:inline text-gray-400">•</span>
+                <span className="font-medium">Over 2,065,847 books ordered!</span>
               </div>
             </div>
 
             {/* Book Cover Preview */}
             {hasQuizData && state.customChartUrl && (
-              <div className="flex justify-center mb-12">
-                <div className="w-full max-w-md">
+              <div className="flex justify-center mb-16">
+                <div className="w-full max-w-sm">
                   <BookCoverPreview
                     userInfo={{
                       firstName: state.firstName || "Your Name",
@@ -524,14 +544,8 @@ export default function PricingPage() {
 
             {/* Choose Your Best Option Section */}
             <div className="text-center mb-12" ref={optionsSectionRef}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose your best option</h2>
-              <p className="text-gray-600 mb-6">Get instant access to your personalized astrology insights</p>
-              
-              {/* Countdown Banner */}
-              <div className="bg-red-500 text-white py-3 px-6 rounded-lg mb-8 flex items-center justify-center max-w-2xl mx-auto">
-                <Clock className="h-5 w-5 mr-2" />
-                <span className="font-medium">This offer ends in {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Choose your best option</h2>
+              <p className="text-gray-600 mb-8">Get instant access to your personalized astrology insights</p>
               
               <div className="max-w-2xl mx-auto space-y-4">
                 {/* Paperback Option - Featured */}
