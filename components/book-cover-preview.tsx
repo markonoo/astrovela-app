@@ -88,9 +88,9 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   }, [isLoading, selectedIcon])
 
   return (
-    <div className="relative w-full max-w-[350px] h-auto aspect-[7/9]">
+    <div className="relative w-full max-w-[350px] h-auto aspect-[7/9] overflow-visible">
       {/* Clean book cover container without 3D effects */}
-      <div className="relative shadow-lg w-full h-full">
+      <div className="relative shadow-lg w-full h-full overflow-visible">
         <div
           className={`${themeColor.bg} ${themeColor.text} aspect-[2/3] w-full h-full p-8 flex flex-col items-center relative overflow-visible font-montserrat`}
         >
@@ -189,8 +189,8 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                 )}
               </div>
               
-              {/* Sun and Moon sign circles - positioned to stay within container bounds */}
-              <div className="absolute left-2 bottom-4 w-14 aspect-square flex flex-col items-center z-10">
+              {/* Sun and Moon sign circles - positioned with original aesthetic design */}
+              <div className="absolute left-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(-30%, 40%)' }}>
                 <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
                 <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
                   {selectedIcon === "custom-natal-chart" && isLoading ? (
@@ -209,7 +209,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                   )}
                 </div>
               </div>
-              <div className="absolute right-2 bottom-4 w-14 aspect-square flex flex-col items-center z-10">
+              <div className="absolute right-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(30%, 40%)' }}>
                 <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
                 <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
                   {selectedIcon === "custom-natal-chart" && isLoading ? (

@@ -132,8 +132,8 @@ export function BookCoverConfirmation() {
         Are you satisfied with the generated book cover and ready to proceed, or would you like to go back and personalize it from the beginning?
       </p>
 
-      <div className="flex justify-center mb-6">
-        <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] h-auto aspect-[7/9] relative flex items-center justify-center">
+      <div className="flex justify-center mb-10 pb-8">
+        <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] h-auto aspect-[7/9] relative flex items-center justify-center overflow-visible">
           <BookCoverPreview
             userInfo={{
               firstName: state.firstName || "FIRST",
