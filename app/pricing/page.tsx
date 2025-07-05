@@ -564,7 +564,6 @@ export default function PricingPage() {
                       isSelected={selectedOptions.paperback}
                       onSelect={() => handleOptionSelect("paperback")}
                       saleTag="SALE 65% OFF"
-                      titleClassName="text-base md:text-lg font-semibold"
                     />
                   </div>
                   {/* Ebook Option */}
@@ -582,7 +581,6 @@ export default function PricingPage() {
                     isSelected={selectedOptions.ebook}
                     onSelect={() => handleOptionSelect("ebook")}
                     saleTag={selectedOptions.paperback ? "INCLUDED" : ""}
-                    titleClassName="text-base md:text-lg font-semibold"
                   />
                   {/* App Subscription Option */}
                   <ProductOption
@@ -599,7 +597,6 @@ export default function PricingPage() {
                     isSelected={selectedOptions.app}
                     onSelect={() => handleOptionSelect("app")}
                     saleTag={selectedOptions.paperback || selectedOptions.ebook ? "FREE TRIAL" : ""}
-                    titleClassName="text-base md:text-lg font-semibold"
                   />
                 </div>
                 {/* Order Summary */}
