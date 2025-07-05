@@ -73,8 +73,8 @@ export default function PricingPage() {
   const [showTermsWarning, setShowTermsWarning] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 28 })
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
-    app: false,
-    paperback: false,
+    app: true,
+    paperback: true,
     ebook: true
   })
   const [isProcessingOrder, setIsProcessingOrder] = useState(false)
@@ -479,25 +479,22 @@ export default function PricingPage() {
         <main className="container mx-auto px-4 py-6">
           <div className="max-w-4xl mx-auto">
             {/* Elegant Hero Section */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               {/* Timer Banner */}
-              <div className="inline-flex items-center bg-red-50 text-red-600 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="inline-flex items-center bg-red-50 text-red-600 px-4 py-2 rounded-full text-xs md:text-sm font-medium mb-4 md:mb-6">
                 <Clock className="h-4 w-4 mr-2" />
                 <span>50% off discount reserved for {timeLeft.minutes}:{timeLeft.seconds.toString().padStart(2, '0')}</span>
               </div>
-              
               {/* Main Heading */}
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
                 Get the #1 personalized astrology<br />
                 book & transform your life today
               </h1>
-              
-              <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+              <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-6">
                 In-depth reading of your unique birth chart to help you achieve self-growth and happy relationships
               </p>
-              
               {/* Social Proof */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-gray-600">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-gray-600 text-xs md:text-sm">
                 <div className="flex items-center gap-2">
                   <StarRating rating={4.8} />
                   <span className="font-medium">4.8/5</span>
@@ -509,8 +506,8 @@ export default function PricingPage() {
 
             {/* Book Cover Preview */}
             {hasQuizData && state.customChartUrl && (
-              <div className="flex justify-center mb-16">
-                <div className="w-full max-w-sm">
+              <div className="flex justify-center mb-10">
+                <div className="w-full max-w-xs md:max-w-sm">
                   <BookCoverPreview
                     userInfo={{
                       firstName: state.firstName || "Your Name",
@@ -542,142 +539,128 @@ export default function PricingPage() {
               </div>
             )}
 
-            {/* Choose Your Best Option Section */}
-            <div className="text-center mb-12" ref={optionsSectionRef}>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Choose your best option</h2>
-              <p className="text-gray-600 mb-8">Get instant access to your personalized astrology insights</p>
-              
-              <div className="max-w-2xl mx-auto space-y-4">
-                {/* Paperback Option - Featured */}
-                <div className="relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold z-10">
-                    MOST POPULAR
+            {/* Pricing Section Container */}
+            <section className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 md:px-8 py-8 mb-10 mx-auto max-w-2xl flex flex-col items-center">
+              <div className="w-full">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">Choose your best option</h2>
+                <p className="text-gray-600 mb-6 text-sm md:text-base text-center">Get instant access to your personalized astrology insights</p>
+                <div className="space-y-4">
+                  {/* Paperback Option - Featured */}
+                  <div className="relative">
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-0.5 rounded-full text-xs font-bold z-10 shadow">
+                      MOST POPULAR
+                    </div>
+                    <ProductOption
+                      type="paperback"
+                      title="astrovela paperback"
+                      features={[
+                        "Uniquely created just for you",
+                        "FREE shipping",
+                        "FREE app & ebook included"
+                      ]}
+                      price="€55.99"
+                      originalPrice="€169.97"
+                      imageSrc="/placeholder.svg"
+                      isSelected={selectedOptions.paperback}
+                      onSelect={() => handleOptionSelect("paperback")}
+                      saleTag="SALE 65% OFF"
+                      titleClassName="text-base md:text-lg font-semibold"
+                    />
                   </div>
+                  {/* Ebook Option */}
                   <ProductOption
-                    type="paperback"
-                    title="astrovela paperback"
+                    type="ebook"
+                    title="astrovela ebook"
                     features={[
-                      "Uniquely created just for you",
-                      "FREE shipping",
-                      "FREE app & ebook included"
+                      "Digital copy delivered to your email",
+                      "FREE app included",
+                      "FREE with the paperback"
                     ]}
-                    price="€55.99"
-                    originalPrice="€169.97"
+                    price={getEbookPrice()}
+                    originalPrice="€49.99"
                     imageSrc="/placeholder.svg"
-                    isSelected={selectedOptions.paperback}
-                    onSelect={() => handleOptionSelect("paperback")}
-                    saleTag="SALE 65% OFF"
+                    isSelected={selectedOptions.ebook}
+                    onSelect={() => handleOptionSelect("ebook")}
+                    saleTag={selectedOptions.paperback ? "INCLUDED" : ""}
+                    titleClassName="text-base md:text-lg font-semibold"
+                  />
+                  {/* App Subscription Option */}
+                  <ProductOption
+                    type="app"
+                    title="astrovela app"
+                    features={[
+                      "Unlimited compatibility reports",
+                      "New daily horoscopes & astrology content",
+                      "FREE 1-month trial with ebook or paperback"
+                    ]}
+                    price={getAppPrice()}
+                    originalPrice="€30.99"
+                    imageSrc="/placeholder.svg"
+                    isSelected={selectedOptions.app}
+                    onSelect={() => handleOptionSelect("app")}
+                    saleTag={selectedOptions.paperback || selectedOptions.ebook ? "FREE TRIAL" : ""}
+                    titleClassName="text-base md:text-lg font-semibold"
                   />
                 </div>
-
-                {/* Ebook Option */}
-                <ProductOption
-                  type="ebook"
-                  title="astrovela ebook"
-                  features={[
-                    "Digital copy delivered to your email",
-                    "FREE app included",
-                    "FREE with the paperback"
-                  ]}
-                  price={getEbookPrice()}
-                  originalPrice="€49.99"
-                  imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.ebook}
-                  onSelect={() => handleOptionSelect("ebook")}
-                  saleTag={selectedOptions.paperback ? "INCLUDED" : ""}
-                />
-
-                {/* App Subscription Option */}
-                <ProductOption
-                  type="app"
-                  title="astrovela app"
-                  features={[
-                    "Unlimited compatibility reports",
-                    "New daily horoscopes & astrology content",
-                    "FREE 1-month trial with ebook or paperback"
-                  ]}
-                  price={getAppPrice()}
-                  originalPrice="€30.99"
-                  imageSrc="/placeholder.svg"
-                  isSelected={selectedOptions.app}
-                  onSelect={() => handleOptionSelect("app")}
-                  saleTag={selectedOptions.paperback || selectedOptions.ebook ? "FREE TRIAL" : ""}
-                />
-              </div>
-            </div>
-
-            {/* Order Summary */}
-            <div className="max-w-md mx-auto mb-12 p-6 bg-white rounded-lg shadow-lg border">
-              <div className="flex justify-between items-center text-2xl font-bold mb-4">
-                <span>Total:</span>
-                <span className="text-yellow-600">€{totalPrice.toFixed(2)}</span>
-              </div>
-
-              {/* Terms and Conditions */}
-              <div className="mb-4">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(e) => {
-                      setTermsAccepted(e.target.checked)
-                      if (e.target.checked) setShowTermsWarning(false)
-                    }}
-                    className="mt-1 h-4 w-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400"
-                  />
-                  <span className="text-sm text-gray-600">
-                    I accept the{" "}
-                    <button className="text-yellow-600 hover:underline">
-                      Terms & Conditions
-                    </button>{" "}
-                    and{" "}
-                    <button className="text-yellow-600 hover:underline">
-                      Privacy Policy
-                    </button>
-                  </span>
-                </label>
-                
-                {showTermsWarning && (
-                  <p className="text-red-500 text-sm mt-2">
-                    Please accept the terms and conditions to continue.
-                  </p>
-                )}
-              </div>
-
-              {/* Checkout Error */}
-              {checkoutError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-700 text-sm">{checkoutError}</p>
+                {/* Order Summary */}
+                <div className="mt-8 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="flex justify-between items-center text-lg font-bold mb-2">
+                    <span>Total:</span>
+                    <span className="text-yellow-600">€{totalPrice.toFixed(2)}</span>
+                  </div>
+                  {/* Terms and Conditions */}
+                  <div className="mb-2">
+                    <label className="flex items-start gap-2 cursor-pointer text-xs md:text-sm">
+                      <input
+                        type="checkbox"
+                        checked={termsAccepted}
+                        onChange={(e) => {
+                          setTermsAccepted(e.target.checked)
+                          if (e.target.checked) setShowTermsWarning(false)
+                        }}
+                        className="mt-1 h-4 w-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400"
+                      />
+                      <span className="text-gray-600">
+                        I accept the <button className="text-yellow-600 hover:underline">Terms & Conditions</button> and <button className="text-yellow-600 hover:underline">Privacy Policy</button>
+                      </span>
+                    </label>
+                    {showTermsWarning && (
+                      <p className="text-red-500 text-xs mt-1">Please accept the terms and conditions to continue.</p>
+                    )}
+                  </div>
+                  {/* Checkout Error */}
+                  {checkoutError && (
+                    <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-700 text-xs">{checkoutError}</p>
+                    </div>
+                  )}
+                  {/* Order Button */}
+                  <button
+                    onClick={handleCheckout}
+                    disabled={isProcessingOrder}
+                    className="w-full bg-yellow-400 text-gray-900 py-3 rounded-full font-bold text-base md:text-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow"
+                  >
+                    {isProcessingOrder ? "Processing..." : "Order Now"}
+                  </button>
+                  <div className="flex justify-center mt-2">
+                    <img
+                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/only-payment-icons-Tlz7XpXRAYL3RvgV4LWPF2B2J7ck0L.webp"
+                      alt="Payment methods"
+                      className="h-7 w-auto"
+                    />
+                  </div>
+                  {selectedOptions.app && (
+                    <p className="text-[10px] md:text-xs text-gray-500 text-center mt-2">
+                      By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at help@astrovela.com
+                    </p>
+                  )}
                 </div>
-              )}
-
-              {/* Order Button */}
-              <button
-                onClick={handleCheckout}
-                disabled={isProcessingOrder}
-                className="w-full bg-yellow-400 text-gray-900 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-              >
-                {isProcessingOrder ? "Processing..." : "Order Now"}
-              </button>
-
-              <div className="flex justify-center mt-4">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/only-payment-icons-Tlz7XpXRAYL3RvgV4LWPF2B2J7ck0L.webp"
-                  alt="Payment methods"
-                  className="h-8 w-auto"
-                />
               </div>
-
-              {selectedOptions.app && (
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at help@astrovela.com
-                </p>
-              )}
-            </div>
+            </section>
 
             {/* Testimonials Section - NEW */}
             <section className="mb-12">
-              <h2 className="text-3xl font-bold text-center mb-8">What our customers say</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-center mb-8">What our customers say</h2>
               <div className="grid md:grid-cols-3 gap-6">
                 <TestimonialCard
                   name="Sarah M."
@@ -712,14 +695,14 @@ export default function PricingPage() {
             {/* "Easily improve relationships" section - Enhanced */}
             <section className="bg-gradient-to-br from-purple-50 to-yellow-50 rounded-2xl p-8 mb-12 shadow-lg">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4">Easily improve relationships, understand yourself better, and reach your personal goals 💛</h2>
+                <h2 className="text-xl md:text-2xl font-bold mb-4">Easily improve relationships, understand yourself better, and reach your personal goals 💛</h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">Join over 2 million people who have discovered their true potential through personalized astrology</p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-8 items-start">
                 {/* Left side - What's included */}
                 <div className="bg-white rounded-xl p-6 shadow-md">
-                  <h3 className="text-2xl font-bold mb-6">What's included?</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-6">What's included?</h3>
                   <div className="space-y-4">
                     <div className="flex items-start">
                       <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center mr-4 flex-shrink-0 shadow-md">
@@ -755,7 +738,7 @@ export default function PricingPage() {
 
                 {/* Right side - Additional content list */}
                 <div className="bg-white rounded-xl p-6 shadow-md">
-                  <h3 className="text-2xl font-bold mb-6">Additional content:</h3>
+                  <h3 className="text-lg md:text-xl font-bold mb-6">Additional content:</h3>
                   <ul className="space-y-3">
                     <li className="flex items-center">
                       <span className="text-yellow-400 mr-3 text-xl">★</span>
@@ -801,7 +784,7 @@ export default function PricingPage() {
 
             {/* FAQ Section - Enhanced */}
             <section className="mb-12">
-              <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
               <div className="max-w-3xl mx-auto">
                 <Accordion type="single" collapsible className="space-y-4">
                   <AccordionItem value="accuracy" className="bg-white rounded-lg shadow-md border-0">
@@ -854,7 +837,7 @@ export default function PricingPage() {
 
             {/* Final CTA Section */}
             <section className="text-center py-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl shadow-lg">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to transform your life?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Ready to transform your life?</h2>
               <p className="text-lg text-gray-800 mb-8 max-w-2xl mx-auto">
                 Join millions who have discovered their true potential through personalized astrology
               </p>
