@@ -25,18 +25,6 @@ interface BookCoverPreviewProps {
 }
 
 export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading, sunSign, moonSign, formattedDate }: BookCoverPreviewProps) {
-  // Debug logging
-  useEffect(() => {
-    console.log("BookCoverPreview - Received props:", {
-      sunSign,
-      moonSign,
-      selectedIcon,
-      customChartUrl,
-      isLoading,
-      userInfo
-    })
-  }, [sunSign, moonSign, selectedIcon, customChartUrl, isLoading, userInfo?.firstName, userInfo?.lastName, userInfo?.placeOfBirth, userInfo?.dateOfBirth])
-
   // Dynamic text color based on background
   const textColorValue = useMemo(() => {
     if (themeColor.bg === "bg-amber-50" || themeColor.bg === "bg-gray-100") {
@@ -88,11 +76,11 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   }, [isLoading, selectedIcon])
 
   return (
-    <div className="relative w-full max-w-[350px] h-auto aspect-[7/9] overflow-visible">
+    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible">
       {/* Clean book cover container without 3D effects */}
       <div className="relative shadow-lg w-full h-full overflow-visible">
         <div
-          className={`${themeColor.bg} ${themeColor.text} aspect-[2/3] w-full h-full p-8 flex flex-col items-center relative overflow-visible font-montserrat`}
+          className={`${themeColor.bg} ${themeColor.text} w-full h-full p-[5%] flex flex-col items-center relative overflow-visible font-montserrat`}
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-[1]">
@@ -107,28 +95,28 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
 
           {/* Content container - ensure it's above the design layer */}
           <div className="relative z-[2] w-full h-full flex flex-col items-center">
-            {/* Top section with name - dynamic sizing based on whether lastName exists */}
-            <div className="text-center mt-2 mb-2 h-[60px] flex flex-col justify-center">
+            {/* Top section with name - moved lower */}
+            <div className="text-center mt-4 mb-2">
               {hasLastName ? (
                 <>
-                  <h1 className="text-2xl font-bold tracking-wider mb-1">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider mb-1">
                     {firstName ? firstName.toUpperCase() : "YOUR NAME"}
                   </h1>
-                  <h2 className="text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
                 </>
               ) : (
-                <h1 className="text-3xl font-bold tracking-wider">{firstName ? firstName.toUpperCase() : "YOUR NAME"}</h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wider">{firstName ? firstName.toUpperCase() : "YOUR NAME"}</h1>
               )}
             </div>
 
-            {/* Chart container */}
-            <div className="relative w-full h-[300px] flex justify-center">
-              {/* Chart Image based on selection */}
-              <div className="relative w-[280px] h-[280px] flex items-center justify-center">
+            {/* Chart container - centered with bigger chart */}
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center">
+              {/* Chart Image based on selection - BIGGER */}
+              <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
                   isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full">
-                      <div className="w-52 h-52 relative flex items-center justify-center">
+                      <div className="w-40 sm:w-48 md:w-52 h-40 sm:h-48 md:h-52 relative flex items-center justify-center">
                         <svg className="w-full h-full" viewBox="0 0 100 100">
                           <circle
                             className="text-gray-300 opacity-30"
@@ -188,65 +176,86 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
                   />
                 )}
               </div>
-              
-              {/* Sun and Moon sign circles - positioned with original aesthetic design */}
-              <div className="absolute left-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(-30%, 40%)' }}>
-                <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
-                <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
-                  {selectedIcon === "custom-natal-chart" && isLoading ? (
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="18" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
-                  ) : sunSign ? (
-                    <img
-                      src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
-                      alt={sunSign}
-                      className="w-8 h-8"
-                      style={{
-                        filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
-                      }}
+
+              {/* Curved date/place text - positioned closer to chart with custom SVG */}
+              <div className="mt-0 pointer-events-none">
+                <svg 
+                  width={260} 
+                  height={30} 
+                  viewBox="0 0 260 30"
+                  style={{ 
+                    overflow: "visible",
+                    pointerEvents: "none"
+                  }}
+                >
+                  <defs>
+                    <path
+                      id="custom-curve-path"
+                      d="M 30,5 C 80,25 180,25 230,5"
+                      fill="none"
                     />
-                  ) : (
-                    <span className="text-lg" style={{ color: textColorValue }}>☉</span>
-                  )}
-                </div>
+                  </defs>
+                  <text
+                    fill={textColorValue}
+                    fontSize={11}
+                    fontFamily="Montserrat, Arial, sans-serif"
+                    fontWeight={400}
+                    letterSpacing="0.05em"
+                    style={{ 
+                      textTransform: "uppercase"
+                    }}
+                  >
+                    <textPath
+                      href="#custom-curve-path"
+                      startOffset="50%"
+                      textAnchor="middle"
+                    >
+                      {`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
+                    </textPath>
+                  </text>
+                </svg>
               </div>
-              <div className="absolute right-0 bottom-0 w-14 aspect-square flex flex-col items-center z-10" style={{ transform: 'translate(30%, 40%)' }}>
-                <span className="text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
-                <div className="w-12 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
-                  {selectedIcon === "custom-natal-chart" && isLoading ? (
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="18" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
-                  ) : moonSign ? (
-                    <img
-                      src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
-                      alt={moonSign}
-                      className="w-8 h-8"
-                      style={{
-                        filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
-                      }}
-                    />
-                  ) : (
-                    <span className="text-lg" style={{ color: textColorValue }}>☽</span>
-                  )}
-                </div>
-              </div>
-              
-              {/* Text positioned to curve around the bottom of the chart - shown for both chart types */}
-              <div 
-                className="absolute w-[330px]"
-                style={{ 
-                  bottom: "45px"
-                }}
-              >
-                <CurvedText
-                  text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
-                  fontSize={13}
-                  color={textColorValue}
-                  width={330}
-                  height={50}
-                  fontFamily="Montserrat, Arial, sans-serif"
-                  fontWeight={400}
-                  radius={150} // Not used in new implementation but kept for API compatibility
-                />
             </div>
+
+            {/* Sun and Moon sign circles - positioned at bottom corners */}
+            <div className="absolute left-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(-15%, -15%)' }}>
+              <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
+              <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                {selectedIcon === "custom-natal-chart" && isLoading ? (
+                  <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="16" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                ) : sunSign ? (
+                  <img
+                    src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
+                    alt={sunSign}
+                    className="w-6 sm:w-8 h-6 sm:h-8"
+                    style={{
+                      filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                    }}
+                  />
+                ) : (
+                  <span className="text-base sm:text-lg" style={{ color: textColorValue }}>☉</span>
+                )}
+              </div>
+            </div>
+
+            <div className="absolute right-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(15%, -15%)' }}>
+              <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
+              <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                {selectedIcon === "custom-natal-chart" && isLoading ? (
+                  <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="16" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                ) : moonSign ? (
+                  <img
+                    src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
+                    alt={moonSign}
+                    className="w-6 sm:w-8 h-6 sm:h-8"
+                    style={{
+                      filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                    }}
+                  />
+                ) : (
+                  <span className="text-base sm:text-lg" style={{ color: textColorValue }}>☽</span>
+                )}
+              </div>
             </div>
           </div>
         </div>

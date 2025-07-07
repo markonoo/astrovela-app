@@ -37,12 +37,18 @@ export function BookCover({
 }: BookCoverProps) {
   const [currentColorScheme, setCurrentColorScheme] = useState(colorScheme)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [wheelChartSVG, setWheelChartSVG] = useState<string | null>(svgContent)
   const [isLoadingChart, setIsLoadingChart] = useState(false)
   const svgContainerRef = useRef<HTMLDivElement>(null)
 
   // Get color scheme details
   const colors = useMemo(() => getColorScheme(currentColorScheme), [currentColorScheme])
+
+  // Set mounted state after hydration
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Update color scheme when prop changes
   useEffect(() => {
@@ -145,26 +151,34 @@ export function BookCover({
     <ErrorBoundary>
       <div
         className={`relative w-full h-full flex flex-col overflow-hidden ${className}`}
-                 style={{ backgroundColor: colors.bgColor }}
+        style={{ backgroundColor: colors.bgColor }}
       >
-        {/* Decorative stars */}
-        <div className="absolute inset-0 overflow-hidden" suppressHydrationWarning={true}>
-          {[...Array(20)].map((_, i) => (
+        {/* Decorative stars - only render after mount to prevent hydration mismatch */}
+        {isMounted && (
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(20)].map((_, i) => {
+              // Deterministic positioning based on index
+              const seed = 12345 + i * 17
+              const seededRandom = (s: number) => ((s * 9301 + 49297) % 233280) / 233280
+              
+              return (
             <div
               key={i}
               className="absolute transform"
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                opacity: 0.4 + Math.random() * 0.6,
+                    top: `${seededRandom(seed) * 100}%`,
+                    left: `${seededRandom(seed + 1) * 100}%`,
+                    opacity: 0.4 + seededRandom(seed + 2) * 0.6,
                 color: colors.accentColor,
-                fontSize: `${0.5 + Math.random() * 1}rem`,
+                    fontSize: `${0.5 + seededRandom(seed + 3) * 1}rem`,
               }}
             >
               ✦
             </div>
-          ))}
+              )
+            })}
         </div>
+        )}
 
         {/* Sun symbol at top */}
         <div className="w-full flex justify-center mb-2" style={{ color: colors.accentColor }}>
@@ -253,23 +267,23 @@ export function BookCover({
               }}
               suppressHydrationWarning={true}
             />
-              {/* Curved birth details */}
+              {/* Curved birth details - now at the very bottom edge of the cover */}
               <div
-                className="absolute left-1/2 top-1/2 pointer-events-none"
+                className="absolute left-1/2 bottom-0 pointer-events-none"
                 style={{
-                  transform: "translate(-50%, -50%)",
-                  zIndex: 20,
-                  width: 320,
-                  height: 320,
+                  transform: 'translate(-50%, 40%)', // push further down if needed
+                  zIndex: 30,
+                  width: 400,
+                  height: 80,
                 }}
               >
                 <CurvedText
                   text={`${birthDate} · ${birthPlace}`}
-                  radius={145}
+                  radius={200} // large radius to hug the bottom edge
                   fontSize={20}
                   color={colors.textColor}
-                  width={320}
-                  height={320}
+                  width={400}
+                  height={80}
                   fontFamily="Montserrat, Arial, sans-serif"
                   fontWeight={600}
                 />
@@ -278,29 +292,28 @@ export function BookCover({
           )}
         </div>
 
-        {/* Sun and Moon sign indicators */}
-        <div className="w-full flex justify-between">
-          <div className="flex flex-col items-center absolute left-4 bottom-4">
-            <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>SUN</span>
-            <div
-              className="w-14 h-14 rounded-full border-2 flex items-center justify-center bg-transparent"
-              style={{ borderColor: colors.textColor, color: colors.textColor }}
-            >
-              <div className="text-center">
-                <div className="text-xl">{finalSunSign ? zodiacSymbols[finalSunSign] : "☉"}</div>
-              </div>
+        {/* Sun in absolute bottom left corner - hug outer edge */}
+        <div className="flex flex-col items-center absolute left-0 bottom-0 z-40" style={{ transform: 'translate(-60%, 60%)' }}>
+          <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>Sun</span>
+          <div
+            className="w-20 h-20 rounded-full border-2 flex items-center justify-center bg-transparent"
+            style={{ borderColor: colors.textColor, color: colors.textColor }}
+          >
+            <div className="text-center">
+              <div className="text-3xl">{finalSunSign ? zodiacSymbols[finalSunSign] : "☉"}</div>
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col items-center absolute right-4 bottom-4">
-            <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>MOON</span>
-            <div
-              className="w-14 h-14 rounded-full border-2 flex items-center justify-center bg-transparent"
-              style={{ borderColor: colors.textColor, color: colors.textColor }}
-            >
-              <div className="text-center">
-                <div className="text-xl">{finalMoonSign ? zodiacSymbols[finalMoonSign] : "☽"}</div>
-              </div>
+        {/* Moon in absolute bottom right corner - hug outer edge */}
+        <div className="flex flex-col items-center absolute right-0 bottom-0 z-40" style={{ transform: 'translate(60%, 60%)' }}>
+          <span className="text-xs uppercase mb-1" style={{ color: colors.textColor }}>Moon</span>
+          <div
+            className="w-20 h-20 rounded-full border-2 flex items-center justify-center bg-transparent"
+            style={{ borderColor: colors.textColor, color: colors.textColor }}
+          >
+            <div className="text-center">
+              <div className="text-3xl">{finalMoonSign ? zodiacSymbols[finalMoonSign] : "☽"}</div>
             </div>
           </div>
         </div>

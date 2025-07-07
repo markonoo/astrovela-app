@@ -10,9 +10,11 @@ export function ProgressBar({ dark = false }: ProgressBarProps) {
   const { state } = useQuiz()
   const { currentStep } = state
   
-  // Hard-code the total steps to match the actual count in the flow (25 steps)
+  // Use the actual total steps from the quiz flow (25 total steps)
   const totalSteps = 25
-  const progress = (currentStep / totalSteps) * 100
+  
+  // Calculate progress as a smooth percentage across all steps
+  const progress = Math.min((currentStep / totalSteps) * 100, 100)
 
   return (
     <div className="w-full px-4 py-2">
@@ -26,7 +28,7 @@ export function ProgressBar({ dark = false }: ProgressBarProps) {
       </div>
       <div className={`w-full h-2 ${dark ? "bg-[#1a233a]" : "bg-gray-200"} rounded-full overflow-hidden`}>
         <div
-          className={`h-full ${dark ? "bg-yellow-300" : "bg-yellow-300"} transition-all duration-300 ease-in-out`}
+          className={`h-full ${dark ? "bg-yellow-300" : "bg-yellow-300"} transition-all duration-500 ease-out`}
           style={{ width: `${progress}%` }}
         />
       </div>

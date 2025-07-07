@@ -477,91 +477,91 @@ export function PremiumBookCover({
         className={`relative w-full h-full flex flex-col overflow-hidden shadow-xl ${className}`}
                  style={{ backgroundColor: "#000033" }}
       >
-        {/* Base background image */}
-        <Image
-          src="/images/space-background.jpg" // You'll need to add this image to your public folder
-          alt="Space background"
-          fill
-          className="object-cover"
-          priority
-        />
+      {/* Base background image */}
+      <Image
+        src="/images/space-background.jpg" // You'll need to add this image to your public folder
+        alt="Space background"
+        fill
+        className="object-cover"
+        priority
+      />
 
-        {/* Color overlay */}
-        <div 
-          className="absolute inset-0 transition-all duration-500"
-                style={{
-            background: colors.bgGradient,
-            opacity: colors.overlayOpacity,
-          }}
-        />
-
-        {/* Content container */}
-        <div className="relative w-full h-full flex flex-col items-center justify-between p-8">
-          {/* Top section */}
-          <div className="w-full text-center space-y-4">
-            <div className="flex justify-center items-center space-x-3">
-              <Image
-                src="/images/sun-face.png" // Add this decorative sun image
-                alt="Decorative sun"
-                width={60}
-                height={60}
-                className="object-contain"
-              />
-              <Image
-                src="/images/moon-face.png" // Add this decorative moon image
-                alt="Decorative moon"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-            </div>
-            <h1 
-              className="text-5xl font-serif font-bold tracking-wider uppercase"
+      {/* Color overlay */}
+      <div 
+        className="absolute inset-0 transition-all duration-500"
               style={{
-                color: colors.textColor,
-                textShadow: `0 0 20px ${colors.textColor}50`
-              }}
-            >
-              {displayName}
-            </h1>
-          </div>
+          background: colors.bgGradient,
+          opacity: colors.overlayOpacity,
+        }}
+      />
 
-          {/* Center zodiac wheel */}
-          <div className="w-3/4 aspect-square relative flex items-center justify-center">
+      {/* Content container */}
+      <div className="relative w-full h-full flex flex-col items-center justify-between p-8">
+        {/* Top section */}
+        <div className="w-full text-center space-y-4">
+          <div className="flex justify-center items-center space-x-3">
             <Image
-              src="/images/zodiac-wheel.png" // Add this zodiac wheel image
-              alt="Zodiac wheel"
-              fill
+              src="/images/sun-face.png" // Add this decorative sun image
+              alt="Decorative sun"
+              width={60}
+              height={60}
               className="object-contain"
-              style={{ filter: `drop-shadow(0 0 10px ${colors.textColor}30)` }}
             />
-            {/* Curved birth details */}
-          <div 
-              className="absolute left-1/2 top-1/2 pointer-events-none"
-              style={{
-                transform: "translate(-50%, -50%)",
-                zIndex: 20,
-                width: 420,
-                height: 420,
+            <Image
+              src="/images/moon-face.png" // Add this decorative moon image
+              alt="Decorative moon"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+          <h1 
+            className="text-5xl font-serif font-bold tracking-wider uppercase"
+            style={{
+              color: colors.textColor,
+              textShadow: `0 0 20px ${colors.textColor}50`
             }}
           >
-              <CurvedText
-                text={`${displayBirthDate} · ${displayBirthPlace}`}
-                radius={185}
-                fontSize={22}
-                color={colors.textColor}
-                width={420}
-                height={420}
-                fontFamily="Montserrat, Arial, sans-serif"
-                fontWeight={700}
-              />
-            </div>
-          </div>
-
-          {/* Bottom birth details */}
-          {/* Removed straight text birth details, now shown as curved text above */}
+            {displayName}
+          </h1>
         </div>
+
+        {/* Center zodiac wheel */}
+        <div className="w-3/4 aspect-square relative flex items-center justify-center">
+          <Image
+            src="/images/zodiac-wheel.png" // Add this zodiac wheel image
+            alt="Zodiac wheel"
+            fill
+            className="object-contain"
+            style={{ filter: `drop-shadow(0 0 10px ${colors.textColor}30)` }}
+          />
+          {/* Curved birth details */}
+        <div 
+            className="absolute left-1/2 top-1/2 pointer-events-none"
+            style={{
+              transform: "translate(-50%, -50%)",
+              zIndex: 20,
+              width: 420,
+              height: 420,
+          }}
+        >
+            <CurvedText
+              text={`${displayBirthDate} · ${displayBirthPlace}`}
+              radius={185}
+              fontSize={22}
+              color={colors.textColor}
+              width={420}
+              height={420}
+              fontFamily="Montserrat, Arial, sans-serif"
+              fontWeight={700}
+            />
+          </div>
+        </div>
+
+        {/* Bottom birth details */}
+        {/* Removed straight text birth details, now shown as curved text above */}
       </div>
+    </div>
     </ErrorBoundary>
   )
 }

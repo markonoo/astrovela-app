@@ -505,7 +505,7 @@ export default function PricingPage() {
             </div>
 
             {/* Book Cover Preview */}
-            {hasQuizData && state.customChartUrl && (
+            {hasQuizData && (
               <div className="flex justify-center mb-10">
                 <div className="w-full max-w-xs md:max-w-sm">
                   <BookCoverPreview
@@ -518,7 +518,7 @@ export default function PricingPage() {
                         : ""
                     }}
                     themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
-                    selectedIcon="custom-natal-chart"
+                    selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
                     customChartUrl={state.customChartUrl}
                     isLoading={false}
                     sunSign={state.sunSign || zodiacSign}

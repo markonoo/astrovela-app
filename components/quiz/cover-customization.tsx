@@ -97,7 +97,7 @@ export function CoverCustomization() {
 
       {/* Book preview - aligned with step 23 */}
       <div className="flex justify-center mb-4 pb-6">
-        <div className="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[350px] h-auto aspect-[7/9] relative flex items-center justify-center overflow-visible">
+        <div className="w-full max-w-[250px] sm:max-w-[280px] md:max-w-[320px] lg:max-w-[350px] h-auto aspect-[7/9] relative flex items-center justify-center overflow-visible">
           <BookCoverPreview
             userInfo={{
               firstName: state.firstName || "FIRST",

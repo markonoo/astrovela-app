@@ -30,37 +30,14 @@ export function EmailCollection() {
     setEmail(emailInput)
 
     try {
-      // Submit quiz data to backend (new endpoint)
-      const response = await fetch('/api/quiz-response', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: emailInput,
-          answers: state.answers,
-          birthDate: state.birthDate,
-          birthPlace: state.birthPlace,
-          birthTime: state.birthTime,
-          firstName: state.firstName,
-          lastName: state.lastName,
-          gender: state.gender,
-          coverDesign: state.coverColorScheme
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to submit quiz')
-      }
-
-      // Mark the quiz as completed and save data
+      // Mark the quiz as completed and save data (this will handle the single submission)
       await completeQuiz()
 
       // Move to the next step (personalized landing)
       nextStep()
     } catch (error) {
-      console.error('Error submitting quiz:', error)
-      setError('Failed to submit quiz. Please try again.')
+      console.error('Error completing quiz:', error)
+      setError('Failed to complete quiz. Please try again.')
     }
   }
 

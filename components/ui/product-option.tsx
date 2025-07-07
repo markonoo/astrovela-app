@@ -30,7 +30,7 @@ export function ProductOption({
 }: ProductOptionProps) {
   // Show "INCLUDED" badge when price is FREE
   const showIncludedBadge = price === "FREE" && isSelected;
-  
+
   return (
     <div
       className={cn(

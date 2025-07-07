@@ -1,46 +1,42 @@
 {
   "app/analytics-setup.tsx -> @/utils/error-monitoring": {
-    "id": 9598,
+    "id": "app/analytics-setup.tsx -> @/utils/error-monitoring",
     "files": [
-      "static/chunks/9598.fcdd0a1c1b0d7f4e.js"
-    ]
-  },
-  "contexts/quiz-context.tsx -> @/services/astrology-api-service": {
-    "id": 2807,
-    "files": [
-      "static/chunks/6434-f081101683682ef1.js",
-      "static/chunks/2807-90efb2dae5e8f6aa.js",
-      "static/chunks/257.ea02243c08a5e1c8.js"
+      "static/chunks/_app-pages-browser_utils_error-monitoring_ts.js"
     ]
   },
   "contexts/quiz-context.tsx -> @/services/astrology-service": {
-    "id": 6121,
+    "id": "contexts/quiz-context.tsx -> @/services/astrology-service",
     "files": [
-      "static/chunks/6434-f081101683682ef1.js",
-      "static/chunks/2807-90efb2dae5e8f6aa.js",
-      "static/chunks/6581.acdd97c927058699.js"
+      "static/chunks/_app-pages-browser_services_astrology-service_ts.js"
+    ]
+  },
+  "contexts/quiz-context.tsx -> @/utils/debug-helpers": {
+    "id": "contexts/quiz-context.tsx -> @/utils/debug-helpers",
+    "files": [
+      "static/chunks/_app-pages-browser_utils_debug-helpers_ts.js"
     ]
   },
   "node_modules/@supabase/auth-js/dist/module/lib/helpers.js -> @supabase/node-fetch": {
-    "id": 485,
+    "id": "node_modules/@supabase/auth-js/dist/module/lib/helpers.js -> @supabase/node-fetch",
     "files": []
   },
   "node_modules/@supabase/functions-js/dist/module/helper.js -> @supabase/node-fetch": {
-    "id": 485,
+    "id": "node_modules/@supabase/functions-js/dist/module/helper.js -> @supabase/node-fetch",
     "files": []
   },
   "node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js -> @supabase/node-fetch": {
-    "id": 485,
+    "id": "node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js -> @supabase/node-fetch",
     "files": []
   },
   "node_modules/@supabase/storage-js/dist/module/lib/helpers.js -> @supabase/node-fetch": {
-    "id": 485,
+    "id": "node_modules/@supabase/storage-js/dist/module/lib/helpers.js -> @supabase/node-fetch",
     "files": []
   },
   "utils/error-monitoring.ts -> ./security": {
-    "id": 5385,
+    "id": "utils/error-monitoring.ts -> ./security",
     "files": [
-      "static/chunks/5385.0dc194d61bce7253.js"
+      "static/chunks/_app-pages-browser_utils_security_ts.js"
     ]
   }
 }

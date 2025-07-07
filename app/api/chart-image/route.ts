@@ -205,14 +205,32 @@ export async function POST(request: Request) {
           
           devLog('Interpretation API response:', interp);
           
-          // Extract sun and moon signs from the planets array
-          const sunPlanet = interp?.planets?.find((p: any) => p.name === 'Sun');
-          const moonPlanet = interp?.planets?.find((p: any) => p.name === 'Moon');
+          // Extract sun and moon signs from the planets array with case-insensitive search
+          const sunPlanet = interp?.planets?.find((p: any) => 
+            p.name && p.name.toLowerCase() === 'sun'
+          );
+          const moonPlanet = interp?.planets?.find((p: any) => 
+            p.name && p.name.toLowerCase() === 'moon'
+          );
           
           sunSign = sunPlanet?.sign || null;
           moonSign = moonPlanet?.sign || null;
           
-          devLog('Extracted signs from API:', { sunSign, moonSign, sunPlanet, moonPlanet });
+          // Normalize signs to lowercase for consistency
+          if (sunSign && typeof sunSign === 'string') {
+            sunSign = sunSign.toLowerCase();
+          }
+          if (moonSign && typeof moonSign === 'string') {
+            moonSign = moonSign.toLowerCase();
+          }
+          
+          devLog('Extracted signs from API:', { 
+            sunSign, 
+            moonSign, 
+            sunPlanet: sunPlanet ? { name: sunPlanet.name, sign: sunPlanet.sign } : null,
+            moonPlanet: moonPlanet ? { name: moonPlanet.name, sign: moonPlanet.sign } : null,
+            allPlanets: interp?.planets?.map((p: any) => ({ name: p.name, sign: p.sign })) || []
+          });
           
           if (session_id && interp) {
             devLog('Inserting comprehensive interpretation into Supabase for session:', session_id);
