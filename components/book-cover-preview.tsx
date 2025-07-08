@@ -96,7 +96,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
           {/* Content container - ensure it's above the design layer */}
           <div className="relative z-[2] w-full h-full flex flex-col items-center">
             {/* Top section with name - moved lower */}
-            <div className="text-center mt-8 mb-2">
+            <div className="text-center mt-12 mb-2">
               {hasLastName ? (
                 <>
                   <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider mb-1">
@@ -110,7 +110,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
 
             {/* Chart container - centered with bigger chart */}
-            <div className="relative w-full flex-grow flex flex-col items-center justify-center">
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-4">
               {/* Chart Image based on selection - BIGGER */}
               <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
@@ -178,7 +178,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="-mt-12 pointer-events-none">
+              <div className="-mt-16 pointer-events-none">
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
                   radius={130}
@@ -192,7 +192,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
           </div>
 
           {/* Sun and Moon sign circles - positioned outside padded container for exact positioning */}
-          <div className="absolute left-[3%] bottom-[6%] flex flex-col items-center z-30">
+          <div className="absolute left-[3%] bottom-[4%] flex flex-col items-center z-30">
             <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
             <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
               {selectedIcon === "custom-natal-chart" && isLoading ? (
@@ -212,7 +212,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
           </div>
 
-          <div className="absolute right-[3%] bottom-[6%] flex flex-col items-center z-30">
+          <div className="absolute right-[3%] bottom-[4%] flex flex-col items-center z-30">
             <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
             <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
               {selectedIcon === "custom-natal-chart" && isLoading ? (
