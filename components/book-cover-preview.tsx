@@ -110,7 +110,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
 
             {/* Chart container - centered with bigger chart */}
-            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-4">
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-8">
               {/* Chart Image based on selection - BIGGER */}
               <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
