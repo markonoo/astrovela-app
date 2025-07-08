@@ -1,4 +1,6 @@
 import Image from "next/image"
+import CurvedText from "./CurvedText"
+import { Progress } from "./ui/progress"
 import React, { useEffect, useMemo, useState } from "react"
 
 interface BookCoverPreviewProps {
@@ -22,16 +24,7 @@ interface BookCoverPreviewProps {
   formattedDate: string
 }
 
-export function BookCoverPreview({ 
-  userInfo, 
-  themeColor, 
-  selectedIcon, 
-  customChartUrl, 
-  isLoading, 
-  sunSign, 
-  moonSign, 
-  formattedDate 
-}: BookCoverPreviewProps) {
+export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customChartUrl, isLoading, sunSign, moonSign, formattedDate }: BookCoverPreviewProps) {
   // Dynamic text color based on background
   const textColorValue = useMemo(() => {
     if (themeColor.bg === "bg-amber-50" || themeColor.bg === "bg-gray-100") {
@@ -82,104 +75,12 @@ export function BookCoverPreview({
     }
   }, [isLoading, selectedIcon])
 
-  // Calculate responsive sizes based on viewport
-  const [dimensions, setDimensions] = useState({
-    coverWidth: 350,
-    coverHeight: 467, // 4:3 aspect ratio
-    chartSize: 280,
-    fontSize: {
-      name: 24,
-      curvedText: 11,
-      sunMoon: 12
-    }
-  })
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      const vw = window.innerWidth
-      let coverWidth = 350
-      let chartSize = 280
-      let nameFontSize = 24
-      let curvedFontSize = 11
-      let sunMoonFontSize = 12
-
-      if (vw < 640) { // mobile
-        coverWidth = Math.min(vw * 0.8, 300)
-        chartSize = coverWidth * 0.65
-        nameFontSize = coverWidth * 0.055
-        curvedFontSize = coverWidth * 0.028
-        sunMoonFontSize = coverWidth * 0.03
-      } else if (vw < 768) { // tablet
-        coverWidth = 320
-        chartSize = 240
-        nameFontSize = 22
-        curvedFontSize = 10
-        sunMoonFontSize = 11
-      }
-
-      setDimensions({
-        coverWidth,
-        coverHeight: coverWidth * 1.333, // maintain 3:4 aspect ratio
-        chartSize,
-        fontSize: {
-          name: nameFontSize,
-          curvedText: curvedFontSize,
-          sunMoon: sunMoonFontSize
-        }
-      })
-    }
-
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
-    return () => window.removeEventListener('resize', updateDimensions)
-  }, [])
-
-  // Prepare the curved text
-  const curvedTextContent = useMemo(() => {
-    const dateText = formattedDate || "Your Birth Date"
-    const placeText = placeOfBirth || "Place of Birth"
-    return `${dateText.toUpperCase()} · ${placeText.toUpperCase()}`
-  }, [formattedDate, placeOfBirth])
-
-  // Calculate dynamic arc path based on text length
-  const arcPath = useMemo(() => {
-    const textLength = curvedTextContent.length
-    const baseRadius = dimensions.chartSize * 0.58
-    // Increase radius for longer text to prevent cutoff
-    const radius = baseRadius + (textLength > 40 ? 25 : textLength > 30 ? 15 : 5)
-    const startAngle = -80 // degrees - wider angle for better visibility
-    const endAngle = 80 // degrees
-    
-    // Convert to radians
-    const startRad = (startAngle * Math.PI) / 180
-    const endRad = (endAngle * Math.PI) / 180
-    
-    // Calculate path coordinates
-    const centerX = dimensions.coverWidth / 2
-    const centerY = dimensions.coverHeight * 0.48 + radius // Adjusted position
-    
-    const startX = centerX + radius * Math.sin(startRad)
-    const startY = centerY - radius * Math.cos(startRad)
-    const endX = centerX + radius * Math.sin(endRad)
-    const endY = centerY - radius * Math.cos(endRad)
-    
-    // Create arc path
-    return `M ${startX},${startY} A ${radius},${radius} 0 0,1 ${endX},${endY}`
-  }, [curvedTextContent, dimensions])
-
   return (
-    <div 
-      className="relative w-full max-w-[350px] mx-auto" 
-      style={{ 
-        width: `${dimensions.coverWidth}px`,
-        height: `${dimensions.coverHeight}px`
-      }}
-    >
-      {/* Book cover container */}
-      <div className="relative shadow-lg w-full h-full">
+    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible">
+      {/* Clean book cover container without 3D effects */}
+      <div className="relative shadow-lg w-full h-full overflow-visible">
         <div
-          className={`${themeColor.bg} ${themeColor.text} w-full h-full flex flex-col items-center relative overflow-hidden font-montserrat`}
-          style={{ padding: `${dimensions.coverWidth * 0.05}px` }}
+          className={`${themeColor.bg} ${themeColor.text} w-full h-full p-[5%] flex flex-col items-center relative overflow-visible font-montserrat`}
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-[1]">
@@ -192,289 +93,148 @@ export function BookCoverPreview({
             />
           </div>
 
-          {/* Content container */}
-          <div className="relative z-[2] w-full h-full flex flex-col items-center justify-between">
-            {/* Top section with name */}
-            <div className="text-center" style={{ marginTop: `${dimensions.coverHeight * 0.06}px` }}>
+          {/* Content container - ensure it's above the design layer */}
+          <div className="relative z-[2] w-full h-full flex flex-col items-center">
+            {/* Top section with name - moved lower */}
+            <div className="text-center mt-4 mb-2">
               {hasLastName ? (
                 <>
-                  <h1 
-                    className="font-bold tracking-wider"
-                    style={{ 
-                      fontSize: `${dimensions.fontSize.name}px`,
-                      lineHeight: 1.2,
-                      marginBottom: `${dimensions.fontSize.name * 0.3}px`
-                    }}
-                  >
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider mb-1">
                     {firstName ? firstName.toUpperCase() : "YOUR NAME"}
                   </h1>
-                  <h2 
-                    className="font-bold tracking-wider"
-                    style={{ 
-                      fontSize: `${dimensions.fontSize.name}px`,
-                      lineHeight: 1.2
-                    }}
-                  >
-                    {lastName.toUpperCase()}
-                  </h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
                 </>
               ) : (
-                <h1 
-                  className="font-bold tracking-wider"
-                  style={{ 
-                    fontSize: `${dimensions.fontSize.name * 1.2}px`,
-                    lineHeight: 1.2
-                  }}
-                >
-                  {firstName ? firstName.toUpperCase() : "YOUR NAME"}
-                </h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wider">{firstName ? firstName.toUpperCase() : "YOUR NAME"}</h1>
               )}
             </div>
 
-            {/* Chart container - moved up */}
-            <div 
-              className="absolute flex items-center justify-center"
-              style={{
-                width: `${dimensions.chartSize}px`,
-                height: `${dimensions.chartSize}px`,
-                top: `${dimensions.coverHeight * 0.28}px`, // Positioned higher
-                left: '50%',
-                transform: 'translateX(-50%)'
-              }}
-            >
-              {selectedIcon === "custom-natal-chart" ? (
-                isLoading ? (
-                  <div className="flex flex-col items-center justify-center w-full h-full">
-                    <div className="relative flex items-center justify-center" style={{ width: '70%', height: '70%' }}>
-                      <svg className="w-full h-full" viewBox="0 0 100 100">
-                        <circle
-                          className="text-gray-300 opacity-30"
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          stroke="currentColor"
-                          strokeWidth="8"
-                          fill="none"
-                        />
-                        <circle
-                          className="text-yellow-400"
-                          cx="50"
-                          cy="50"
-                          r="45"
-                          stroke="currentColor"
-                          strokeWidth="8"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray="283"
-                          strokeDashoffset={283 - (progress / 100) * 283}
-                          transform="rotate(-90 50 50)"
-                        />
-                        <text
-                          x="50"
-                          y="54"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="#f7c800"
-                          fontSize="20"
-                          fontWeight="bold"
-                        >
-                          {Math.round(progress)}%
-                        </text>
-                      </svg>
+            {/* Chart container - centered with bigger chart */}
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center">
+              {/* Chart Image based on selection - BIGGER */}
+              <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
+                {selectedIcon === "custom-natal-chart" ? (
+                  isLoading ? (
+                    <div className="flex flex-col items-center justify-center w-full h-full">
+                      <div className="w-40 sm:w-48 md:w-52 h-40 sm:h-48 md:h-52 relative flex items-center justify-center">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle
+                            className="text-gray-300 opacity-30"
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="none"
+                          />
+                          <circle
+                            className="text-yellow-400"
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeDasharray="283"
+                            strokeDashoffset={283 - (progress / 100) * 283}
+                            transform="rotate(-90 50 50)"
+                          />
+                          <text
+                            x="50"
+                            y="54"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="#f7c800"
+                            fontSize="20"
+                            fontWeight="bold"
+                          >
+                            {Math.round(progress)}%
+                          </text>
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-400 mt-2">Generating chart...</span>
                     </div>
-                    <span 
-                      className="text-gray-400 mt-2"
-                      style={{ fontSize: `${dimensions.fontSize.sunMoon}px` }}
-                    >
-                      Generating chart...
-                    </span>
-                  </div>
-                ) : customChartUrl ? (
+                  ) : customChartUrl ? (
+                    <img
+                      src={customChartUrl}
+                      alt="Custom Natal Chart"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-full border border-dashed border-gray-300 opacity-60">
+                      <span className="text-gray-400">No Chart</span>
+                    </div>
+                  )
+                ) : (
+                  <Image
+                    src={selectedIcon === "natal-chart" ? "/images/natal-chart.png" : "/images/zodiac-chart-icon.png"}
+                    alt={selectedIcon === "natal-chart" ? "Natal Chart" : "Zodiac Chart"}
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                )}
+              </div>
+
+              {/* Curved date/place text - positioned closer to chart with custom SVG */}
+              <div className="mt-0 pointer-events-none">
+                <CurvedText
+                  text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
+                  radius={130}
+                  fontSize={11}
+                  color={textColorValue}
+                  width={260}
+                  height={30}
+                />
+              </div>
+            </div>
+
+            {/* Sun and Moon sign circles - positioned with original aesthetic design using transforms */}
+            <div className="absolute left-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(-30%, 40%)' }}>
+              <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
+              <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                {selectedIcon === "custom-natal-chart" && isLoading ? (
+                  <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="16" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                ) : sunSign ? (
                   <img
-                    src={customChartUrl}
-                    alt="Custom Natal Chart"
-                    className="w-full h-full object-contain"
+                    src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
+                    alt={sunSign}
+                    className="w-6 sm:w-8 h-6 sm:h-8"
+                    style={{
+                      filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-full border border-dashed border-gray-300 opacity-60">
-                    <span className="text-gray-400">No Chart</span>
-                  </div>
-                )
-              ) : (
-                <Image
-                  src={selectedIcon === "natal-chart" ? "/images/natal-chart.png" : "/images/zodiac-chart-icon.png"}
-                  alt={selectedIcon === "natal-chart" ? "Natal Chart" : "Zodiac Chart"}
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              )}
+                  <span className="text-base sm:text-lg" style={{ color: textColorValue }}>☉</span>
+                )}
+              </div>
             </div>
 
-            {/* Curved date/place text - positioned below chart */}
-            <div 
-              className="absolute pointer-events-none"
-              style={{
-                bottom: `${dimensions.coverHeight * 0.18}px`, // Moved up to be more visible
-                left: 0,
-                right: 0,
-                height: `${dimensions.chartSize * 0.4}px`
-              }}
-            >
-              <svg 
-                width={dimensions.coverWidth}
-                height={dimensions.chartSize * 0.4}
-                viewBox={`0 0 ${dimensions.coverWidth} ${dimensions.chartSize * 0.4}`}
-                style={{ 
-                  overflow: "visible",
-                  pointerEvents: "none"
-                }}
-              >
-                <defs>
-                  <path
-                    id="book-cover-curve-path"
-                    d={arcPath}
-                    fill="none"
+            <div className="absolute right-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(30%, 40%)' }}>
+              <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
+              <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
+                {selectedIcon === "custom-natal-chart" && isLoading ? (
+                  <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#bbb" /><text x="16" y="21" textAnchor="middle" fontSize="16" fontFamily="Arial" fill="#fff" dominantBaseline="middle" alignmentBaseline="middle">?</text></svg>
+                ) : moonSign ? (
+                  <img
+                    src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
+                    alt={moonSign}
+                    className="w-6 sm:w-8 h-6 sm:h-8"
+                    style={{
+                      filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
+                    }}
                   />
-                </defs>
-                <text
-                  fill={textColorValue}
-                  fontSize={dimensions.fontSize.curvedText}
-                  fontFamily="Montserrat, Arial, sans-serif"
-                  fontWeight={400}
-                  letterSpacing="0.08em"
-                  style={{ 
-                    textTransform: "uppercase"
-                  }}
-                >
-                  <textPath
-                    href="#book-cover-curve-path"
-                    startOffset="50%"
-                    textAnchor="middle"
-                  >
-                    {curvedTextContent}
-                  </textPath>
-                </text>
-              </svg>
-            </div>
-
-            {/* Sun and Moon sign circles - moved to very bottom corners */}
-            {(sunSign || moonSign) && (
-              <>
-                {/* Sun sign - bottom left corner */}
-                <div 
-                  className="absolute flex flex-col items-center z-30"
-                  style={{
-                    left: `${dimensions.coverWidth * 0.08}px`, // Closer to edge
-                    bottom: `${dimensions.coverHeight * 0.03}px` // Very bottom
-                  }}
-                >
-                  <span 
-                    className="font-normal mb-1"
-                    style={{ 
-                      fontSize: `${dimensions.fontSize.sunMoon * 0.9}px`,
-                      color: textColorValue 
-                    }}
-                  >
-                    Sun
-                  </span>
-                  <div 
-                    className="aspect-square rounded-full border-2 flex items-center justify-center bg-transparent shadow"
-                    style={{ 
-                      borderColor: textColorValue,
-                      width: `${dimensions.coverWidth * 0.13}px`,
-                      height: `${dimensions.coverWidth * 0.13}px`
-                    }}
-                  >
-                    {sunSign ? (
-                      <img
-                        src={`/images/zodiac/${sunSign.toLowerCase()}.svg`}
-                        alt={sunSign}
-                        style={{
-                          width: '60%',
-                          height: '60%',
-                          filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
-                        }}
-                      />
-                    ) : (
-                      <span style={{ 
-                        fontSize: `${dimensions.fontSize.name * 0.8}px`,
-                        color: textColorValue 
-                      }}>☉</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Moon sign - bottom right corner */}
-                <div 
-                  className="absolute flex flex-col items-center z-30"
-                  style={{
-                    right: `${dimensions.coverWidth * 0.08}px`, // Closer to edge
-                    bottom: `${dimensions.coverHeight * 0.03}px` // Very bottom
-                  }}
-                >
-                  <span 
-                    className="font-normal mb-1"
-                    style={{ 
-                      fontSize: `${dimensions.fontSize.sunMoon * 0.9}px`,
-                      color: textColorValue 
-                    }}
-                  >
-                    Moon
-                  </span>
-                  <div 
-                    className="aspect-square rounded-full border-2 flex items-center justify-center bg-transparent shadow"
-                    style={{ 
-                      borderColor: textColorValue,
-                      width: `${dimensions.coverWidth * 0.13}px`,
-                      height: `${dimensions.coverWidth * 0.13}px`
-                    }}
-                  >
-                    {moonSign ? (
-                      <img
-                        src={`/images/zodiac/${moonSign.toLowerCase()}.svg`}
-                        alt={moonSign}
-                        style={{
-                          width: '60%',
-                          height: '60%',
-                          filter: textColorValue === "#000" ? "brightness(0)" : "brightness(0) invert(1)"
-                        }}
-                      />
-                    ) : (
-                      <span style={{ 
-                        fontSize: `${dimensions.fontSize.name * 0.8}px`,
-                        color: textColorValue 
-                      }}>☽</span>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Bottom text - astrovela */}
-            <div 
-              className="absolute text-center"
-              style={{
-                bottom: `${dimensions.coverHeight * 0.05}px`,
-                left: '50%',
-                transform: 'translateX(-50%)'
-              }}
-            >
-              <span 
-                className="font-medium tracking-wider"
-                style={{ 
-                  fontSize: `${dimensions.fontSize.sunMoon}px`,
-                  color: textColorValue
-                }}
-              >
-                astrovela
-              </span>
+                ) : (
+                  <span className="text-base sm:text-lg" style={{ color: textColorValue }}>☽</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Clean shadow for depth */}
-        <div className="absolute inset-0 shadow-[0_2px_10px_rgba(0,0,0,0.2)] pointer-events-none rounded-sm"></div>
+        {/* Clean, subtle shadow for depth without 3D effects */}
+        <div className="absolute inset-0 shadow-[0_2px_10px_rgba(0,0,0,0.2)] pointer-events-none"></div>
       </div>
     </div>
   )
