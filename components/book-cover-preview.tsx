@@ -99,20 +99,20 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             <div className="text-center mt-12 mb-2">
               {hasLastName ? (
                 <>
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider mb-1">
+                  <h1 className="text-xl sm:text-2xl md:text-2xl font-bold tracking-wider mb-1">
                     {firstName ? firstName.toUpperCase() : "YOUR NAME"}
                   </h1>
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
+                  <h2 className="text-xl sm:text-2xl md:text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
                 </>
               ) : (
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wider">{firstName ? firstName.toUpperCase() : "YOUR NAME"}</h1>
+                <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold tracking-wider">{firstName ? firstName.toUpperCase() : "YOUR NAME"}</h1>
               )}
             </div>
 
             {/* Chart container - centered with bigger chart */}
             <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-8">
               {/* Chart Image based on selection - BIGGER */}
-              <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
+              <div className="relative w-[300px] sm:w-[300px] h-[300px] sm:h-[300px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
                   isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full">
