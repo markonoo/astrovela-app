@@ -144,11 +144,11 @@ export function BookCoverPreview({
   // Calculate dynamic arc path based on text length
   const arcPath = useMemo(() => {
     const textLength = curvedTextContent.length
-    const baseRadius = dimensions.chartSize * 0.55
+    const baseRadius = dimensions.chartSize * 0.58
     // Increase radius for longer text to prevent cutoff
-    const radius = baseRadius + (textLength > 40 ? 20 : 0)
-    const startAngle = -60 // degrees
-    const endAngle = 60 // degrees
+    const radius = baseRadius + (textLength > 40 ? 25 : textLength > 30 ? 15 : 5)
+    const startAngle = -80 // degrees - wider angle for better visibility
+    const endAngle = 80 // degrees
     
     // Convert to radians
     const startRad = (startAngle * Math.PI) / 180
@@ -156,7 +156,7 @@ export function BookCoverPreview({
     
     // Calculate path coordinates
     const centerX = dimensions.coverWidth / 2
-    const centerY = dimensions.coverHeight * 0.5 + radius
+    const centerY = dimensions.coverHeight * 0.48 + radius // Adjusted position
     
     const startX = centerX + radius * Math.sin(startRad)
     const startY = centerY - radius * Math.cos(startRad)
@@ -195,7 +195,7 @@ export function BookCoverPreview({
           {/* Content container */}
           <div className="relative z-[2] w-full h-full flex flex-col items-center justify-between">
             {/* Top section with name */}
-            <div className="text-center" style={{ marginTop: `${dimensions.coverHeight * 0.08}px` }}>
+            <div className="text-center" style={{ marginTop: `${dimensions.coverHeight * 0.06}px` }}>
               {hasLastName ? (
                 <>
                   <h1 
@@ -231,14 +231,15 @@ export function BookCoverPreview({
               )}
             </div>
 
-            {/* Chart container - centered */}
+            {/* Chart container - moved up */}
             <div 
-              className="relative flex items-center justify-center"
+              className="absolute flex items-center justify-center"
               style={{
                 width: `${dimensions.chartSize}px`,
                 height: `${dimensions.chartSize}px`,
-                marginTop: `${dimensions.coverHeight * 0.02}px`,
-                marginBottom: `${dimensions.coverHeight * 0.02}px`
+                top: `${dimensions.coverHeight * 0.28}px`, // Positioned higher
+                left: '50%',
+                transform: 'translateX(-50%)'
               }}
             >
               {selectedIcon === "custom-natal-chart" ? (
@@ -314,16 +315,16 @@ export function BookCoverPreview({
             <div 
               className="absolute pointer-events-none"
               style={{
-                bottom: `${dimensions.coverHeight * 0.22}px`,
+                bottom: `${dimensions.coverHeight * 0.18}px`, // Moved up to be more visible
                 left: 0,
                 right: 0,
-                height: `${dimensions.chartSize * 0.3}px`
+                height: `${dimensions.chartSize * 0.4}px`
               }}
             >
               <svg 
                 width={dimensions.coverWidth}
-                height={dimensions.chartSize * 0.3}
-                viewBox={`0 0 ${dimensions.coverWidth} ${dimensions.chartSize * 0.3}`}
+                height={dimensions.chartSize * 0.4}
+                viewBox={`0 0 ${dimensions.coverWidth} ${dimensions.chartSize * 0.4}`}
                 style={{ 
                   overflow: "visible",
                   pointerEvents: "none"
@@ -357,21 +358,21 @@ export function BookCoverPreview({
               </svg>
             </div>
 
-            {/* Sun and Moon sign circles - consistent positioning */}
+            {/* Sun and Moon sign circles - moved to very bottom corners */}
             {(sunSign || moonSign) && (
               <>
-                {/* Sun sign - bottom left */}
+                {/* Sun sign - bottom left corner */}
                 <div 
                   className="absolute flex flex-col items-center z-30"
                   style={{
-                    left: `${dimensions.coverWidth * 0.15}px`,
-                    bottom: `${dimensions.coverHeight * 0.08}px`
+                    left: `${dimensions.coverWidth * 0.08}px`, // Closer to edge
+                    bottom: `${dimensions.coverHeight * 0.03}px` // Very bottom
                   }}
                 >
                   <span 
                     className="font-normal mb-1"
                     style={{ 
-                      fontSize: `${dimensions.fontSize.sunMoon}px`,
+                      fontSize: `${dimensions.fontSize.sunMoon * 0.9}px`,
                       color: textColorValue 
                     }}
                   >
@@ -381,8 +382,8 @@ export function BookCoverPreview({
                     className="aspect-square rounded-full border-2 flex items-center justify-center bg-transparent shadow"
                     style={{ 
                       borderColor: textColorValue,
-                      width: `${dimensions.coverWidth * 0.14}px`,
-                      height: `${dimensions.coverWidth * 0.14}px`
+                      width: `${dimensions.coverWidth * 0.13}px`,
+                      height: `${dimensions.coverWidth * 0.13}px`
                     }}
                   >
                     {sunSign ? (
@@ -404,18 +405,18 @@ export function BookCoverPreview({
                   </div>
                 </div>
 
-                {/* Moon sign - bottom right */}
+                {/* Moon sign - bottom right corner */}
                 <div 
                   className="absolute flex flex-col items-center z-30"
                   style={{
-                    right: `${dimensions.coverWidth * 0.15}px`,
-                    bottom: `${dimensions.coverHeight * 0.08}px`
+                    right: `${dimensions.coverWidth * 0.08}px`, // Closer to edge
+                    bottom: `${dimensions.coverHeight * 0.03}px` // Very bottom
                   }}
                 >
                   <span 
                     className="font-normal mb-1"
                     style={{ 
-                      fontSize: `${dimensions.fontSize.sunMoon}px`,
+                      fontSize: `${dimensions.fontSize.sunMoon * 0.9}px`,
                       color: textColorValue 
                     }}
                   >
@@ -425,8 +426,8 @@ export function BookCoverPreview({
                     className="aspect-square rounded-full border-2 flex items-center justify-center bg-transparent shadow"
                     style={{ 
                       borderColor: textColorValue,
-                      width: `${dimensions.coverWidth * 0.14}px`,
-                      height: `${dimensions.coverWidth * 0.14}px`
+                      width: `${dimensions.coverWidth * 0.13}px`,
+                      height: `${dimensions.coverWidth * 0.13}px`
                     }}
                   >
                     {moonSign ? (
@@ -449,6 +450,26 @@ export function BookCoverPreview({
                 </div>
               </>
             )}
+
+            {/* Bottom text - astrovela */}
+            <div 
+              className="absolute text-center"
+              style={{
+                bottom: `${dimensions.coverHeight * 0.05}px`,
+                left: '50%',
+                transform: 'translateX(-50%)'
+              }}
+            >
+              <span 
+                className="font-medium tracking-wider"
+                style={{ 
+                  fontSize: `${dimensions.fontSize.sunMoon}px`,
+                  color: textColorValue
+                }}
+              >
+                astrovela
+              </span>
+            </div>
           </div>
         </div>
 
