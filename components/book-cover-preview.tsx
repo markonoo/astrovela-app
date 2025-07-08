@@ -112,7 +112,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             {/* Chart container - centered with bigger chart */}
             <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-8">
               {/* Chart Image based on selection - BIGGER */}
-              <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center mb-2">
+              <div className="relative w-[280px] sm:w-[300px] h-[280px] sm:h-[300px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
                   isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full">
@@ -178,7 +178,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="-mt-4 pointer-events-none">
+              <div className="-mt-6 pointer-events-none">
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
                   radius={130}
