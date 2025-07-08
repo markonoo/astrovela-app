@@ -540,7 +540,7 @@ export default function PricingPage() {
             )}
 
             {/* Pricing Section Container */}
-            <section className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 md:px-8 py-8 mb-10 mx-auto max-w-2xl flex flex-col items-center">
+            <section ref={optionsSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 md:px-8 py-8 mb-10 mx-auto max-w-2xl flex flex-col items-center">
               <div className="w-full">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">Choose your best option</h2>
                 <p className="text-gray-600 mb-6 text-sm md:text-base text-center">Get instant access to your personalized astrology insights</p>
@@ -771,7 +771,7 @@ export default function PricingPage() {
 
               <div className="text-center mt-8">
                 <button
-                  onClick={handleCheckout}
+                  onClick={scrollToOptions}
                   className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-500 transition-colors shadow-lg transform hover:scale-105 transition-transform"
                 >
                   Order now - Save 65%
