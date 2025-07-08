@@ -178,7 +178,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="mt-0 pointer-events-none">
+              <div className="-mt-4 pointer-events-none">
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
                   radius={130}
@@ -191,7 +191,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
 
             {/* Sun and Moon sign circles - positioned with original aesthetic design using transforms */}
-            <div className="absolute left-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(-30%, 40%)' }}>
+            <div className="absolute left-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(-30%, 37%)' }}>
               <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Sun</span>
               <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
                 {selectedIcon === "custom-natal-chart" && isLoading ? (
@@ -211,7 +211,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
             </div>
 
-            <div className="absolute right-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(30%, 40%)' }}>
+            <div className="absolute right-0 bottom-0 flex flex-col items-center z-30" style={{ transform: 'translate(30%, 37%)' }}>
               <span className="text-[10px] sm:text-xs font-normal mb-1" style={{ color: textColorValue }}>Moon</span>
               <div className="w-12 sm:w-14 aspect-square rounded-full border flex items-center justify-center bg-transparent shadow" style={{ borderColor: textColorValue }}>
                 {selectedIcon === "custom-natal-chart" && isLoading ? (
