@@ -506,7 +506,7 @@ export default function PricingPage() {
 
             {/* Book Cover Preview */}
             {hasQuizData && (
-              <div className="flex justify-center mb-10">
+              <div className="flex justify-center mb-10 -mx-4">
                 <div className="w-full max-w-xs md:max-w-sm">
                   <BookCoverPreview
                     userInfo={{
