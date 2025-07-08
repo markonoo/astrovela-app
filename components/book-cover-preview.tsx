@@ -178,7 +178,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="-mt-6 pointer-events-none">
+              <div className="-mt-8 pointer-events-none">
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
                   radius={130}
