@@ -5,6 +5,7 @@ import { useState, useMemo } from "react"
 import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
 import { getZodiacSign } from "@/utils/zodiac"
+import { format } from "date-fns"
 
 // Import the quiz steps data needed for navigation
 interface QuizStep {
@@ -56,13 +57,22 @@ export function BookCoverConfirmation() {
     }, 300)
   }
 
-  // Format birth date for display (Day Month Year format)
+  // Format birth date for display using date-fns (matching pricing page)
   const formattedDate = useMemo(() => {
     if (state.birthDate?.year && state.birthDate?.month && state.birthDate?.day) {
-      const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", {
-        month: "long",
-      })
-      return `${state.birthDate.day} ${month} ${state.birthDate.year}`
+      try {
+        return format(
+          new Date(
+            parseInt(state.birthDate.year),
+            parseInt(state.birthDate.month) - 1,
+            parseInt(state.birthDate.day)
+          ),
+          "dd MMMM yyyy"
+        )
+      } catch (error) {
+        console.warn("Date formatting error:", error)
+        return "Your Birth Date"
+      }
     }
     return "Your Birth Date"
   }, [state.birthDate])
@@ -136,17 +146,17 @@ export function BookCoverConfirmation() {
         <div className="w-full max-w-[250px] sm:max-w-[280px] md:max-w-[320px] lg:max-w-[350px] h-auto aspect-[3/4] relative flex items-center justify-center overflow-visible">
           <BookCoverPreview
             userInfo={{
-              firstName: state.firstName || "FIRST",
+              firstName: state.firstName || "Your Name",
               lastName: state.lastName || "",
-              placeOfBirth: state.birthPlace || "Place of Birth",
+              placeOfBirth: state.birthPlace || "Your Birth Place",
               dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
                 ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
                 : "",
             }}
-            themeColor={THEME_COLORS[state.coverColorScheme]}
+            themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
             selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
             customChartUrl={state.customChartUrl || undefined}
-            isLoading={state.isLoadingChart}
+            isLoading={false}
             formattedDate={formattedDate}
             sunSign={sunSign}
             moonSign={moonSign}

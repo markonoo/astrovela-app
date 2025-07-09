@@ -13,6 +13,7 @@ import { HamburgerButton } from "../hamburger-button"
 import { ResetButton } from "./reset-button"
 import { getZodiacSign } from "@/utils/zodiac"
 import { Book, Star, Check } from "lucide-react"
+import { format } from "date-fns"
 
 export function PersonalizedLanding() {
   const router = useRouter()
@@ -87,13 +88,22 @@ export function PersonalizedLanding() {
     }
   }, [state.sunSign, state.moonSign, state.natalChart, state.birthDate])
 
-  // Format date for book cover (Day Month Year format)
+  // Format date for book cover using date-fns (matching pricing page)
   const formattedDate = useMemo(() => {
     if (state.birthDate?.year && state.birthDate?.month && state.birthDate?.day) {
-      const month = new Date(0, Number.parseInt(state.birthDate.month) - 1).toLocaleString("default", {
-        month: "long",
-      })
-      return `${state.birthDate.day} ${month} ${state.birthDate.year}`
+      try {
+        return format(
+          new Date(
+            parseInt(state.birthDate.year),
+            parseInt(state.birthDate.month) - 1,
+            parseInt(state.birthDate.day)
+          ),
+          "dd MMMM yyyy"
+        )
+      } catch (error) {
+        console.warn("Date formatting error:", error)
+        return ""
+      }
     }
     return ""
   }, [state.birthDate])
@@ -118,7 +128,7 @@ export function PersonalizedLanding() {
           <h1 className="text-2xl font-bold mb-2">Your personalised astrovela book</h1>
           <p className="text-gray-600 mb-8">is almost ready!</p>
 
-          {/* Book cover display with proper sun/moon signs - fully centered */}
+          {/* Book cover display with proper sun/moon signs - matching pricing page implementation */}
           <div className="w-full flex justify-center mb-8">
             <BookCoverPreview
               userInfo={{
@@ -129,13 +139,13 @@ export function PersonalizedLanding() {
                   ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
                   : "",
               }}
-              themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.black}
+              themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
               selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
               customChartUrl={state.customChartUrl}
               isLoading={false}
               sunSign={extractedSunSign}
               moonSign={extractedMoonSign}
-              formattedDate={formattedDate || ""}
+              formattedDate={formattedDate}
             />
           </div>
 

@@ -17,8 +17,8 @@ export function ProgressBar({ dark = false }: ProgressBarProps) {
   const progress = Math.min((currentStep / totalSteps) * 100, 100)
 
   return (
-    <div className="w-full px-4 py-1">
-      <div className="flex items-center justify-between mb-2">
+    <div className="w-full px-4 py-0.5">
+      <div className="flex items-center justify-between mb-1">
         <span className={`text-sm font-medium ${dark ? "text-yellow-100" : "text-gray-700"}`}>
           Step {currentStep} of {totalSteps}
         </span>
