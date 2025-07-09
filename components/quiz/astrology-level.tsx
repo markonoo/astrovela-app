@@ -17,7 +17,7 @@ export function AstrologyLevel() {
       <h1 className="text-2xl font-semibold text-gray-900">How familiar are you</h1>
       <h2 className="text-2xl font-semibold text-gray-900">with astrology?</h2>
 
-      <div className="space-y-3 mt-8">
+      <div className="space-y-3 mt-4">
         <OptionCard selected={state.astrologyLevel === "beginner"} onClick={() => handleSelect("beginner")}>
           <div className="bg-purple-100 p-2 rounded-full mr-3">
             <Sparkles className="w-5 h-5 text-purple-500" />

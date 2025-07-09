@@ -33,8 +33,8 @@ export function ZodiacDisplay() {
 
   return (
     <div className="relative w-full h-full text-white overflow-hidden">
-      <div className="relative z-10 flex flex-col items-center justify-start min-h-[auto] px-4 pt-0 pb-8">
-        <div className="w-full max-w-md text-center space-y-3 mt-6">
+      <div className="relative z-10 flex flex-col items-center justify-start min-h-[auto] px-4 pt-0 pb-4">
+        <div className="w-full max-w-md text-center space-y-3 mt-3">
           <div className="flex justify-center">
             <div className="w-[165px] h-[165px] flex items-center justify-center">
               <img
@@ -57,7 +57,7 @@ export function ZodiacDisplay() {
 
           <button
             onClick={nextStep}
-            className="w-full py-3 px-4 rounded-full font-medium hover:brightness-110 transition-colors mt-8"
+            className="w-full py-3 px-4 rounded-full font-medium hover:brightness-110 transition-colors mt-4"
             style={{ backgroundColor: '#f7c800', color: '#28293d' }}
           >
             Continue

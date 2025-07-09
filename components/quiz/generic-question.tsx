@@ -90,7 +90,7 @@ export function GenericQuestion({ questionNumber, questionText, options }: Gener
         </div>
       )}
 
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 mt-3">
         {options.map((option, index) => (
           <OptionCard
             key={index}

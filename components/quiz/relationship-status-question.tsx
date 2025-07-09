@@ -39,7 +39,7 @@ export function RelationshipStatusQuestion() {
     >
       <h1 className="text-2xl font-semibold text-gray-900">What's your relationship status?</h1>
 
-      <div className="space-y-3 mt-8">
+      <div className="space-y-3 mt-4">
         {options.map((option, index) => (
           <OptionCard
             key={index}

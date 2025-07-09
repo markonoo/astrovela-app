@@ -52,7 +52,7 @@ function LoadingAnimation({ message, isStep12 = false }: { message: string; isSt
   }, [isStep12, message]); // Re-run when message changes
   
   return (
-    <div className="flex flex-col items-center justify-center min-h-[300px] bg-transparent text-yellow-100 rounded-xl p-8 mx-auto max-w-xl">
+    <div className="flex flex-col items-center justify-center min-h-[200px] bg-transparent text-yellow-100 rounded-xl p-4 md:p-6 mx-auto max-w-xl">
       <div className="w-32 h-32 bg-transparent rounded-full mb-4 flex items-center justify-center">
         {/* Circular progress indicator */}
         <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -135,7 +135,7 @@ function MainGoalsMultiSelect({ stepConfig }: { stepConfig: any }) {
         )}
       </div>
       
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 mt-3">
         {mainGoalsOptions.map((option, index) => (
           <OptionCard
             key={index}
@@ -205,7 +205,7 @@ function MotivationMultiSelect({ stepConfig }: { stepConfig: any }) {
         )}
       </div>
       
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 mt-3">
         {motivationOptions.map((option, index) => (
           <OptionCard
             key={index}
@@ -275,7 +275,7 @@ function AdditionalTopicsMultiSelect({ stepConfig }: { stepConfig: any }) {
         )}
       </div>
       
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 mt-3">
         {additionalTopicsOptions.map((option, index) => (
           <OptionCard
             key={index}
@@ -344,7 +344,7 @@ function GenericMultiSelect({ stepConfig, question }: { stepConfig: any; questio
         )}
       </div>
       
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 mt-3">
         {question.options.map((option: string, index: number) => (
           <OptionCard
             key={index}
@@ -660,7 +660,7 @@ export function QuizController() {
       case "intro":
         // Greeting/intro step inspired by competitor screenshot
         return (
-          <div className="flex flex-col items-center justify-center min-h-[500px] bg-astro-dark text-white rounded-xl p-6 md:p-8 shadow-lg mx-auto max-w-2xl">
+          <div className="flex flex-col items-center justify-center min-h-[350px] md:min-h-[450px] bg-astro-dark text-white rounded-xl p-4 md:p-8 shadow-lg mx-auto max-w-2xl">
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-yellow-300 text-center">🌟 Welcome to Astrovela</h2>
             <div className="bg-[#041c3c] rounded-lg p-4 md:p-6 mb-6 w-full">
               <h3 className="text-base md:text-lg font-semibold mb-4 text-yellow-200 text-center">Discover your unique path to love, purpose, and self-growth.</h3>
@@ -705,7 +705,7 @@ export function QuizController() {
       }
       case "testimonial":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[40vh] py-6 text-yellow-100">
+          <div className="flex flex-col items-center justify-center min-h-[30vh] py-3 text-yellow-100">
             {/* Large square photo placeholder - increased by 2x */}
             <div className="flex items-center justify-center mb-4">
               <div className="w-96 h-96 rounded-xl border-4 border-yellow-300 bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg">

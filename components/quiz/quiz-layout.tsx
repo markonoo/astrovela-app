@@ -31,7 +31,7 @@ export default function QuizLayout({ children, showBackButton = true, className 
   return (
     <div className={`min-h-screen flex flex-col ${className} relative overflow-hidden`}>
       {isDark && <Stars />}
-      <header className="relative py-4 border-b border-[#f7c800]">
+      <header className="relative py-2 md:py-3 border-b border-[#f7c800]">
         <div className="container mx-auto px-4 flex justify-between items-center">
           {showBackButton ? (
             <button onClick={prevStep} className="text-[#8f90a6] hover:text-[#28293d]" aria-label="Go back">
@@ -58,7 +58,7 @@ export default function QuizLayout({ children, showBackButton = true, className 
       {/* Drawer Menu */}
       <DrawerMenu isOpen={isDrawerOpen} onClose={closeDrawer} />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-3 md:py-6">
         <div className="w-full max-w-md">{children}</div>
       </main>
     </div>

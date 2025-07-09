@@ -16,7 +16,7 @@ export function GenderSelection() {
     <div className="space-y-6 text-center">
       <h1 className="text-2xl font-semibold text-[#28293d]">What's your gender?</h1>
 
-      <div className="space-y-3 mt-8">
+      <div className="space-y-3 mt-4">
         <OptionCard selected={state.gender === "male"} onClick={() => handleSelect("male")}>
           <Male className="w-5 h-5 mr-3 text-blue-500" />
           <span>Male</span>
