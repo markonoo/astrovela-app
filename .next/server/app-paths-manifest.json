@@ -1,6 +1,14 @@
 {
-  "/reviews/page": "app/reviews/page.js",
-  "/book-designer/page": "app/book-designer/page.js",
   "/quiz/page": "app/quiz/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/reviews/page": "app/reviews/page.js",
+  "/dashboard/monitoring/page": "app/dashboard/monitoring/page.js",
+  "/api/analytics/performance/route": "app/api/analytics/performance/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/shopify/connection/route": "app/api/shopify/connection/route.js",
+  "/api/security/monitoring/route": "app/api/security/monitoring/route.js",
+  "/api/marketing/status/route": "app/api/marketing/status/route.js",
+  "/api/shopify/analytics/route": "app/api/shopify/analytics/route.js",
+  "/book-designer/page": "app/book-designer/page.js",
+  "/pricing/page": "app/pricing/page.js"
 }
