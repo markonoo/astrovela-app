@@ -58,8 +58,8 @@ export default function QuizLayout({ children, showBackButton = true, className 
       {/* Drawer Menu */}
       <DrawerMenu isOpen={isDrawerOpen} onClose={closeDrawer} />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 pt-8 pb-4 md:pt-12 md:pb-6 min-h-[calc(100vh-120px)]">
-        <div className="w-full max-w-md flex flex-col justify-center min-h-[400px]">{children}</div>
+      <main className="flex-1 flex flex-col items-center justify-center px-4 pt-6 pb-4 md:pt-8 md:pb-6 min-h-[calc(100vh-120px)]">
+        <div className="w-full max-w-md flex flex-col justify-center min-h-[350px]">{children}</div>
       </main>
     </div>
   )
