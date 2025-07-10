@@ -143,7 +143,7 @@ export function BookCoverConfirmation() {
       </p>
 
       <div className="flex justify-center mb-10 pb-8">
-        <div className="w-full max-w-[250px] sm:max-w-[280px] md:max-w-[320px] lg:max-w-[350px] h-auto aspect-[3/4] relative flex items-center justify-center overflow-visible">
+        <div className="w-full max-w-[350px]">
           <BookCoverPreview
             userInfo={{
               firstName: state.firstName || "Your Name",

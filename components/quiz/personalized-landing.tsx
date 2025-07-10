@@ -128,25 +128,27 @@ export function PersonalizedLanding() {
           <h1 className="text-2xl font-bold mb-2">Your personalised astrovela book</h1>
           <p className="text-gray-600 mb-8">is almost ready!</p>
 
-          {/* Book cover display with proper sun/moon signs - matching pricing page implementation */}
+          {/* Book cover display with proper sun/moon signs - simplified container matching pricing page */}
           <div className="w-full flex justify-center mb-8">
-            <BookCoverPreview
-              userInfo={{
-                firstName: state.firstName || "Your Name",
-                lastName: state.lastName || "",
-                placeOfBirth: state.birthPlace || "Your Birth Place",
-                dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
-                  ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
-                  : "",
-              }}
-              themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
-              selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
-              customChartUrl={state.customChartUrl}
-              isLoading={false}
-              sunSign={extractedSunSign}
-              moonSign={extractedMoonSign}
-              formattedDate={formattedDate}
-            />
+            <div className="w-full max-w-[350px]">
+              <BookCoverPreview
+                userInfo={{
+                  firstName: state.firstName || "Your Name",
+                  lastName: state.lastName || "",
+                  placeOfBirth: state.birthPlace || "Your Birth Place",
+                  dateOfBirth: state.birthDate?.year && state.birthDate?.month && state.birthDate?.day
+                    ? `${state.birthDate.year}-${state.birthDate.month.padStart(2, "0")}-${state.birthDate.day.padStart(2, "0")}`
+                    : "",
+                }}
+                themeColor={THEME_COLORS[state.coverColorScheme] || THEME_COLORS.purple}
+                selectedIcon={state.customChartUrl ? "custom-natal-chart" : "natal-chart"}
+                customChartUrl={state.customChartUrl}
+                isLoading={false}
+                sunSign={extractedSunSign}
+                moonSign={extractedMoonSign}
+                formattedDate={formattedDate}
+              />
+            </div>
           </div>
 
           {/* Button with reduced spacing - moved up */}
