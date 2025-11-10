@@ -1,0 +1,22 @@
+{
+  "id": "p-49",
+  "number": 49,
+  "title": "TAURUS — Inner",
+  "type": "zodiac-inner",
+  "background": "#000",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "The Inner Taurus", "className": "text-zodiac-gold text-xl mb-2" },
+    { "type": "paragraph", "content": "Tauruses are deeply sensitive, loyal, and crave stability. They enjoy beauty and comfort, often expressed through artistic pursuits. They are reliable and practical, making them excellent partners.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Health and Diet", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Taurus needs to pay attention to throat and neck health. Diets with throat-soothing foods (honey, herbal teas) and balanced exercise are essential. Stress management is vital due to Taurus’s love for indulgence.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "How Others See Taurus", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Others view them as calm, composed, and reliable. Their patience earns respect, though resistance to change may be seen as stubbornness. Their love for luxury is admired, and loyalty makes them dependable.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Love and Relationships", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Venus grants Taurus an appreciation for beauty and love. They seek stability and security in love, creating luxurious and consistent relationships.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Career and Finance", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "They thrive in finance, administration, or luxury industries. They excel in managing money but must remain adaptable to avoid rigidity.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Celebrities with Taurus Sun", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Queen Elizabeth II (Apr 21), Dwayne Johnson (May 2), Adele (May 5), David Beckham (May 2), George Clooney (May 6), Audrey Hepburn (May 4), Al Pacino (Apr 25), Megan Fox (May 16), Mark Zuckerberg (May 14), Kelly Clarkson (Apr 24), Penélope Cruz (Apr 28), Cher (May 20), Jessica Alba (Apr 28), Jack Nicholson (Apr 22), William Shakespeare (Apr 26)", "className": "text-zodiac-gold" }
+  ]
+}
+

@@ -21,6 +21,7 @@ import { BirthDate } from "./birth-date"
 import { BirthTime } from "./birth-time"
 import { BirthPlace } from "./birth-place"
 import { OptionCard } from "./option-card"
+import { logger } from "@/utils/logger"
 
 // Create a separate loading animation component
 function LoadingAnimation({ message, isStep12 = false }: { message: string; isStep12?: boolean }) {
@@ -497,7 +498,7 @@ export function QuizController() {
   useEffect(() => {
     // Reset API state when moving away from step 12
     if (previousStep.current === 12 && currentStep !== 12) {
-      console.log('🔄 Resetting API state when leaving step 12')
+      logger.quiz('Resetting API state when leaving step 12')
       if (apiCallState.current.abortController) {
         apiCallState.current.abortController.abort()
       }
@@ -525,7 +526,7 @@ export function QuizController() {
 
     if (!hasAllData || state.customChartUrl || state.isLoadingChart) {
       if (currentStep === 12 && !hasAllData) {
-        console.log('❌ Step 12 but missing required data:', {
+        logger.quiz('Step 12 but missing required data', {
           hasBirthDate: !!(state.birthDate.year && state.birthDate.month && state.birthDate.day),
           hasTime: !!state.birthTime,
           hasPlace: !!state.birthPlace,
@@ -538,7 +539,7 @@ export function QuizController() {
 
     // Prevent multiple simultaneous calls
     if (apiCallState.current.isExecuting) {
-      console.log('⚠️ API call already in progress, skipping duplicate request')
+      logger.quiz('API call already in progress, skipping duplicate request')
       return
     }
 
@@ -548,7 +549,7 @@ export function QuizController() {
     const minInterval = 2000 // 2 seconds minimum between calls
 
     if (timeSinceLastCall < minInterval) {
-      console.log(`⏳ Rate limiting: ${minInterval - timeSinceLastCall}ms remaining`)
+      logger.debug(`Rate limiting: ${minInterval - timeSinceLastCall}ms remaining`)
       return
     }
 
@@ -559,8 +560,7 @@ export function QuizController() {
       apiCallState.current.lastCallTime = now
       apiCallState.current.abortController = new AbortController()
 
-      console.log(`🚀 Starting API call #${requestId}`)
-      console.log('Birth data:', {
+      logger.quiz(`Starting API call #${requestId}`, {
         date: `${state.birthDate.year}-${state.birthDate.month}-${state.birthDate.day}`,
         time: state.birthTime,
         place: state.birthPlace
@@ -571,14 +571,14 @@ export function QuizController() {
         
         // Check if this is still the current request (no newer requests)
         if (requestId === apiCallState.current.requestId) {
-          console.log(`✅ API call #${requestId} completed successfully`)
+          logger.quiz(`API call #${requestId} completed successfully`)
         } else {
-          console.log(`🔄 API call #${requestId} completed but superseded by newer request`)
+          logger.debug(`API call #${requestId} completed but superseded by newer request`)
         }
       } catch (error) {
         // Only log error if this is still the current request
         if (requestId === apiCallState.current.requestId) {
-          console.error(`❌ API call #${requestId} failed:`, error)
+          logger.error(`API call #${requestId} failed`, error)
         }
       } finally {
         // Only reset state if this is still the current request

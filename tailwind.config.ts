@@ -70,11 +70,50 @@ const config: Config = {
           muted: "#8f90a6",
           secondary: "#4d4d4d",
         },
+        // Apple-inspired colors
+        apple: {
+          gray: {
+            1: "#1d1d1f", // Primary text
+            2: "#424245", // Secondary text
+            3: "#86868b", // Tertiary text
+            4: "#d2d2d7", // Borders
+            5: "#f5f5f7", // Light backgrounds
+            6: "#ffffff", // White
+          },
+          blue: {
+            DEFAULT: "#007aff",
+            light: "#5ac8fa",
+            dark: "#0051d5",
+          },
+          green: {
+            DEFAULT: "#34c759",
+            light: "#30d158",
+          },
+          orange: {
+            DEFAULT: "#ff9500",
+            light: "#ffcc00",
+          },
+          red: {
+            DEFAULT: "#ff3b30",
+            light: "#ff6961",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // Apple-inspired radius
+        "apple-sm": "8px",
+        "apple-md": "12px",
+        "apple-lg": "16px",
+        "apple-xl": "20px",
+      },
+      boxShadow: {
+        "apple-sm": "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)",
+        "apple-md": "0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06)",
+        "apple-lg": "0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.08)",
+        "apple-xl": "0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -127,6 +166,26 @@ const config: Config = {
         fadeIn: 'fadeIn 0.5s ease-in-out',
         slideDown: 'slideDown 0.5s ease-in-out forwards',
         slideUp: 'slideUp 0.5s ease-in-out forwards',
+        // Apple-inspired animations
+        "spring": "spring 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "spring-smooth": "spring 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "scale-in": "scaleIn 0.2s cubic-bezier(0, 0, 0.2, 1)",
+        "scale-out": "scaleOut 0.15s cubic-bezier(0.4, 0, 1, 1)",
+      },
+      keyframes: {
+        spring: {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "50%": { transform: "scale(1.02)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        scaleIn: {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        scaleOut: {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "100%": { transform: "scale(0.95)", opacity: "0" },
+        },
       },
     },
   },

@@ -1,0 +1,16 @@
+{
+  "id": "p-42",
+  "number": 42,
+  "title": "THE ELEMENTAL CLASSIFICATION",
+  "type": "zodiac-overview",
+  "background": "#efe6d7",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "THE ELEMENTAL CLASSIFICATION", "className": "text-center font-serif text-3xl mb-4" },
+    { "type": "paragraph", "content": "The twelve zodiac signs are categorized into four elements: Fire, Earth, Air, and Water. These elements represent the essential types of energy that manifest in our personalities, life experiences. This categorization reveals the temperament and basic nature of the signs within each element.", "className": "max-w-[150mm] mx-auto text-[11pt] leading-[1.75]" },
+    { "type": "paragraph", "content": "Fire Signs (Aries, Leo, Sagittarius) — Are passionate, dynamic, and energetic. They are known for their enthusiasm, courage, and inspiration. Fire signs are action-oriented, often driven by the desire for self-expression and the pursuit of their passions.", "className": "mt-2" },
+    { "type": "paragraph", "content": "Earth Signs (Taurus, Virgo, Capricorn) — Are practical, grounded, and reliable. These signs value stability, hard work, and tangible results. Earth signs are focused on material achievements and practicality, embodying resilience and patience.", "className": "mt-2" },
+    { "type": "paragraph", "content": "Air Signs (Gemini, Libra, Aquarius) — Are intellectual, communicative, and social. They thrive on ideas, information, and interaction. Air signs are known for their curiosity, adaptability, and analytical skills, often seeking to understand and connect with the world through thought and communication.", "className": "mt-2" },
+    { "type": "paragraph", "content": "Water Signs (Cancer, Scorpio, Pisces) — Are intuitive, emotional, and sensitive. They navigate the world through their feelings, forming deep connections with others. Water signs are known for their empathy, depth, and capacity for healing, often possessing a strong sense of intuition and artistic creativity.", "className": "mt-2" }
+  ]
+}
+

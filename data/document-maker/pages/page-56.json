@@ -1,0 +1,24 @@
+{
+  "id": "p-56",
+  "number": 56,
+  "title": "VIRGO (August 23 – September 22)",
+  "type": "zodiac-sign",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "VIRGO (August 23 – September 22)", "className": "text-2xl font-bold text-center mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Virgo", "traits": {
+      "Duality": "Feminine",
+      "Element": "Earth",
+      "Quality": "Mutable",
+      "Lucky Day": "Wednesday",
+      "Written Symbol": "Representing a maiden carrying a sheaf of wheat, the symbol signifies Virgo’s connection to harvest, symbolizing productivity and the reaping of rewards through hard work.",
+      "Symbol": "The Virgin",
+      "Ruling Planet": "Mercury. The planet of communication and intellect influences Virgos to be thoughtful and detail-oriented in their thoughts and expressions.",
+      "Dominant Keyword": "\"I Analyze\"",
+      "Lucky Number": "5, 14, and any combination.",
+      "Body Part Ruled": "Digestive system"
+    } },
+    { "type": "paragraph", "content": "Virgos are deeply compassionate, offering service to others as a key aspect of their personality. They are modest and" }
+  ]
+}
+

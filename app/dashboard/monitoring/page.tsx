@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface ShopifyAnalytics {
   status: 'connected' | 'disconnected' | 'error';
@@ -72,6 +73,39 @@ interface MarketingAnalytics {
   platforms: MarketingPlatformStatus[];
 }
 
+interface CompanionAppStats {
+  summary: {
+    totalEntitlements: number;
+    activeSubscriptions: number;
+    expiredTrials: number;
+    usersWithReports: number;
+    recentEntitlements: number;
+    expiringSoon: number;
+    conversionRate: string;
+  };
+  byPlan: Array<{
+    plan: string;
+    count: number;
+  }>;
+  timestamp: string;
+}
+
+interface PDFStats {
+  summary: {
+    usersWithReports: number;
+    totalChartInterpretations: number;
+    recentCharts: number;
+    totalChartImages: number;
+    recentChartImages: number;
+    pdfGenerationRate: string;
+  };
+  documentMaker: {
+    totalPages: number;
+    pagesWithContent: number;
+  };
+  timestamp: string;
+}
+
 export default function MonitoringDashboard() {
   const [healthStatus, setHealthStatus] = useState<any>(null);
   const [performanceData, setPerformanceData] = useState<any>(null);
@@ -79,6 +113,8 @@ export default function MonitoringDashboard() {
   const [shopifyAnalytics, setShopifyAnalytics] = useState<ShopifyAnalytics | null>(null);
   const [shopifyConnection, setShopifyConnection] = useState<ShopifyConnection | null>(null);
   const [marketingAnalytics, setMarketingAnalytics] = useState<MarketingAnalytics | null>(null);
+  const [companionAppStats, setCompanionAppStats] = useState<CompanionAppStats | null>(null);
+  const [pdfStats, setPdfStats] = useState<PDFStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -174,6 +210,42 @@ export default function MonitoringDashboard() {
     }
   };
 
+  const fetchCompanionAppStats = async () => {
+    try {
+      console.log('📱 Fetching Companion App stats...');
+      
+      const response = await fetch('/api/admin/companion-stats');
+      
+      if (response.ok) {
+        const stats = await response.json();
+        setCompanionAppStats(stats);
+        console.log('✅ Companion App stats loaded:', stats);
+      } else {
+        console.error('❌ Companion App stats error:', response.status);
+      }
+    } catch (err) {
+      console.error('Error fetching Companion App stats:', err);
+    }
+  };
+
+  const fetchPDFStats = async () => {
+    try {
+      console.log('📄 Fetching PDF stats...');
+      
+      const response = await fetch('/api/admin/pdf-stats');
+      
+      if (response.ok) {
+        const stats = await response.json();
+        setPdfStats(stats);
+        console.log('✅ PDF stats loaded:', stats);
+      } else {
+        console.error('❌ PDF stats error:', response.status);
+      }
+    } catch (err) {
+      console.error('Error fetching PDF stats:', err);
+    }
+  };
+
   const fetchAllData = async () => {
     setLoading(true);
     await Promise.all([
@@ -181,7 +253,9 @@ export default function MonitoringDashboard() {
       fetchPerformanceData(),
       fetchSecurityData(),
       fetchShopifyData(),
-      fetchMarketingData()
+      fetchMarketingData(),
+      fetchCompanionAppStats(),
+      fetchPDFStats()
     ]);
     setLastRefresh(new Date());
     setLoading(false);
@@ -245,6 +319,7 @@ export default function MonitoringDashboard() {
   }
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
@@ -795,6 +870,178 @@ export default function MonitoringDashboard() {
           )}
         </div>
 
+        {/* Companion App Analytics */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            📱 Companion App Analytics
+          </h2>
+          
+          {companionAppStats ? (
+            <div className="space-y-6">
+              {/* Summary Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="bg-blue-50 p-4 rounded border">
+                  <h3 className="font-medium text-blue-700">Total Entitlements</h3>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {companionAppStats.summary.totalEntitlements}
+                  </p>
+                </div>
+                <div className="bg-green-50 p-4 rounded border">
+                  <h3 className="font-medium text-green-700">Active Subscriptions</h3>
+                  <p className="text-2xl font-bold text-green-600">
+                    {companionAppStats.summary.activeSubscriptions}
+                  </p>
+                  <p className="text-sm text-green-600">
+                    {companionAppStats.summary.conversionRate} conversion
+                  </p>
+                </div>
+                <div className="bg-yellow-50 p-4 rounded border">
+                  <h3 className="font-medium text-yellow-700">Expiring Soon</h3>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {companionAppStats.summary.expiringSoon}
+                  </p>
+                  <p className="text-sm text-yellow-600">Next 7 days</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded border">
+                  <h3 className="font-medium text-purple-700">Users with Reports</h3>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {companionAppStats.summary.usersWithReports}
+                  </p>
+                </div>
+              </div>
+
+              {/* By Plan Breakdown */}
+              <div>
+                <h3 className="font-medium text-gray-700 mb-3">📊 Entitlements by Plan</h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {companionAppStats.byPlan.map((item) => (
+                    <div key={item.plan} className="bg-gray-50 p-4 rounded border">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium capitalize text-gray-700">{item.plan}</span>
+                        <span className="text-2xl font-bold text-gray-800">{item.count}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-4 rounded border">
+                  <h3 className="font-medium text-gray-700 mb-2">Recent Entitlements</h3>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {companionAppStats.summary.recentEntitlements}
+                  </p>
+                  <p className="text-sm text-gray-600">Last 30 days</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded border">
+                  <h3 className="font-medium text-gray-700 mb-2">Expired Trials</h3>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {companionAppStats.summary.expiredTrials}
+                  </p>
+                  <p className="text-sm text-gray-600">Total expired</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading Companion App stats...</p>
+            </div>
+          )}
+        </div>
+
+        {/* PDF & Document Maker Analytics */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            📄 PDF & Document Maker Analytics
+          </h2>
+          
+          {pdfStats ? (
+            <div className="space-y-6">
+              {/* Summary Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="bg-blue-50 p-4 rounded border">
+                  <h3 className="font-medium text-blue-700">Users with Reports</h3>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {pdfStats.summary.usersWithReports}
+                  </p>
+                  <p className="text-sm text-blue-600">Can download PDFs</p>
+                </div>
+                <div className="bg-green-50 p-4 rounded border">
+                  <h3 className="font-medium text-green-700">Total Charts</h3>
+                  <p className="text-2xl font-bold text-green-600">
+                    {pdfStats.summary.totalChartInterpretations}
+                  </p>
+                  <p className="text-sm text-green-600">Natal charts generated</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded border">
+                  <h3 className="font-medium text-purple-700">Chart Images</h3>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {pdfStats.summary.totalChartImages}
+                  </p>
+                  <p className="text-sm text-purple-600">Stored images</p>
+                </div>
+                <div className="bg-orange-50 p-4 rounded border">
+                  <h3 className="font-medium text-orange-700">PDF Rate</h3>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {pdfStats.summary.pdfGenerationRate}
+                  </p>
+                  <p className="text-sm text-orange-600">Generation rate</p>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-4 rounded border">
+                  <h3 className="font-medium text-gray-700 mb-2">Recent Charts</h3>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {pdfStats.summary.recentCharts}
+                  </p>
+                  <p className="text-sm text-gray-600">Last 30 days</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded border">
+                  <h3 className="font-medium text-gray-700 mb-2">Recent Images</h3>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {pdfStats.summary.recentChartImages}
+                  </p>
+                  <p className="text-sm text-gray-600">Last 30 days</p>
+                </div>
+              </div>
+
+              {/* Document Maker Info */}
+              <div className="bg-indigo-50 p-4 rounded border">
+                <h3 className="font-medium text-indigo-700 mb-3">📚 Document Maker Status</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-sm text-indigo-600">Total Pages Available</span>
+                    <p className="text-xl font-bold text-indigo-800">
+                      {pdfStats.documentMaker.totalPages}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-indigo-600">Pages with Content</span>
+                    <p className="text-xl font-bold text-indigo-800">
+                      {pdfStats.documentMaker.pagesWithContent}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-indigo-200">
+                  <p className="text-sm text-indigo-600">
+                    Report Viewer: <a href="/companion/report/viewer" className="underline">View Demo</a> • 
+                    PDF Generation: <a href="/api/companion/report/pdf" className="underline">API Endpoint</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading PDF stats...</p>
+            </div>
+          )}
+        </div>
+
         {/* API Endpoints */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">🔗 Available Monitoring APIs</h2>
@@ -832,6 +1079,28 @@ export default function MonitoringDashboard() {
                 Test API →
               </a>
             </div>
+            <div className="bg-gray-50 p-4 rounded border">
+              <h3 className="font-medium mb-2">Companion App Stats</h3>
+              <code className="text-sm text-gray-600 block mb-2">/api/admin/companion-stats</code>
+              <a 
+                href="/api/admin/companion-stats" 
+                target="_blank" 
+                className="text-blue-500 hover:text-blue-700 text-sm underline"
+              >
+                Test API →
+              </a>
+            </div>
+            <div className="bg-gray-50 p-4 rounded border">
+              <h3 className="font-medium mb-2">PDF Stats</h3>
+              <code className="text-sm text-gray-600 block mb-2">/api/admin/pdf-stats</code>
+              <a 
+                href="/api/admin/pdf-stats" 
+                target="_blank" 
+                className="text-blue-500 hover:text-blue-700 text-sm underline"
+              >
+                Test API →
+              </a>
+            </div>
           </div>
         </div>
 
@@ -842,5 +1111,6 @@ export default function MonitoringDashboard() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

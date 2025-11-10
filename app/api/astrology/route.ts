@@ -1,17 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { fetchNatalWheelChartSVG, geocodeLocation } from "@/services/astrology-api-service"
+import { logger } from "@/utils/logger"
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("Debug - API route called")
+    logger.api('/api/astrology', 'API route called')
 
     const body = await request.json()
-    console.log("Debug - Request body:", body)
+    logger.api('/api/astrology', 'Request body received', { hasBirthDate: !!body.birthDate, hasBirthTime: !!body.birthTime, hasBirthLocation: !!body.birthLocation })
 
     const { birthDate, birthTime, birthLocation } = body
 
     if (!birthDate || !birthTime || !birthLocation) {
-      console.error("Debug - Missing required fields:", { birthDate, birthTime, birthLocation })
+      logger.error("Missing required fields", undefined, { birthDate, birthTime, birthLocation })
       return NextResponse.json(
         { error: "Missing required fields: birthDate, birthTime, or birthLocation" },
         { status: 400 },
@@ -19,13 +20,13 @@ export async function POST(request: NextRequest) {
     }
 
     // First, geocode the location to get coordinates
-    console.log("Debug - Geocoding location:", birthLocation)
+    logger.api('/api/astrology', 'Geocoding location', { birthLocation })
     let geocodeResult
     try {
       geocodeResult = await geocodeLocation(birthLocation)
-      console.log("Debug - Geocode result:", geocodeResult)
+      logger.api('/api/astrology', 'Geocode result received', { latitude: geocodeResult.latitude, longitude: geocodeResult.longitude })
     } catch (error) {
-      console.error("Debug - Geocoding error:", error)
+      logger.error("Geocoding error", error)
       return NextResponse.json(
         { error: `Error geocoding location: ${error instanceof Error ? error.message : String(error)}` },
         { status: 500 },
@@ -35,13 +36,13 @@ export async function POST(request: NextRequest) {
     const { latitude, longitude } = geocodeResult
 
     // Then fetch the natal wheel chart SVG
-    console.log("Debug - Fetching natal wheel chart SVG with:", { birthDate, birthTime, latitude, longitude })
+    logger.api('/api/astrology', 'Fetching natal wheel chart SVG', { birthDate, birthTime, latitude, longitude })
     let svg
     try {
       svg = await fetchNatalWheelChartSVG(birthDate, birthTime, latitude, longitude)
-      console.log("Debug - SVG fetched successfully, length:", svg.length)
+      logger.api('/api/astrology', 'SVG fetched successfully', { svgLength: svg.length })
     } catch (error) {
-      console.error("Debug - Error fetching SVG:", error)
+      logger.error("Error fetching SVG", error)
       return NextResponse.json(
         { error: `Error fetching natal wheel chart: ${error instanceof Error ? error.message : String(error)}` },
         { status: 500 },
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ svg })
   } catch (error) {
-    console.error("Debug - Error in astrology API route:", error)
+    logger.error("Error in astrology API route", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "An unknown error occurred" },
       { status: 500 },

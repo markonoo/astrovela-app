@@ -1,0 +1,72 @@
+{
+  "id": "p-73",
+  "number": 73,
+  "title": "The Luminaries",
+  "type": "planet-detail",
+  "background": "#fff",
+  "sections": [
+    {
+      "type": "heading",
+      "level": 1,
+      "content": "The Luminaries",
+      "className": "text-center font-serif text-2xl mb-4"
+    },
+    {
+      "type": "two-column",
+      "columns": [
+        [
+          {
+            "type": "image",
+            "src": "/images/page73-sun.png",
+            "alt": "Sun",
+            "className": "w-full max-w-xs mx-auto mb-3"
+          },
+          {
+            "type": "heading",
+            "level": 3,
+            "content": "Sun",
+            "className": "font-serif text-lg mb-2"
+          },
+          {
+            "type": "paragraph",
+            "content": "The Sun not only symbolizes our ego and will, but it also illuminates our creative force, the raw energy that fuels our passions, ambitions, and the pursuit of our true selves. The Sun's position by sign, house, and aspect in our natal chart is a guide to understanding our potential for achievement, leadership, and the way we radiate our power. It shapes our personality, influencing everything from our approach to life's challenges to how we express our individuality.",
+            "className": "text-[11pt] leading-[1.6]"
+          },
+          {
+            "type": "paragraph",
+            "content": "The Sun's transit through the sky marks significant cycles, offering opportunities for growth, self-expression, and the realization of our deepest desires. The Sun is also the most widely-known planet, often associated with the term \"Zodiac Sign.\" The Sun usually takes approximately 1 month in each sign. The Sun's journey through the zodiac takes about a year, symbolizing the cycle of personal growth and evolution over a year.",
+            "className": "text-[11pt] leading-[1.6] mt-2"
+          }
+        ],
+        [
+          {
+            "type": "image",
+            "src": "/images/page73-moon.png",
+            "alt": "Moon",
+            "className": "w-full max-w-xs mx-auto mb-3"
+          },
+          {
+            "type": "heading",
+            "level": 3,
+            "content": "Moon",
+            "className": "font-serif text-lg mb-2"
+          },
+          {
+            "type": "paragraph",
+            "content": "The Moon reflects the moods and emotions that flow through us. It represents our instinctual self, our memory, and the subconscious layers that are responsible for our habits and attachments. Its placement in our birth chart speaks to our intuitive sense and the way we seek comfort and security in the world.",
+            "className": "text-[11pt] leading-[1.6]"
+          },
+          {
+            "type": "paragraph",
+            "content": "The Moon's phases, from new to full, symbolize the cyclical nature of our lives, reminding us of the constant change and the need to adapt emotionally to the world's rhythms. The Moon stays in each sign for approximately 2.5 days. Its rapid movement reflects the changing landscape of our emotions and moods.",
+            "className": "text-[11pt] leading-[1.6] mt-2"
+          }
+        ]
+      ]
+    }
+  ],
+  "metadata": {
+    "planetName": "Sun and Moon"
+  }
+}
+

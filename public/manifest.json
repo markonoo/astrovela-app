@@ -1,0 +1,37 @@
+{
+  "name": "AstroVela Companion",
+  "short_name": "AstroVela",
+  "description": "Your personal astrology control center",
+  "start_url": "/companion",
+  "display": "standalone",
+  "background_color": "#f7f7f7",
+  "theme_color": "#28293d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "entertainment"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Today",
+      "short_name": "Today",
+      "description": "View today's astrology insights",
+      "url": "/companion",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Love",
+      "short_name": "Love",
+      "description": "Check love compatibility",
+      "url": "/companion/love",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ]
+}
+

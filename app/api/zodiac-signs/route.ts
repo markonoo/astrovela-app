@@ -7,11 +7,13 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPA
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, sessionId } = body
+    // Support both camelCase and snake_case for backward compatibility
+    const { email, sessionId, session_id } = body
+    const finalSessionId = sessionId || session_id
 
-    if (!email && !sessionId) {
+    if (!email && !finalSessionId) {
       return NextResponse.json(
-        { error: 'Email or session ID is required' },
+        { error: 'Email or sessionId is required' },
         { status: 400 }
       )
     }
@@ -23,8 +25,8 @@ export async function POST(request: NextRequest) {
 
     if (email) {
       query = query.eq('email', email)
-    } else if (sessionId) {
-      query = query.eq('session_id', sessionId)
+    } else if (finalSessionId) {
+      query = query.eq('session_id', finalSessionId) // Database uses snake_case
     }
 
     // Get the most recent record

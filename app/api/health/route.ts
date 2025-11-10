@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 interface HealthCheckResult {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -33,41 +34,55 @@ export async function GET(request: NextRequest) {
   const services: HealthCheckResult['services'] = {};
   
   try {
-    // 1. Database connectivity check
+    // 1. Database connectivity check (Supabase ping)
     try {
-      // This would check your actual database connection
-      // For now, we'll simulate it
       const dbStartTime = Date.now();
-      
-      // TODO: Replace with actual database check
-      // const dbCheck = await checkDatabaseConnection();
-      const dbCheck = true; // Simulated
-      
-      const dbDuration = Date.now() - dbStartTime;
-      
-      if (dbCheck) {
-        services.database = 'connected';
-        checks.push({
-          name: 'database_connectivity',
-          status: 'pass',
-          message: 'Database connection successful',
-          duration: dbDuration
-        });
-      } else {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
         services.database = 'error';
         checks.push({
           name: 'database_connectivity',
           status: 'fail',
-          message: 'Database connection failed',
-          duration: dbDuration
+          message: 'Supabase environment variables missing',
         });
+      } else {
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        // Use a lightweight HEAD-style select to verify connectivity
+        const { error } = await supabase
+          .from('QuizResponse')
+          .select('id', { head: true, count: 'exact' });
+
+        const dbDuration = Date.now() - dbStartTime;
+
+        if (!error) {
+          services.database = 'connected';
+          checks.push({
+            name: 'database_connectivity',
+            status: 'pass',
+            message: 'Supabase reachable and responding',
+            duration: dbDuration,
+          });
+        } else {
+          // Distinguish between network/Fetch errors vs permission/RLS errors
+          const msg = typeof error.message === 'string' ? error.message : String(error);
+          const isNetwork = /fetch/i.test(msg) || /network/i.test(msg);
+          services.database = isNetwork ? 'error' : 'connected';
+          checks.push({
+            name: 'database_connectivity',
+            status: isNetwork ? 'fail' : 'warn',
+            message: `Supabase ping error: ${msg}`,
+            duration: dbDuration,
+          });
+        }
       }
     } catch (error) {
       services.database = 'error';
       checks.push({
         name: 'database_connectivity',
         status: 'fail',
-        message: `Database check error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Database check error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
     }
 

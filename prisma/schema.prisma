@@ -35,6 +35,26 @@ model User {
   chartImages              ChartImage[]
   NatalChartInterpretation NatalChartInterpretation[]
   quizResponses            QuizResponse[]
+  appEntitlement           AppEntitlement?
+}
+
+model AppEntitlement {
+  id            String   @id @default(cuid())
+  userId        Int      @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email         String   @index
+  plan          String   @default("trial") // "trial" | "active" | "canceled" | "expired"
+  freeUntil     DateTime
+  hasReport     Boolean  @default(false)
+  purchaseDate  DateTime?
+  shopifyOrderId String?
+  stripeCustomerId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([plan])
+  @@index([freeUntil])
 }
 
 model ChartImage {

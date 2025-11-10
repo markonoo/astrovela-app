@@ -9,23 +9,25 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { 
       chartUrl, 
-      chart_url, 
+      chart_url, // Legacy support
       userId, 
       birthData, 
-      birth_data,
+      birth_data, // Legacy support
       chartType, 
       email, 
-      session_id 
+      sessionId,
+      session_id // Legacy support
     } = body
     
-    // Handle both chartUrl and chart_url formats for backward compatibility
+    // Standardize to camelCase (prefer camelCase, fallback to snake_case for backward compatibility)
     const finalChartUrl = chartUrl || chart_url
     const finalBirthData = birthData || birth_data
     const finalChartType = chartType || 'natal'
+    const finalSessionId = sessionId || session_id
     
     if (!finalChartUrl || !finalBirthData) {
       devError('Missing required fields', { chartUrl: finalChartUrl, birthData: finalBirthData });
-      return NextResponse.json({ error: 'Missing required fields: chart_url and birth_data' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing required fields: chartUrl and birthData' }, { status: 400 })
     }
 
     // Use the public Supabase client for anonymous uploads
@@ -71,8 +73,8 @@ export async function POST(request: Request) {
       }, { status: 500 })
     }
 
-    // Generate a unique filename with user ID or session_id as folder
-    const folder = userId ? String(userId) : (session_id ? String(session_id) : 'anonymous')
+    // Generate a unique filename with user ID or sessionId as folder
+    const folder = userId ? String(userId) : (finalSessionId ? String(finalSessionId) : 'anonymous')
     const fileExt = finalChartUrl.split('.').pop()?.split('?')[0] || 'png'
     const fileName = `${folder}/chart_${Date.now()}.${fileExt}`
     devLog('Generated filename:', fileName)
@@ -128,7 +130,7 @@ export async function POST(request: Request) {
       const chartImageData = {
         userId: userId ? Number(userId) : null,
         email: email || null,
-        session_id: session_id || null,
+        session_id: finalSessionId || null,
         imageUrl,
         birthData: finalBirthData,
         chartType: finalChartType,
@@ -232,12 +234,12 @@ export async function POST(request: Request) {
             allPlanets: interp?.planets?.map((p: any) => ({ name: p.name, sign: p.sign })) || []
           });
           
-          if (session_id && interp) {
-            devLog('Inserting comprehensive interpretation into Supabase for session:', session_id);
+          if (finalSessionId && interp) {
+            devLog('Inserting comprehensive interpretation into Supabase for session:', finalSessionId);
             
             // Prepare comprehensive interpretation data
             const interpretationData = {
-              session_id,
+              session_id: finalSessionId,
               chartImageId: chartImage.id,
               sun_sign: sunSign,
               moon_sign: moonSign,
@@ -322,9 +324,9 @@ export async function POST(request: Request) {
             devLog('Calculated fallback signs:', { sunSign, moonSign, moonDegrees: adjustedMoonDegrees, finalMoonSignIndex });
             
             // Store the calculated signs in Supabase for future reference
-            if (session_id) {
+            if (finalSessionId) {
               const fallbackInterpretationData = {
-                session_id,
+                session_id: finalSessionId,
                 chartImageId: chartImage.id,
                 sun_sign: sunSign,
                 moon_sign: moonSign,
@@ -474,9 +476,10 @@ export async function DELETE(request: Request) {
 // Merge session-to-user endpoint
 export async function PUT(request: NextRequest) {
   try {
-    const { session_id, userId } = await request.json();
-    if (!session_id || !userId) {
-      return NextResponse.json({ error: 'Missing session_id or userId' }, { status: 400 });
+    const { sessionId, session_id, userId } = await request.json();
+    const finalSessionId = sessionId || session_id; // Support both formats
+    if (!finalSessionId || !userId) {
+      return NextResponse.json({ error: 'Missing sessionId or userId' }, { status: 400 });
     }
 
     // Use Supabase client
@@ -485,14 +488,14 @@ export async function PUT(request: NextRequest) {
       env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
 
-    // Update all ChartImage records with this session_id and no userId using Supabase
+    // Update all ChartImage records with this sessionId and no userId using Supabase
     const { data, error } = await supabaseAuth
       .from('ChartImage')
       .update({
         userId: Number(userId),
         session_id: null,
       })
-      .eq('session_id', session_id)
+      .eq('session_id', finalSessionId)
       .is('userId', null)
       .select()
     

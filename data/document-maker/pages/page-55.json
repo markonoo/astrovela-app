@@ -1,0 +1,22 @@
+{
+  "id": "p-55",
+  "number": 55,
+  "title": "THE INNER LEO",
+  "type": "zodiac-inner",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "THE INNER LEO", "className": "text-xl font-semibold text-center mb-2" },
+    { "type": "paragraph", "content": "Internally, Leos possess a profound sense of loyalty, generosity, and a desire to protect those they love. Their hearts are big, and they often seek to express their love and creativity in grand, noticeable ways. Despite their confident exterior, Leos crave validation and appreciation, needing to feel valued and respected. They have an innate artistic flair and often excel in creative endeavors, driven by their desire to leave a lasting impact on the world." },
+    { "type": "heading", "level": 3, "content": "HOW OTHERS SEE LEO", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "To others, Leos appear as confident, charismatic, and naturally magnetic people, often drawing attention effortlessly. Their warmth and generosity are very obvious, making them beloved by many. However, their need for admiration and stubbornness can sometimes be perceived as egotistic. Despite this, Leos’ ability to inspire, uplift, and lead is widely admired, making them sought-after friends and leaders." },
+    { "type": "heading", "level": 3, "content": "HEALTH AND DIET", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Leos should pay attention to their heart and spinal health. Engaging in regular cardio exercises like running, swimming, or cycling can help maintain heart health, while yoga and strength training can support spinal integrity. A diet rich in heart-healthy foods, such as omega-3 fatty acids, whole grains, and plenty of fruits and vegetables, is beneficial. Leos should also manage stress through relaxation techniques to protect their heart and overall well-being." },
+    { "type": "heading", "level": 3, "content": "LOVE AND RELATIONSHIPS", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Leo, governed by the Sun, radiates warmth, generosity, and charisma in love. They crave admiration and devotion, seeking partners who will celebrate their strengths and share in their love for drama and romance. Leos are generous lovers, often showering their partners with grand gestures of affection. They thrive in relationships that allow them to express their creativity and passion." },
+    { "type": "heading", "level": 3, "content": "CAREER AND FINANCE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Leos are charismatic and love being in the spotlight, which makes careers in the arts, entertainment, or any field that allows them to showcase their creativity and leadership ideal. They tend to attract wealth and opportunities but need to manage their finances as carefully as they manage their public image. A Leo’s financial health is often tied to their career success, so maintaining their reputation is crucial." },
+    { "type": "heading", "level": 3, "content": "CELEBRITIES WITH LEO SUN", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Barack Obama (August 4), Madonna (August 16), Jennifer Lopez (July 24), J.K. Rowling (July 31), Sandra Bullock (July 26), Roger Federer (August 8), Charlize Theron (August 7), Chris Hemsworth (August 11), Mick Jagger (July 26), Halle Berry (August 14), Daniel Radcliffe (July 23), Whitney Houston (August 9), Simon Cowell (October 7), Meghan Markle (August 4), Arnold Schwarzenegger (July 30)" }
+  ]
+}
+

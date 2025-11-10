@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from '@supabase/supabase-js'
 import { env } from '@/utils/environment'
+import { logger } from '@/utils/logger'
 
 export async function POST(request: Request) {
   try {
@@ -9,11 +10,16 @@ export async function POST(request: Request) {
     
     const quizData = await request.json()
     
-    console.log('📝 Quiz Submit to Supabase:', {
+    // Support both camelCase and snake_case for backward compatibility
+    const sessionId = quizData.sessionId || quizData.session_id
+    
+    logger.info('Quiz submission received', {
       email: quizData.email,
       firstName: quizData.firstName,
       lastName: quizData.lastName,
-      sessionId: quizData.session_id,
+      sessionId: sessionId,
+      hasBirthDate: !!quizData.birthDate,
+      coverColorScheme: quizData.coverColorScheme,
       hasAnswers: !!quizData.answers
     })
     
@@ -28,23 +34,23 @@ export async function POST(request: Request) {
         firstName: quizData.firstName || '',
         lastName: quizData.lastName || '',
         gender: quizData.gender || '',
-        coverDesign: quizData.coverColorScheme || null,
-        session_id: quizData.session_id || null,
+        coverDesign: quizData.coverColorScheme || null, // Transform: coverColorScheme → coverDesign (database field)
+        session_id: sessionId || null, // Database uses snake_case
         userId: quizData.userId || null
       })
       .select()
     
     if (error) {
-      console.error('❌ Supabase quiz submit error:', error)
+      logger.error('Failed to submit quiz to Supabase', error)
       throw error
     }
     
-    console.log('✅ Quiz submitted successfully to Supabase:', data)
+    logger.info('Quiz submitted successfully', { quizResponseId: data[0]?.id })
     return NextResponse.json({ success: true, data: data[0] })
   } catch (error) {
-    console.error("❌ Error saving quiz data:", error)
+    logger.error("Failed to save quiz data", error)
     return NextResponse.json(
-      { error: "Failed to save quiz data", details: error instanceof Error ? error.message : error },
+      { error: "Failed to save quiz data", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }

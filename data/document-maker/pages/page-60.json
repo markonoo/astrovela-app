@@ -1,0 +1,23 @@
+{
+  "id": "p-60",
+  "number": 60,
+  "title": "SCORPIO (October 23 – November 21)",
+  "type": "zodiac-sign",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "SCORPIO (October 23 – November 21)", "className": "text-2xl font-bold text-center mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Scorpio", "traits": {
+      "Duality": "Feminine",
+      "Element": "Water",
+      "Quality": "Fixed",
+      "Lucky Day": "Tuesday",
+      "Symbol": "The Scorpion",
+      "Ruling Planet": "Pluto (traditional Mars) – transformation, rebirth, cycles.",
+      "Dominant Keyword": "\"I Desire\"",
+      "Lucky Number": "8, 17",
+      "Body Part Ruled": "Reproductive system & genitals"
+    } },
+    { "type": "paragraph", "content": "Scorpios are intense, passionate, loyal, secretive, transformative." }
+  ]
+}
+

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { saveQuizData, getQuizData, isQuizCompleted, clearQuizData } from "@/utils/storage"
 import type { NatalChart, ChartInterpretation } from "@/types/astrology"
 import { supabase } from "@/lib/supabaseClient"
+import { logger } from "@/utils/logger"
 
 // Import debug helpers in development
 if (process.env.NODE_ENV === "development") {
@@ -242,10 +243,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   // Function to save quiz response to database
   const saveQuizResponse = async (quizState: QuizState) => {
     try {
-      console.log('📝 Starting QuizResponse storage process...')
+      logger.quiz('Starting QuizResponse storage process')
       
       const sessionId = getOrCreateSessionId()
-      console.log('🔍 Using session ID for quiz submission:', sessionId)
+      logger.quiz('Using session ID for quiz submission', { sessionId })
       
       const response = await fetch('/api/quiz/submit', {
         method: 'POST',
@@ -273,10 +274,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       }
 
       const result = await response.json()
-      console.log('✅ QuizResponse stored successfully:', result)
+      logger.quiz('QuizResponse stored successfully', { result })
       return result
     } catch (error) {
-      console.error('❌ Error storing QuizResponse:', error)
+      logger.error('Error storing QuizResponse', error)
       // Don't throw - we don't want to block quiz completion if database storage fails
     }
   }
@@ -294,7 +295,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       
       // Save to database asynchronously (don't await to avoid blocking UI)
       saveQuizResponse(newState).catch(error => {
-        console.error('Background QuizResponse save failed:', error)
+        logger.error('Background QuizResponse save failed', error)
       })
       
       return newState
@@ -311,9 +312,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       try {
         localStorage.clear()
         sessionStorage.clear()
-        console.log("Complete storage wipe performed")
+        logger.debug("Complete storage wipe performed")
       } catch (e) {
-        console.error("Error during complete storage wipe:", e)
+        logger.error("Error during complete storage wipe", e)
       }
     }
     
@@ -350,7 +351,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const fetchNatalChart = async () => {
     // Rate limiting: prevent multiple simultaneous calls
     if (state.isLoadingChart) {
-      console.log("⚠️ Chart is already loading, skipping duplicate request")
+      logger.quiz("Chart is already loading, skipping duplicate request")
       return
     }
     
@@ -360,12 +361,12 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, isLoadingChart: true, chartError: null }))
     
     try {
-      console.log("📍 Starting optimized natal chart fetch process...")
+      logger.quiz("Starting optimized natal chart fetch process")
 
       // Geocode the birth place if not already done
       let location = state.birthLocation
       if (!location || !location.latitude || !location.longitude) {
-        console.log("🌍 Geocoding birth place:", state.birthPlace)
+        logger.quiz("Geocoding birth place", { birthPlace: state.birthPlace })
         if (!state.birthPlace) {
           throw new Error("Birth place is required for natal chart generation")
         }
@@ -397,7 +398,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         tzone: 1.0 // Default timezone, will be handled by geocoding
       }
 
-      console.log("🌟 Fetching natal wheel chart with formatted data:", { 
+      logger.quiz("Fetching natal wheel chart with formatted data", { 
         birthDateStr, 
         birthTimeStr, 
         lat: location.latitude, 
@@ -405,13 +406,12 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       })
       
       // 1. Fetch natal wheel chart URL via server-side API (fixes client-side env var issue)
-      console.log("🔄 Calling natal wheel chart API...", {
+      logger.quiz("Calling natal wheel chart API", {
         birthDateStr,
         birthTimeStr,
         latitude: location.latitude,
         longitude: location.longitude,
-        timezone: 1.0,
-        timestamp: new Date().toISOString()
+        timezone: 1.0
       })
       
       const wheelChartResponse = await fetch('/api/natal-wheel-chart', {
@@ -435,29 +435,26 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       
       const wheelChartResult = await wheelChartResponse.json()
       
-      console.log("✅ Received wheel chart result:", {
+      logger.quiz("Received wheel chart result", {
         hasResult: !!wheelChartResult,
         hasChartUrl: !!(wheelChartResult as any)?.chartUrl,
         hasSvgContent: !!(wheelChartResult as any)?.svgContent,
         isStringResult: typeof wheelChartResult === 'string',
-        resultType: typeof wheelChartResult,
-        resultKeys: wheelChartResult && typeof wheelChartResult === 'object' ? Object.keys(wheelChartResult) : [],
-        
-        timestamp: new Date().toISOString()
+        resultType: typeof wheelChartResult
       })
       
       // Extract the chart URL or create data URL from SVG
-      console.log("🔗 Processing chart URL extraction...")
+      logger.quiz("Processing chart URL extraction")
       let chartUrlToStore = null
       if ((wheelChartResult as any)?.chartUrl) {
         chartUrlToStore = (wheelChartResult as any).chartUrl
-        console.log("✅ Using external chart URL from API:", {
+        logger.quiz("Using external chart URL from API", {
           source: "API chartUrl field",
           urlType: chartUrlToStore?.startsWith('http') ? "External HTTP URL" : "Other URL type",
           urlLength: chartUrlToStore?.length || 0
         })
               } else if ((wheelChartResult as any)?.svgContent) {
-        console.log("🎨 Using fallback SVG content:", {
+        logger.quiz("Using fallback SVG content", {
           source: "API svgContent field (Fallback Mode)",
           svgLength: (wheelChartResult as any).svgContent.length,
           encodingMethod: "Base64"
@@ -469,12 +466,11 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           const utf8Bytes = encoder.encode((wheelChartResult as any).svgContent)
           const base64String = btoa(String.fromCharCode(...utf8Bytes))
           chartUrlToStore = `data:image/svg+xml;base64,${base64String}`
-          console.log("✅ Successfully encoded SVG to data URL:", {
-            dataUrlLength: chartUrlToStore.length,
-            dataUrlPrefix: chartUrlToStore.substring(0, 50) + "..."
+          logger.quiz("Successfully encoded SVG to data URL", {
+            dataUrlLength: chartUrlToStore.length
           })
         } catch (error) {
-          console.error("Error encoding SVG to base64:", error)
+          logger.error("Error encoding SVG to base64", error)
           // Fallback: use URL encoding instead
           chartUrlToStore = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(wheelChartResult.svgContent)}`
         }
@@ -489,7 +485,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       
       // 2. Call unified chart-image API to store chart + fetch interpretation in parallel
           const sessionId = getOrCreateSessionId()
-      console.log("🔄 Calling chart-image API for storage and interpretation...")
+      logger.quiz("Calling chart-image API for storage and interpretation")
       
       const response = await fetch('/api/chart-image', {
         method: 'POST',
@@ -510,12 +506,13 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       }
       
       const result = await response.json()
-      console.log("✅ Chart stored and interpretation fetched:", result)
-      console.log("🔍 Debug - API result sunSign:", result.sunSign, "moonSign:", result.moonSign)
+      logger.quiz("Chart stored and interpretation fetched", { 
+        sunSign: result.sunSign, 
+        moonSign: result.moonSign 
+      })
       
       // 3. Update state with chart data and zodiac signs from interpretation
       setState((prev) => {
-        console.log("🔍 Debug - Before setState - prev sunSign:", prev.sunSign, "moonSign:", prev.moonSign)
         const newState = {
           ...prev,
           customChartUrl: chartUrlToStore,
@@ -524,14 +521,17 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           isLoadingChart: false,
           chartError: null
         }
-        console.log("🔍 Debug - After setState - new sunSign:", newState.sunSign, "moonSign:", newState.moonSign)
+        logger.debug("Updated state with chart data", { 
+          sunSign: newState.sunSign, 
+          moonSign: newState.moonSign 
+        })
         return newState
       })
       
-      console.log("🎉 Successfully completed optimized natal chart process")
+      logger.quiz("Successfully completed optimized natal chart process")
       
     } catch (error: any) {
-      console.error("❌ Error in optimized fetchNatalChart:", error)
+      logger.error("Error in optimized fetchNatalChart", error)
       setState((prev) => ({
         ...prev,
         chartError: error.message || "Failed to fetch natal chart data",
