@@ -1,0 +1,20 @@
+{
+  "id": "p-59",
+  "number": 59,
+  "title": "THE INNER LIBRA",
+  "type": "zodiac-inner",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "THE INNER LIBRA", "className": "text-xl font-semibold text-center mb-2" },
+    { "type": "paragraph", "content": "Charming, fair, indecisive at times. Seek harmony and justice." },
+    { "type": "heading", "level": 3, "content": "HEALTH AND DIET", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Care for kidneys. Balanced diet, hydration, exercise." },
+    { "type": "heading", "level": 3, "content": "LOVE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Desire harmony, fairness, romantic, graceful." },
+    { "type": "heading", "level": 3, "content": "CAREER AND FINANCE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Thrive in law, HR, PR. Must budget carefully." },
+    { "type": "heading", "level": 3, "content": "CELEBRITIES WITH LIBRA SUN", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Will Smith, Serena Williams, Mahatma Gandhi, Kim Kardashian, Oscar Wilde, John Lennon, Eminem, Hugh Jackman, Gwen Stefani, Kate Winslet." }
+  ]
+}
+

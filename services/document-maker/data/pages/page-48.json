@@ -1,0 +1,25 @@
+{
+  "id": "p-48",
+  "number": 48,
+  "title": "TAURUS",
+  "type": "zodiac-sign",
+  "background": "#000",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "TAURUS", "className": "text-center font-serif text-4xl text-zodiac-gold mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Taurus", "traits": {
+      "Duality": "Feminine",
+      "Element": "Earth",
+      "Quality": "Fixed",
+      "Lucky Day": "Friday",
+      "Written Symbol": "This symbol represents the bull’s head and horns, signifying resilience, determination, and a peaceful yet powerful demeanor.",
+      "Symbol": "The Bull",
+      "Ruling Planet": "Venus. The planet of love and beauty influences Taurus to appreciate harmony, artistry, and sensory experiences.",
+      "Dominant Keyword": "\"I Have\"",
+      "Lucky Number": "2, 6, and any combination of them.",
+      "Body Part Ruled": "Neck & Throat"
+    } },
+    { "type": "paragraph", "content": "Tauruses are loyal and stable, making them excellent friends and partners. They resist change, preferring stability. Their connection to the Earth makes them sensual, grounded, and comforted by consistency. Tauruses are determined, patient, and hardworking, pursuing their goals steadily.", "className": "text-zodiac-gold" },
+    { "type": "paragraph", "content": "Best Compatible With: Cancer, Virgo, Capricorn, Pisces", "className": "text-zodiac-gold font-semibold mt-4" }
+  ]
+}
+

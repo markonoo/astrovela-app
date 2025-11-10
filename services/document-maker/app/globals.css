@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom print-friendly styles for A4 pages */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: Georgia, serif;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply relative mx-auto my-3 shadow bg-white;
+    width: 210mm;
+    height: 297mm;
+  }
+  
+  .page-content {
+    @apply absolute inset-4 p-4;
+    /* 16mm converted to approximate rem values */
+    margin: 16mm;
+  }
+  
+  .page-number {
+    @apply absolute bottom-2 left-0 right-0 text-center text-xs tracking-wider;
+    bottom: 10mm;
+  }
+}
+
+@layer utilities {
+  .scroll-snap-container {
+    scroll-snap-type: y mandatory;
+  }
+  
+  .scroll-snap-item {
+    scroll-snap-align: start;
+  }
+}
+

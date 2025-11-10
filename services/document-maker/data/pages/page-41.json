@@ -1,0 +1,26 @@
+{
+  "id": "p-41",
+  "number": 41,
+  "title": "The Zodiac Signs",
+  "type": "zodiac-overview",
+  "background": "#efe6d7",
+  "sections": [
+    {
+      "type": "heading",
+      "level": 1,
+      "content": "THE ZODIAC SIGNS",
+      "className": "text-center font-serif text-4xl mb-6"
+    },
+    {
+      "type": "paragraph",
+      "content": "Zodiac signs, the celestial coordinates that divide the sky into twelve equal parts, are at the heart of astrology's symbolic language. Each sign represents a unique segment of the ecliptic, complete with its own characteristics, energies, and traits.",
+      "className": "max-w-[150mm] mx-auto text-[11pt] leading-[1.75]"
+    },
+    {
+      "type": "paragraph",
+      "content": "(With illustrated circular glyphs of the twelve zodiac signs)",
+      "className": "text-neutral-600 italic text-center mt-4"
+    }
+  ]
+}
+

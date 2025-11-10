@@ -1,0 +1,26 @@
+{
+  "id": "p-52",
+  "number": 52,
+  "title": "CANCER (June 21 – July 22)",
+  "type": "zodiac-sign",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "CANCER (June 21 – July 22)", "className": "text-2xl font-bold text-center mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Cancer", "traits": {
+      "Duality": "Feminine",
+      "Element": "Water",
+      "Quality": "Cardinal",
+      "Lucky Day": "Monday",
+      "Written Symbol": "The symbol represents the crab’s claws, signifying Cancer’s ability to hold onto what they cherish.",
+      "Symbol": "The Crab",
+      "Ruling Planet": "Moon. The Moon phases influence Cancer and reflect their fluctuating moods and deep connection to feelings and comfort.",
+      "Dominant Keyword": "\"I Feel\"",
+      "Lucky Number": "2, 3, and any combination of them.",
+      "Body Part Ruled": "Chest, breasts, and stomach"
+    } },
+    { "type": "paragraph", "content": "Cancers are protective of their loved ones and can be incredibly nurturing, offering warmth and comfort. Their intuition is their guiding force, often understanding the emotional undercurrents of situations without the need for words. However, their sensitivity can lead them to be overly protective or moody, as they internalize the emotions and energies around them. Cancers value security and comfort, creating cozy, safe spaces that serve as their sanctuary from the outside world." },
+    { "type": "paragraph", "content": "Cancers pay more attention to emotions and represent the nurturing essence and the depth of feelings. Known for their empathy, intuition, and protective instincts, those born under the Cancer sun sign navigate life through their hearts and closely held bonds.", "className": "mt-2" },
+    { "type": "paragraph", "content": "BEST COMPATIBLE WITH: Taurus, Virgo, Scorpio, Pisces", "className": "font-semibold mt-3" }
+  ]
+}
+
