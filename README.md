@@ -1,97 +1,188 @@
-# astrovela
+# AstroVela Companion App
 
-Astrovela is a private, modern web application for creating personalized astrology books and related services. The platform guides users through a multi-step quiz, offers a book designer, and provides a seamless, mobile-friendly experience.
+A personal astrology control center that extends static PDF reports with ongoing, personalized astrology content. Built with Next.js 14/15, featuring a beautiful Apple-inspired design system and full mobile responsiveness.
+
+## 🚀 Features
+
+### Core Functionality
+- **Daily Astrology Feed** - Personalized daily insights, transits, and action prompts
+- **Weekly & Monthly Outlook** - Emotions, relationships, money/career, spiritual themes
+- **Zodiac Encyclopedia** - Complete guide to 12 signs, planets, and houses
+- **Love & Compatibility** - Sign comparisons, compatibility scoring, timing insights
+- **Career & Timing** - Career energy, best days to act, retrograde warnings
+- **My Report** - Interactive report viewer with PDF download
+- **Quiz Flow** - Comprehensive birth chart quiz with natal chart generation
+
+### Technical Features
+- ✅ Next.js 14/15 with App Router
+- ✅ TypeScript for type safety
+- ✅ TailwindCSS with Apple-inspired design system
+- ✅ Supabase for authentication and database
+- ✅ Shopify integration for e-commerce
+- ✅ PWA-ready (Progressive Web App)
+- ✅ Mobile-first responsive design
+- ✅ PDF generation with Puppeteer
+- ✅ Astrology API integration
+
+## 📋 Prerequisites
+
+- Node.js 18+ 
+- npm or pnpm
+- PostgreSQL (via Supabase)
+- Supabase account
+- Shopify store (for e-commerce features)
+- AstrologyAPI credentials (optional, has fallbacks)
+
+## 🛠️ Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/astrovela-app.git
+cd astrovela-app
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+pnpm install
+```
+
+### 3. Environment Variables
+
+Copy the environment template and fill in your values:
+
+```bash
+cp ENV_TEMPLATE.md .env.local
+```
+
+Required environment variables:
+- `DATABASE_URL` - Supabase PostgreSQL connection string
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `USER_ID` - AstrologyAPI user ID
+- `API_KEY` - AstrologyAPI API key
+- Shopify variables (see `ENV_TEMPLATE.md` for full list)
+
+### 4. Database Setup
+
+Run Prisma migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+### 5. Run Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📁 Project Structure
+
+```
+AstroBook/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   ├── companion/         # Companion app pages
+│   └── quiz/              # Quiz flow pages
+├── components/            # React components
+│   ├── companion/         # Companion app components
+│   ├── quiz/              # Quiz components
+│   └── ui/                # UI components
+├── lib/                   # Utility libraries
+│   ├── document-maker/    # PDF generation
+│   └── entitlements.ts    # Access control
+├── contexts/              # React contexts
+├── hooks/                 # Custom React hooks
+├── types/                 # TypeScript types
+├── utils/                 # Utility functions
+└── prisma/                # Database schema
+```
+
+## 🎨 Design System
+
+The app uses an Apple-inspired design system with:
+- SF Pro font family
+- Refined color palette
+- Soft shadows and smooth animations
+- Generous spacing
+- iOS-safe area insets for mobile
+
+See `DESIGN_SYSTEM.md` for complete design tokens.
+
+## 📚 Documentation
+
+- `CODEBASE_INVENTORY.md` - Complete codebase overview
+- `COMPANION_APP_IMPLEMENTATION.md` - Companion app features
+- `DESIGN_SYSTEM.md` - Design tokens and guidelines
+- `ENV_TEMPLATE.md` - Environment variables reference
+- `REMAINING_TODOS.md` - Known issues and improvements
+- `PRODUCTION_CHECKLIST.md` - Deployment checklist
+
+## 🧪 Testing
+
+```bash
+# Run linting
+npm run lint
+
+# Type checking
+npm run type-check
+
+# Build for production
+npm run build
+```
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Push to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+### Manual Deployment
+
+```bash
+npm run build
+npm start
+```
+
+## 🔒 Security
+
+- ✅ Environment variables properly secured
+- ✅ No hardcoded credentials
+- ✅ XSS protection implemented
+- ✅ Security headers configured
+- ✅ Rate limiting enabled
+- ✅ Input validation and sanitization
+
+## 📊 Monitoring
+
+- Error monitoring infrastructure ready (Sentry integration available)
+- Performance tracking
+- Analytics dashboard at `/dashboard/monitoring`
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Test thoroughly
+4. Submit a pull request
+
+## 📝 License
+
+Private repository - All rights reserved
+
+## 🆘 Support
+
+For issues or questions, please refer to the documentation files or create an issue in the repository.
 
 ---
 
-## Project Description
-
-Astrovela helps users discover personalized astrological insights and create custom astrology books. The app features a guided quiz, book design tools, and a streamlined payment flow (UI only, no payment processing yet).
-
----
-
-## Recent Updates
-
-- **Payment Page UI**:  
-  Added a new `/payment` route with a modern, mobile-friendly payment page UI.  
-  - Features a timer, payment method selection (PayPal, Card, Apple Pay, Google Pay), card input fields, and a summary.  
-  - No payment integration yet—UI only.
-
-- **Drawer Menu Update**:  
-  Added a "Payment" link (with a credit card icon) to the DrawerMenu for direct access and testing of the payment page.
-
----
-
-## Getting Started
-
-1. **Install dependencies**  
-   ```bash
-   npm install
-   ```
-
-2. **Run the development server**  
-   ```bash
-   npm run dev
-   ```
-
-3. **Open the app**  
-   Visit [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## Project Structure
-
-- `/app/payment/page.tsx` — Payment page UI
-- `/components/drawer-menu.tsx` — Drawer menu with navigation links
-- `/app/pricing` — Pricing page
-- `/app/thank-you` — Thank you/confirmation page
-
----
-
-## Features
-
-- Multi-step quiz for personalized astrology book
-- Book designer tool
-- Modern navigation drawer with social/auth links
-- Payment page UI (no backend integration yet)
-
----
-
-## API Integration & Backend Storage
-
-- The backend provides endpoints for astrology chart image storage, retrieval, and deletion at `/api/chart-image`.
-- Chart images are generated via an external astrology API, then downloaded and stored in a Supabase storage bucket (`charts`).
-- Metadata (image URL, birth data, chart type, timestamp) is saved in the database and linked to the user.
-- Endpoints:
-  - `POST /api/chart-image`: Store a chart image and metadata for a user.
-  - `GET /api/chart-image?userId=...`: Retrieve all chart images for a user.
-  - `GET /api/chart-image?id=...`: Retrieve a specific chart image by ID.
-  - `DELETE /api/chart-image`: Delete a chart image (requires image ID and user ID).
-
-## User Flows
-
-1. User completes the quiz and provides birth data.
-2. The frontend requests a chart image from the astrology API.
-3. The chart image URL and user info are sent to the backend.
-4. The backend downloads, stores, and saves metadata for the image.
-5. Users can view, download, or delete their saved charts from their profile/dashboard.
-
-## Security & Privacy Measures
-
-- Chart images are stored in Supabase storage. (Currently public URLs; can be made private for enhanced privacy.)
-- Only the user who owns a chart image can delete it via the API.
-- Raw birth data is never exposed in URLs or logs.
-- All sensitive operations are performed server-side.
-- User authentication and authorization should be enforced on all endpoints (future work: add middleware for auth checks).
-
-## Environment Variables
-
-- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for Supabase storage.
-- `DATABASE_URL` for PostgreSQL/Prisma.
-- Astrology API credentials (see `.env.example`).
-
----
-
-## License
-
-Private project. All rights reserved.
+**Built with ❤️ for astrology enthusiasts**
