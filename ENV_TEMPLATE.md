@@ -134,6 +134,30 @@ NEXT_PUBLIC_APP_URL=https://astrovela.com
 
 ---
 
+### Admin Authentication
+```env
+# Admin password for preview dashboard access
+ADMIN_PASSWORD=your_secure_admin_password_here
+
+# Admin 2FA Secret (optional but recommended)
+# Generate via /admin/2fa-setup endpoint, then add here
+ADMIN_2FA_SECRET=your_2fa_secret_key_here
+```
+**Source:** 
+- Password: Set a strong password
+- 2FA Secret: Visit `/admin/2fa-setup` to generate, then add to environment variables
+**Required:** 
+- `ADMIN_PASSWORD`: Yes (defaults to "admin123" in development)
+- `ADMIN_2FA_SECRET`: No (optional, but highly recommended for production)
+
+**Security Notes:**
+- Use a strong password for `ADMIN_PASSWORD` in production
+- Enable 2FA by setting `ADMIN_2FA_SECRET` for enhanced security
+- Never commit these values to git
+- Rotate secrets periodically
+
+---
+
 ## Environment Variable Validation
 
 The app validates required environment variables in production:
@@ -182,4 +206,5 @@ curl http://localhost:3000/api/shopify/connection
 
 **Last Updated:** During implementation review  
 **Status:** Complete template
+
 

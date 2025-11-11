@@ -277,3 +277,4 @@ AstroBook/
 6. Add PWA support
 7. Create billing/subscription management page
 
+

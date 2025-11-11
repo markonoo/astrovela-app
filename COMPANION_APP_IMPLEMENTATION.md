@@ -219,3 +219,4 @@ NEXT_PUBLIC_SHOPIFY_STORE_URL=https://your-store.myshopify.com
 - [ ] Test on mobile devices
 - [ ] Set up monitoring/alerts
 
+

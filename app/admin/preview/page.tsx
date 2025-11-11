@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute"
 import { 
   BookOpen, 
   FileText, 
@@ -19,15 +20,22 @@ import {
   Briefcase,
   Compass,
   Layout,
-  ExternalLink
+  ExternalLink,
+  LogOut
 } from "lucide-react"
 
-export default function AdminPreviewPage() {
+function AdminPreviewContent() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_session")
+    localStorage.removeItem("admin_session_expiry")
+    window.location.href = "/admin/login"
+  }
 
   if (!mounted) {
     return (
@@ -41,11 +49,17 @@ export default function AdminPreviewPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Preview Dashboard</h1>
-          <p className="text-lg text-gray-600">
-            Access all features and preview the application without authentication
-          </p>
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Preview Dashboard</h1>
+            <p className="text-lg text-gray-600">
+              Access all features and preview the application
+            </p>
+          </div>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
         </div>
 
         {/* Main Features Grid */}
@@ -262,6 +276,14 @@ export default function AdminPreviewPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AdminPreviewPage() {
+  return (
+    <AdminProtectedRoute>
+      <AdminPreviewContent />
+    </AdminProtectedRoute>
   )
 }
 

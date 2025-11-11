@@ -49,3 +49,4 @@
 4. ✅ `birthDate` structure: Always use `{ month, day, year }` object format
 5. ✅ `coverColorScheme` → `coverDesign` → `coverColor` transformation documented
 
+

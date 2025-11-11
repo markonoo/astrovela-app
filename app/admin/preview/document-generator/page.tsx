@@ -6,11 +6,12 @@ import { ScrollHeader } from "@/components/document-maker/ui/ScrollHeader"
 import { PageRenderer } from "@/components/document-maker/pages/PageRenderer"
 import { loadPagesData, getAvailablePages, canUseReplaceStateSafely } from "@/lib/document-maker/content"
 import { personalizePages } from "@/lib/document-maker/personalize"
+import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export default function DocumentGeneratorPreviewPage() {
+function DocumentGeneratorPreviewContent() {
   const [pages, setPages] = useState<PageData[]>([])
   const [currentPage, setCurrentPage] = useState(41)
   const [loading, setLoading] = useState(true)
@@ -159,6 +160,14 @@ export default function DocumentGeneratorPreviewPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function DocumentGeneratorPreviewPage() {
+  return (
+    <AdminProtectedRoute>
+      <DocumentGeneratorPreviewContent />
+    </AdminProtectedRoute>
   )
 }
 

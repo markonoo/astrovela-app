@@ -120,3 +120,4 @@ All required dependencies are already in `package.json`:
 - [ ] Add page search functionality
 - [ ] Export to other formats (EPUB, etc.)
 
+

@@ -238,3 +238,4 @@ RESEND_API_KEY=re_...
 - Log email failures for debugging
 - Consider email queue for production (e.g., BullMQ with Redis)
 
+

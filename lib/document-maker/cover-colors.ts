@@ -36,3 +36,4 @@ export function getCoverTextColor(coverColorScheme: string | null | undefined): 
   return lightColors.includes(coverColorScheme.toLowerCase()) ? '#000000' : '#ffffff';
 }
 
+
