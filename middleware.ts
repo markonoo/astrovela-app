@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { SecurityMonitor, SECURITY_HEADERS, RATE_LIMITS } from '@/utils/security'
-import { verifyCSRFToken } from '@/lib/csrf'
+
+// Edge-compatible CSRF verification (simple string comparison)
+function verifyCSRFTokenEdge(token: string | null, cookieToken: string | undefined): boolean {
+  if (!token || !cookieToken) {
+    return false
+  }
+  // Double-submit cookie pattern: token in header must match token in cookie
+  return token === cookieToken && token.length === 64 // 32 bytes hex = 64 chars
+}
 
 // Rate limiting store (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
@@ -99,17 +106,12 @@ export function middleware(request: NextRequest) {
       response.headers.set('X-RateLimit-Remaining', (maxRequests - 1).toString())
       response.headers.set('X-RateLimit-Reset', new Date(now + windowMs).toISOString())
          } else if (rateLimitData.count >= maxRequests) {
-       // Rate limit exceeded - log security event
-       SecurityMonitor.logEvent({
-         type: 'rate_limit_exceeded',
+       // Rate limit exceeded - log to console (Edge Runtime compatible)
+       console.warn('Rate limit exceeded', {
          ip,
          path: request.nextUrl.pathname,
-         userAgent: request.headers.get('user-agent') ?? undefined,
-         details: {
-           maxRequests,
-           currentCount: rateLimitData.count,
-           windowMs
-         }
+         maxRequests,
+         currentCount: rateLimitData.count
        })
        
        response.headers.set('X-RateLimit-Limit', maxRequests.toString())
@@ -130,20 +132,15 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Security logging for suspicious activity
+  // Security logging for suspicious activity (Edge Runtime compatible)
   if (request.nextUrl.pathname.includes('..') || 
       request.nextUrl.pathname.includes('<script>') ||
       request.nextUrl.searchParams.toString().includes('<script>')) {
     
-    SecurityMonitor.logEvent({
-      type: 'suspicious_request',
+    console.warn('Suspicious request detected', {
       ip: request.headers.get('x-forwarded-for') ?? 'unknown',
       path: request.nextUrl.pathname,
-      userAgent: request.headers.get('user-agent') ?? undefined,
-      details: {
-        searchParams: request.nextUrl.searchParams.toString(),
-        method: request.method
-      }
+      method: request.method
     })
   }
 
@@ -155,18 +152,14 @@ export function middleware(request: NextRequest) {
     const csrfToken = request.headers.get('x-csrf-token')
     const csrfCookie = request.cookies.get('csrf_token')?.value
     
-      if (!csrfToken || !csrfCookie || !verifyCSRFToken(csrfToken, csrfCookie)) {
-        SecurityMonitor.logEvent({
-          type: 'suspicious_request',
+      if (!csrfToken || !csrfCookie || !verifyCSRFTokenEdge(csrfToken, csrfCookie)) {
+        // Log CSRF failure (Edge Runtime compatible)
+        console.warn('CSRF validation failed', {
           ip: request.headers.get('x-forwarded-for') ?? 'unknown',
           path: request.nextUrl.pathname,
-          userAgent: request.headers.get('user-agent') ?? undefined,
-          details: {
-            method: request.method,
-            reason: 'csrf_validation_failed',
-            hasToken: !!csrfToken,
-            hasCookie: !!csrfCookie
-          }
+          method: request.method,
+          hasToken: !!csrfToken,
+          hasCookie: !!csrfCookie
         })
       
       return new NextResponse(
