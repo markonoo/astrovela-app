@@ -83,8 +83,8 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
         orderBy: { created_at: 'desc' },
         select: {
           id: true,
-          sunSign: true,
-          moonSign: true,
+          sun_sign: true,
+          moon_sign: true,
           created_at: true,
         },
       },
@@ -165,8 +165,8 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
     chartImages: user.chartImages,
     chartInterpretations: user.NatalChartInterpretation.map(ci => ({
       id: ci.id,
-      sunSign: ci.sunSign,
-      moonSign: ci.moonSign,
+      sunSign: ci.sun_sign,
+      moonSign: ci.moon_sign,
       createdAt: ci.created_at,
     })),
     entitlements: user.appEntitlement ? [user.appEntitlement] : [],

@@ -24,17 +24,11 @@ export async function cleanupOldQuizResponses(): Promise<number> {
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - RETENTION_PERIODS.quizResponses)
 
-  // Find users with no activity in retention period
+  // Find old quiz responses
   const oldResponses = await prisma.quizResponse.findMany({
     where: {
       createdAt: {
         lt: cutoffDate,
-      },
-      user: {
-        // Only delete if user has been inactive
-        updatedAt: {
-          lt: cutoffDate,
-        },
       },
     },
   })

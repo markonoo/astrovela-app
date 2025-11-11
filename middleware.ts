@@ -155,18 +155,19 @@ export function middleware(request: NextRequest) {
     const csrfToken = request.headers.get('x-csrf-token')
     const csrfCookie = request.cookies.get('csrf_token')?.value
     
-    if (!csrfToken || !csrfCookie || !verifyCSRFToken(csrfToken, csrfCookie)) {
-      SecurityMonitor.logEvent({
-        type: 'csrf_validation_failed',
-        ip: request.headers.get('x-forwarded-for') ?? 'unknown',
-        path: request.nextUrl.pathname,
-        userAgent: request.headers.get('user-agent') ?? undefined,
-        details: {
-          method: request.method,
-          hasToken: !!csrfToken,
-          hasCookie: !!csrfCookie
-        }
-      })
+      if (!csrfToken || !csrfCookie || !verifyCSRFToken(csrfToken, csrfCookie)) {
+        SecurityMonitor.logEvent({
+          type: 'suspicious_request',
+          ip: request.headers.get('x-forwarded-for') ?? 'unknown',
+          path: request.nextUrl.pathname,
+          userAgent: request.headers.get('user-agent') ?? undefined,
+          details: {
+            method: request.method,
+            reason: 'csrf_validation_failed',
+            hasToken: !!csrfToken,
+            hasCookie: !!csrfCookie
+          }
+        })
       
       return new NextResponse(
         JSON.stringify({ error: 'Invalid CSRF token' }),

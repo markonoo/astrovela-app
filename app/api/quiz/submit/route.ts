@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       lastName: quizData.lastName,
       sessionId: sessionId,
       hasBirthDate: !!quizData.birthDate,
-      coverColorScheme: quizData.coverColorScheme,
+      coverDesign: quizData.coverDesign,
       hasAnswers: !!quizData.answers
     })
     
@@ -48,8 +48,6 @@ export async function POST(request: Request) {
     const birthDateToStore = useEncryption && quizData.birthDate
       ? encryptBirthData(quizData.birthDate)
       : quizData.birthDate
-    
-    const sessionId = quizData.sessionId || quizData.session_id
     
     const { data, error } = await supabase
       .from('QuizResponse')
