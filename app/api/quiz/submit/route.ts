@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { createClient } from '@supabase/supabase-js'
 import { env } from '@/utils/environment'
 import { logger } from '@/utils/logger'
+import { validateRequest, quizSubmitSchema, sanitizeObject } from '@/lib/validation'
+import { encryptBirthData } from '@/lib/encryption'
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +13,22 @@ export async function POST(request: Request) {
     const supabaseAnonKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     
-    const quizData = await request.json()
+    const rawData = await request.json()
+    
+    // Validate input
+    const validation = validateRequest(quizSubmitSchema, rawData)
+    if (!validation.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input data', 
+          details: validation.details?.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        },
+        { status: 400 }
+      )
+    }
+    
+    // Sanitize and use validated data
+    const quizData = sanitizeObject(validation.data)
     
     // Support both camelCase and snake_case for backward compatibility
     const sessionId = quizData.sessionId || quizData.session_id
@@ -26,18 +43,26 @@ export async function POST(request: Request) {
       hasAnswers: !!quizData.answers
     })
     
+    // Encrypt sensitive birth data if encryption is enabled
+    const useEncryption = process.env.ENCRYPT_SENSITIVE_DATA === 'true'
+    const birthDateToStore = useEncryption && quizData.birthDate
+      ? encryptBirthData(quizData.birthDate)
+      : quizData.birthDate
+    
+    const sessionId = quizData.sessionId || quizData.session_id
+    
     const { data, error } = await supabase
       .from('QuizResponse')
       .insert({
         email: quizData.email || '',
         answers: quizData.answers,
-        birthDate: quizData.birthDate,
+        birthDate: birthDateToStore,
         birthPlace: quizData.birthPlace || '',
         birthTime: quizData.birthTime || '',
         firstName: quizData.firstName || '',
         lastName: quizData.lastName || '',
         gender: quizData.gender || '',
-        coverDesign: quizData.coverColorScheme || null, // Transform: coverColorScheme → coverDesign (database field)
+        coverDesign: quizData.coverDesign || null,
         session_id: sessionId || null, // Database uses snake_case
         userId: quizData.userId || null
       })

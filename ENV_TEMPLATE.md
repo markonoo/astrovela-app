@@ -193,6 +193,12 @@ The app validates required environment variables in production:
 - Shopify variables (app works without, but checkout won't function)
 - Email service (can use placeholder)
 - Stripe (not required for MVP)
+- `SUPABASE_SERVICE_ROLE_KEY` - For admin operations (user deletion, signed URLs)
+- `USE_SIGNED_URLS` - Set to "true" when storage buckets are private (default: "false")
+- `ENCRYPT_SENSITIVE_DATA` - Set to "true" to encrypt birth data (default: "false")
+- `DATA_ENCRYPTION_KEY` - 32-byte hex key for AES-256 encryption (generate with: `openssl rand -hex 32`)
+- `CRON_SECRET` - Secret for cron job authentication (optional)
+- `REQUIRE_AGE_VERIFICATION` - Set to "false" to disable age checks (default: "true")
 
 ---
 

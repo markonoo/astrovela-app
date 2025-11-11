@@ -4,6 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
+import { decryptBirthData } from './encryption'
 
 export interface UserDataSummary {
   profile: {
@@ -144,6 +145,15 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
   // Sort data sources by date
   dataSources.sort((a, b) => b.collectedAt.getTime() - a.collectedAt.getTime())
 
+  // Decrypt birth data if encrypted
+  const useEncryption = process.env.ENCRYPT_SENSITIVE_DATA === 'true'
+  const decryptedQuizResponses = user.quizResponses.map(qr => ({
+    ...qr,
+    birthDate: useEncryption && typeof qr.birthDate === 'string'
+      ? decryptBirthData(qr.birthDate)
+      : qr.birthDate,
+  }))
+
   return {
     profile: {
       id: user.id,
@@ -151,7 +161,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
       name: user.name,
       createdAt: user.createdAt,
     },
-    quizResponses: user.quizResponses,
+    quizResponses: decryptedQuizResponses,
     chartImages: user.chartImages,
     chartInterpretations: user.NatalChartInterpretation.map(ci => ({
       id: ci.id,

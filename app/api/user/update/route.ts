@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabaseClient"
 import { prisma } from "@/lib/prisma"
 import { logger } from "@/utils/logger"
+import { validateRequest, userUpdateSchema, sanitizeString } from "@/lib/validation"
 
 /**
  * User Data Update API - GDPR Right to Rectification (Article 16)
@@ -30,8 +31,21 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { name, email } = body
+    const rawBody = await request.json()
+    
+    // Validate input
+    const validation = validateRequest(userUpdateSchema, rawBody)
+    if (!validation.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input data',
+          details: validation.details?.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        },
+        { status: 400 }
+      )
+    }
+    
+    const { name, email } = validation.data
 
     // Validate input
     if (email && email !== user.email) {
@@ -42,11 +56,11 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    // Update user data
+    // Sanitize and update user data
     const updatedUser = await prisma.user.update({
       where: { id: dbUser.id },
       data: {
-        ...(name !== undefined && { name }),
+        ...(name !== undefined && { name: sanitizeString(name) }),
       },
     })
 
