@@ -71,7 +71,7 @@ export async function getUserEntitlement(userId: number): Promise<AppEntitlement
     };
   }
 
-  return entitlement;
+  return entitlement as AppEntitlement;
 }
 
 /**
@@ -103,7 +103,7 @@ export async function createOrUpdateEntitlement(data: {
         shopifyOrderId: data.shopifyOrderId ?? existing.shopifyOrderId,
         stripeCustomerId: data.stripeCustomerId ?? existing.stripeCustomerId,
       },
-    });
+    }) as Promise<AppEntitlement>;
   }
 
   return prisma.appEntitlement.create({
@@ -117,17 +117,18 @@ export async function createOrUpdateEntitlement(data: {
       shopifyOrderId: data.shopifyOrderId,
       stripeCustomerId: data.stripeCustomerId,
     },
-  });
+  }) as Promise<AppEntitlement>;
 }
 
 /**
  * Get entitlement by email (useful for webhook processing)
  */
 export async function getEntitlementByEmail(email: string): Promise<AppEntitlement | null> {
-  return prisma.appEntitlement.findFirst({
+  const entitlement = await prisma.appEntitlement.findFirst({
     where: { email },
     orderBy: { createdAt: 'desc' },
   });
+  return entitlement as AppEntitlement | null;
 }
 
 /**
@@ -138,4 +139,5 @@ export function calculateFreeUntil(): Date {
   date.setDate(date.getDate() + 30);
   return date;
 }
+
 
