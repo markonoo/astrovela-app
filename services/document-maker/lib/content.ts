@@ -3,7 +3,7 @@ import { PageData } from '../types/content';
 // Content loader utility
 export async function loadPageData(pageNumber: number): Promise<PageData | null> {
   try {
-    const response = await import(`@/data/pages/page-${pageNumber}.json`);
+    const response = await import(`../data/pages/page-${pageNumber}.json`);
     return response.default as PageData;
   } catch (error) {
     console.warn(`Failed to load page ${pageNumber}:`, error);

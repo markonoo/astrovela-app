@@ -1,5 +1,5 @@
 import { PageData } from '../../types/content';
-import { ContentRenderer } from '@/components/sections/ContentRenderer';
+import { ContentRenderer } from '../sections/ContentRenderer';
 
 interface ZodiacSignPageProps {
   data: PageData;

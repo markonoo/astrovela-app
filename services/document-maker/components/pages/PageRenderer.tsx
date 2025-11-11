@@ -1,6 +1,6 @@
 import { PageData } from '../../types/content';
-import { Page } from '@/components/ui/Page';
-import { ContentRenderer } from '@/components/sections/ContentRenderer';
+import { Page } from '../ui/Page';
+import { ContentRenderer } from '../sections/ContentRenderer';
 
 interface PageRendererProps {
   pageData: PageData;

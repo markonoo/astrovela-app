@@ -5,7 +5,7 @@ import { PageData } from '../../types/content';
 
 // Lazy load page renderer for better performance
 const PageRenderer = lazy(() => 
-  import('@/components/pages/PageRenderer').then(module => ({ 
+  import('../pages/PageRenderer').then(module => ({ 
     default: module.PageRenderer 
   }))
 );

@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { PageData } from '../../types/content';
-import { ScrollHeader } from '@/components/ui/ScrollHeader';
-import { PageRenderer } from '@/components/pages/PageRenderer';
-import { loadPagesData, getAvailablePages, canUseReplaceStateSafely } from '@/lib/content';
-import NordastroScrollableReport from '@/src/components/NordastroScrollableReport';
+import { ScrollHeader } from '../../components/ui/ScrollHeader';
+import { PageRenderer } from '../../components/pages/PageRenderer';
+import { loadPagesData, getAvailablePages, canUseReplaceStateSafely } from '../../lib/content';
+import NordastroScrollableReport from '../../src/components/NordastroScrollableReport';
 
 export default function ReportPage() {
   // Temporary: render legacy monolithic component until JSON migration completes
