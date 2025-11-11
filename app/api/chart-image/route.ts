@@ -401,6 +401,27 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Failed to fetch chart images' }, { status: 500 })
       }
       
+      // Optionally convert to signed URLs if storage is private
+      // For now, return public URLs (bucket is still public)
+      // To enable signed URLs, set USE_SIGNED_URLS=true in environment
+      const useSignedURLs = process.env.USE_SIGNED_URLS === 'true'
+      
+      if (useSignedURLs && images) {
+        try {
+          const { convertToSignedURL } = await import('@/lib/storage-security')
+          const imagesWithSignedURLs = await Promise.all(
+            images.map(async (image: any) => ({
+              ...image,
+              imageUrl: await convertToSignedURL(image.imageUrl, 'charts'),
+            }))
+          )
+          return NextResponse.json(imagesWithSignedURLs)
+        } catch (signedUrlError) {
+          devError('Error generating signed URLs, returning public URLs:', signedUrlError)
+          // Fallback to public URLs if signed URL generation fails
+        }
+      }
+      
       return NextResponse.json(images)
     } else if (id) {
       // Get a specific chart image by id using Supabase

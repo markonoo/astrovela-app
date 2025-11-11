@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabaseClient"
 import { prisma } from "@/lib/prisma"
 import { logger } from "@/utils/logger"
+import { requireAdminAuth } from "@/lib/admin-auth"
 
 /**
  * Admin API: Get PDF/Document Maker Statistics
@@ -9,11 +9,11 @@ import { logger } from "@/utils/logger"
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Add admin authentication check
-    // const { data: { user } } = await supabase.auth.getUser()
-    // if (!user || !isAdmin(user)) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-    // }
+    // Verify admin authentication and log access
+    const auth = await requireAdminAuth(request, '/api/admin/pdf-stats')
+    if (!auth.authenticated || auth.response) {
+      return auth.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
     // Get total users with reports (potential PDF downloads)
     const usersWithReports = await prisma.appEntitlement.count({

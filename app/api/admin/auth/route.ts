@@ -4,6 +4,7 @@ import { verifyTOTP, getAdmin2FASecret, is2FAEnabled, generateQRCode, generate2F
 import { adminLoginLimiter, getClientIP } from "@/lib/rate-limit"
 import { verifyPassword } from "@/lib/password"
 import { createAdminSession, setAdminSessionCookie, verifyAdminSession, getAdminSessionCookie } from "@/lib/admin-session"
+import { logAdminLogin, logAdminLogout } from "@/lib/admin-audit"
 
 /**
  * Admin Authentication API
@@ -66,6 +67,15 @@ export async function POST(request: NextRequest) {
 
       if (!password || !passwordValid) {
         logger.warn("Admin login attempt failed - invalid password", { ip: clientIP })
+        
+        // Log failed login attempt
+        await logAdminLogin(
+          false,
+          clientIP,
+          request.headers.get('user-agent') || undefined,
+          { step: 'password', reason: 'invalid_password' }
+        )
+        
         return NextResponse.json(
           { success: false, error: "Invalid password", step: 'password' },
           { status: 401 }
@@ -87,6 +97,14 @@ export async function POST(request: NextRequest) {
         // No 2FA enabled, login successful - create secure session
         const sessionToken = createAdminSession()
         await setAdminSessionCookie(sessionToken)
+        
+        // Log successful login
+        await logAdminLogin(
+          true,
+          clientIP,
+          request.headers.get('user-agent') || undefined,
+          { step: 'password', requires2FA: false }
+        )
         
         logger.info("Admin login successful", { ip: clientIP })
         return NextResponse.json({
@@ -131,6 +149,14 @@ export async function POST(request: NextRequest) {
           const sessionToken = createAdminSession()
           await setAdminSessionCookie(sessionToken)
           
+          // Log successful login with 2FA
+          await logAdminLogin(
+            true,
+            clientIP,
+            request.headers.get('user-agent') || undefined,
+            { step: '2fa', requires2FA: true }
+          )
+          
           logger.info("Admin login successful with 2FA", { ip: clientIP })
           return NextResponse.json({
             success: true,
@@ -140,6 +166,15 @@ export async function POST(request: NextRequest) {
           })
         } else {
           logger.warn("Admin login attempt failed - invalid 2FA code", { ip: clientIP })
+          
+          // Log failed 2FA attempt
+          await logAdminLogin(
+            false,
+            clientIP,
+            request.headers.get('user-agent') || undefined,
+            { step: '2fa', reason: 'invalid_2fa_code' }
+          )
+          
           return NextResponse.json(
             { success: false, error: "Invalid 2FA code", step: '2fa' },
             { status: 401 }

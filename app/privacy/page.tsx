@@ -80,15 +80,18 @@ export default function PrivacyPolicyPage() {
         <h2>5. Your Data Protection Rights</h2>
         <p>Depending on your location, you may have the following rights:</p>
         <ul>
-          <li>Right to access personal information we hold about you</li>
-          <li>Right to request correction of inaccurate information</li>
-          <li>Right to request deletion of your information</li>
-          <li>Right to object to or restrict processing of your information</li>
-          <li>Right to data portability</li>
-          <li>Right to withdraw consent at any time</li>
-          <li>Right to lodge a complaint with a supervisory authority</li>
+          <li><strong>Right to Access (GDPR Article 15):</strong> View all personal information we hold about you. <a href="/settings/privacy" className="text-blue-600 hover:underline">Access your data here</a></li>
+          <li><strong>Right to Rectification (GDPR Article 16):</strong> Request correction of inaccurate information. Update your profile in account settings.</li>
+          <li><strong>Right to Deletion (GDPR Article 17):</strong> Request deletion of your account and all associated data. <a href="/settings/privacy" className="text-blue-600 hover:underline">Request deletion here</a></li>
+          <li><strong>Right to Data Portability (GDPR Article 20):</strong> Download all your data in a portable format (JSON or CSV). <a href="/settings/privacy" className="text-blue-600 hover:underline">Export your data here</a></li>
+          <li><strong>Right to Object:</strong> Object to or restrict processing of your information</li>
+          <li><strong>Right to Withdraw Consent:</strong> Withdraw consent at any time. Manage cookie preferences <a href="/settings/privacy#consent" className="text-blue-600 hover:underline">here</a></li>
+          <li><strong>Right to Lodge a Complaint:</strong> Lodge a complaint with a supervisory authority</li>
         </ul>
-        <p>To exercise these rights, please contact us using the details provided below.</p>
+        <p>
+          <strong>To exercise these rights:</strong> Visit your <a href="/settings/privacy" className="text-blue-600 hover:underline font-semibold">Privacy Settings</a> page or contact us at{" "}
+          <a href="mailto:privacy@astrovela.com" className="text-blue-600 hover:underline">privacy@astrovela.com</a>
+        </p>
 
         <h2>6. Cookies and Tracking Technologies</h2>
         <p>
@@ -121,8 +124,18 @@ export default function PrivacyPolicyPage() {
         <h2>8. Data Retention</h2>
         <p>
           We will retain your personal information only for as long as is necessary for the purposes set out in this
-          Privacy Policy. We will retain and use your information to the extent necessary to comply with our legal
-          obligations, resolve disputes, and enforce our policies.
+          Privacy Policy. Our retention periods are:
+        </p>
+        <ul>
+          <li><strong>Quiz Responses:</strong> 3 years after last activity</li>
+          <li><strong>Chart Images:</strong> 5 years</li>
+          <li><strong>User Accounts:</strong> Until deletion requested</li>
+          <li><strong>Audit Logs:</strong> 1 year minimum</li>
+          <li><strong>Data Exports:</strong> 7 days (download links expire)</li>
+        </ul>
+        <p>
+          We will retain and use your information to the extent necessary to comply with our legal
+          obligations, resolve disputes, and enforce our policies. You can request deletion of your data at any time.
         </p>
 
         <h2>9. Children's Privacy</h2>

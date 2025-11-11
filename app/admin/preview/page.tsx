@@ -193,14 +193,20 @@ function AdminPreviewContent() {
               <CardDescription>View application metrics</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
+              <Link href="/admin/audit">
+                <Button className="w-full mb-2" variant="default" size="sm">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Audit Logs
+                </Button>
+              </Link>
               <Link href="/api/admin/companion-stats" target="_blank">
-                <Button className="w-full" variant="outline" size="sm">
+                <Button className="w-full mb-2" variant="outline" size="sm">
                   <Users className="w-4 h-4 mr-2" />
                   Companion Stats
                 </Button>
               </Link>
               <Link href="/api/admin/pdf-stats" target="_blank">
-                <Button className="w-full" variant="outline" size="sm">
+                <Button className="w-full mb-2" variant="outline" size="sm">
                   <FileText className="w-4 h-4 mr-2" />
                   PDF Stats
                 </Button>

@@ -50,3 +50,4 @@
 5. ✅ `coverColorScheme` → `coverDesign` → `coverColor` transformation documented
 
 
+

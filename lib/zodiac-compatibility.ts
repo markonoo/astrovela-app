@@ -60,3 +60,4 @@ export function getCompatibility(sign1: string, sign2: string) {
 }
 
 
+

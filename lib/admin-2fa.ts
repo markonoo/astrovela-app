@@ -78,3 +78,4 @@ export function is2FAEnabled(): boolean {
   return !!process.env.ADMIN_2FA_SECRET
 }
 
+

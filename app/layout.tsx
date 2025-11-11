@@ -2,6 +2,7 @@ import type React from "react"
 import { QuizProvider } from "@/contexts/quiz-context"
 import { UserProvider } from "@/contexts/UserContext"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+import { CookieBannerWrapper } from "@/components/consent/CookieBannerWrapper"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { AnalyticsSetup } from './analytics-setup';
@@ -101,6 +102,7 @@ export default function RootLayout({
             </ErrorBoundary>
           </QuizProvider>
         </UserProvider>
+        <CookieBannerWrapper />
       </body>
     </html>
   )

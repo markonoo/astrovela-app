@@ -32,10 +32,15 @@ model User {
   email                    String                     @unique
   name                     String?
   createdAt                DateTime                   @default(now())
+  deletedAt                DateTime?
+  deletionRequestedAt      DateTime?
   chartImages              ChartImage[]
   NatalChartInterpretation NatalChartInterpretation[]
   quizResponses            QuizResponse[]
   appEntitlement           AppEntitlement?
+  dataExportRequests       DataExportRequest[]
+  deletionRequests         DeletionRequest[]
+  consents                 Consent[]
 }
 
 model AppEntitlement {
@@ -99,4 +104,69 @@ model NatalChartInterpretation {
 
   @@index([chartImageId])
   @@index([userId])
+}
+
+model AdminAuditLog {
+  id        String   @id @default(cuid())
+  adminId   String?  // Admin identifier (email or session ID)
+  action    String   // "login", "login_failed", "data_access", "data_modify", "logout", etc.
+  resource  String?  // What resource was accessed (e.g., "/api/admin/companion-stats")
+  ipAddress String?
+  userAgent String?
+  success   Boolean
+  details   Json?    // Additional context
+  createdAt DateTime @default(now())
+  
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([success])
+}
+
+model DataExportRequest {
+  id        String   @id @default(cuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  format    String   // "json" | "csv"
+  status    String   @default("pending") // "pending" | "processing" | "completed" | "failed"
+  fileUrl   String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model DeletionRequest {
+  id            String   @id @default(cuid())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason        String?
+  status        String   @default("pending") // "pending" | "processing" | "completed" | "failed"
+  scheduledAt   DateTime
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model Consent {
+  id            String   @id @default(cuid())
+  userId        Int?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId     String?  // For anonymous users
+  consentType   String   // "cookies", "marketing", "analytics"
+  granted       Boolean
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@index([consentType])
+  @@index([granted])
 }
