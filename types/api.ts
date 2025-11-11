@@ -21,6 +21,7 @@ export interface EntitlementData {
   freeUntil: string
   hasReport: boolean
   purchaseDate?: string | null
+  shopifyOrderId?: string | null
   daysRemaining?: number
 }
 

@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
             freeUntil: entitlement.freeUntil.toISOString(),
             hasReport: entitlement.hasReport,
             purchaseDate: entitlement.purchaseDate?.toISOString() || null,
+            shopifyOrderId: entitlement.shopifyOrderId || null,
             daysRemaining: Math.ceil(
               (new Date(entitlement.freeUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
             ),
