@@ -60,7 +60,7 @@ export default function CareerPage() {
     )
   }
 
-  if (!user || !entitlement?.hasAccess) {
+  if (!user || !entitlement) {
     return <Paywall />
   }
 

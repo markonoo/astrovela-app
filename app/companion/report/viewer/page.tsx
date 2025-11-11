@@ -152,7 +152,7 @@ export default function ReportViewerPage() {
     )
   }
 
-  if (!user || !entitlement?.hasAccess) {
+  if (!user || !entitlement) {
     return <Paywall />
   }
 

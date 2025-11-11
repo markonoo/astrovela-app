@@ -67,11 +67,8 @@ export default function CompanionTodayPage() {
     return <Paywall />
   }
 
-  if (!entitlement || !entitlement.hasAccess) {
-    const daysRemaining = entitlement?.freeUntil
-      ? Math.ceil((new Date(entitlement.freeUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-      : undefined
-    return <Paywall daysRemaining={daysRemaining} />
+  if (!entitlement) {
+    return <Paywall />
   }
 
   if (!todayData) {

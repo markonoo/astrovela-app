@@ -43,7 +43,7 @@ export default function ExplorePage() {
     )
   }
 
-  if (!user || !entitlement?.hasAccess) {
+  if (!user || !entitlement) {
     return <Paywall />
   }
 

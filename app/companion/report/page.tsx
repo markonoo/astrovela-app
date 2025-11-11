@@ -84,7 +84,7 @@ export default function MyReportPage() {
     )
   }
 
-  if (!user || !entitlement?.hasAccess) {
+  if (!user || !entitlement) {
     return <Paywall />
   }
 

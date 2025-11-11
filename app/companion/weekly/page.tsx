@@ -67,7 +67,7 @@ export default function WeeklyMonthlyPage() {
     )
   }
 
-  if (!user || !entitlement?.hasAccess) {
+  if (!user || !entitlement) {
     return <Paywall />
   }
 
