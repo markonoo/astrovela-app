@@ -3,6 +3,9 @@ import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from
 import { ShopifyError, ShopifyErrorCodes, handleShopifyError } from '@/utils/shopify-error-handler';
 import { ErrorMonitor } from '@/utils/error-monitoring';
 
+// Force dynamic rendering (uses Shopify API)
+export const dynamic = 'force-dynamic'
+
 interface ShopifyAnalytics {
   status: 'connected' | 'disconnected' | 'error';
   revenue: {
@@ -50,11 +53,12 @@ async function makeShopifyRequest(query: string, variables: any = {}) {
   const startTime = Date.now();
   
   if (!SHOPIFY_STOREFRONT_API_ENDPOINT || !SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
-    throw new ShopifyError(
-      "Shopify configuration is missing",
-      ShopifyErrorCodes.INVALID_CREDENTIALS,
-      500
-    );
+    // Return gracefully instead of throwing during build
+    return { 
+      data: null, 
+      responseTime: 0,
+      error: 'Shopify configuration is missing'
+    };
   }
 
   const response = await fetch(SHOPIFY_STOREFRONT_API_ENDPOINT, {
@@ -96,6 +100,27 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
+    // Check if Shopify is configured before attempting to fetch
+    if (!SHOPIFY_STOREFRONT_API_ENDPOINT || !SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
+      // Return disconnected status gracefully
+      const disconnectedAnalytics: ShopifyAnalytics = {
+        status: 'disconnected',
+        revenue: { today: 0, week: 0, month: 0, currency: 'USD' },
+        orders: { today: 0, week: 0, month: 0, pending: 0 },
+        products: { total: 0, published: 0, outOfStock: 0 },
+        conversion: { rate: 0, visitors: 0, checkouts: 0, completions: 0 },
+        lastUpdated: new Date().toISOString(),
+        responseTime: Date.now() - startTime,
+      };
+      
+      return NextResponse.json({
+        success: false,
+        analytics: disconnectedAnalytics,
+        message: 'Shopify is not configured',
+        timestamp: Date.now(),
+      });
+    }
+    
     console.log('🛍️ Fetching Shopify analytics...');
     
     const { todayStart, weekStart, monthStart } = getTimeRanges();
@@ -124,7 +149,29 @@ export async function GET(request: NextRequest) {
 
     // Since Storefront API has limited analytics capabilities,
     // we'll get what we can and provide realistic estimates
-    const { data: productsData, responseTime } = await makeShopifyRequest(productsQuery);
+    const result = await makeShopifyRequest(productsQuery);
+    
+    // Handle missing configuration gracefully
+    if (result.error || !result.data) {
+      const disconnectedAnalytics: ShopifyAnalytics = {
+        status: 'disconnected',
+        revenue: { today: 0, week: 0, month: 0, currency: 'USD' },
+        orders: { today: 0, week: 0, month: 0, pending: 0 },
+        products: { total: 0, published: 0, outOfStock: 0 },
+        conversion: { rate: 0, visitors: 0, checkouts: 0, completions: 0 },
+        lastUpdated: new Date().toISOString(),
+        responseTime: result.responseTime || (Date.now() - startTime),
+      };
+      
+      return NextResponse.json({
+        success: false,
+        analytics: disconnectedAnalytics,
+        message: result.error || 'Shopify is not configured',
+        timestamp: Date.now(),
+      });
+    }
+    
+    const { data: productsData, responseTime } = result;
     
     const products = productsData?.products?.edges || [];
     const totalProducts = products.length;

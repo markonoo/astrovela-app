@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN, SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
 
+// Force dynamic rendering (uses Shopify API)
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
