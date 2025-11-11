@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Lock, AlertCircle, Shield, ArrowLeft } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useCSRF } from "@/hooks/useCSRF"
 
 type LoginStep = 'password' | '2fa' | 'complete'
 
@@ -18,13 +19,27 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const csrfToken = useCSRF()
 
   useEffect(() => {
-    // Check if already logged in
-    const adminSession = localStorage.getItem("admin_session")
-    if (adminSession) {
-      router.push("/admin/preview")
+    // Check if already logged in (using cookie-based session)
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/admin/auth", {
+          method: "GET",
+          credentials: 'include',
+        })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.authenticated) {
+            router.push("/admin/preview")
+          }
+        }
+      } catch (error) {
+        // Session check failed, stay on login page
+      }
     }
+    checkSession()
   }, [router])
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -33,11 +48,19 @@ export default function AdminLoginPage() {
     setError(null)
 
     try {
+      if (!csrfToken) {
+        setError("CSRF token not ready. Please refresh the page.")
+        setLoading(false)
+        return
+      }
+
       const response = await fetch("/api/admin/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken,
         },
+        credentials: 'include', // Include cookies for session
         body: JSON.stringify({ password, step: 'password' }),
       })
 
@@ -67,11 +90,19 @@ export default function AdminLoginPage() {
     setError(null)
 
     try {
+      if (!csrfToken) {
+        setError("CSRF token not ready. Please refresh the page.")
+        setLoading(false)
+        return
+      }
+
       const response = await fetch("/api/admin/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken,
         },
+        credentials: 'include', // Include cookies for session
         body: JSON.stringify({ 
           password, 
           totpCode, 
@@ -94,9 +125,8 @@ export default function AdminLoginPage() {
   }
 
   const completeLogin = () => {
-    // Store admin session
-    localStorage.setItem("admin_session", "authenticated")
-    localStorage.setItem("admin_session_expiry", String(Date.now() + 24 * 60 * 60 * 1000)) // 24 hours
+    // Session is already set by server via httpOnly cookie
+    // Just redirect to admin dashboard
     router.push("/admin/preview")
   }
 

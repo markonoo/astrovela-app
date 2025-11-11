@@ -31,10 +31,18 @@ function AdminPreviewContent() {
     setMounted(true)
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_session")
-    localStorage.removeItem("admin_session_expiry")
-    window.location.href = "/admin/login"
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", {
+        method: "POST",
+        credentials: 'include',
+      })
+    } catch (error) {
+      console.error("Logout error:", error)
+    } finally {
+      // Redirect regardless of API call success
+      window.location.href = "/admin/login"
+    }
   }
 
   if (!mounted) {

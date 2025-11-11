@@ -136,25 +136,43 @@ NEXT_PUBLIC_APP_URL=https://astrovela.com
 
 ### Admin Authentication
 ```env
-# Admin password for preview dashboard access
+# Admin password (plain text - for backward compatibility)
+# DEPRECATED: Use ADMIN_PASSWORD_HASH instead
 ADMIN_PASSWORD=your_secure_admin_password_here
+
+# Admin password hash (recommended - use setup script to generate)
+# Run: npm run setup-admin-password
+ADMIN_PASSWORD_HASH=bcrypt_hash_here
+
+# Admin JWT secret for session tokens (generate random 32+ character string)
+ADMIN_JWT_SECRET=generate-random-32-character-secret-here
+
+# CSRF secret for token generation (generate random 32+ character string)
+CSRF_SECRET=generate-random-32-character-secret-here
 
 # Admin 2FA Secret (optional but recommended)
 # Generate via /admin/2fa-setup endpoint, then add here
 ADMIN_2FA_SECRET=your_2fa_secret_key_here
 ```
 **Source:** 
-- Password: Set a strong password
-- 2FA Secret: Visit `/admin/2fa-setup` to generate, then add to environment variables
+- Password Hash: Run `npm run setup-admin-password` to generate
+- JWT Secret: Generate random string (32+ characters)
+- CSRF Secret: Generate random string (32+ characters)
+- 2FA Secret: Visit `/admin/2fa-setup` to generate
+
 **Required:** 
-- `ADMIN_PASSWORD`: Yes (defaults to "admin123" in development)
+- `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH`: Yes (hash recommended)
+- `ADMIN_JWT_SECRET`: Yes (for secure sessions)
+- `CSRF_SECRET`: Yes (for CSRF protection)
 - `ADMIN_2FA_SECRET`: No (optional, but highly recommended for production)
 
 **Security Notes:**
-- Use a strong password for `ADMIN_PASSWORD` in production
+- Use `ADMIN_PASSWORD_HASH` instead of plain `ADMIN_PASSWORD` in production
+- Generate strong random secrets for JWT and CSRF (32+ characters)
 - Enable 2FA by setting `ADMIN_2FA_SECRET` for enhanced security
 - Never commit these values to git
 - Rotate secrets periodically
+- Use different secrets for development and production
 
 ---
 

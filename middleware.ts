@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { SecurityMonitor, SECURITY_HEADERS, RATE_LIMITS } from '@/utils/security'
+import { verifyCSRFToken } from '@/lib/csrf'
 
 // Rate limiting store (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
@@ -144,6 +145,40 @@ export function middleware(request: NextRequest) {
         method: request.method
       }
     })
+  }
+
+  // CSRF Protection for admin routes (except auth/login which handles its own CSRF)
+  if (request.nextUrl.pathname.startsWith('/api/admin') && 
+      !request.nextUrl.pathname.includes('/auth') &&
+      ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+    
+    const csrfToken = request.headers.get('x-csrf-token')
+    const csrfCookie = request.cookies.get('csrf_token')?.value
+    
+    if (!csrfToken || !csrfCookie || !verifyCSRFToken(csrfToken, csrfCookie)) {
+      SecurityMonitor.logEvent({
+        type: 'csrf_validation_failed',
+        ip: request.headers.get('x-forwarded-for') ?? 'unknown',
+        path: request.nextUrl.pathname,
+        userAgent: request.headers.get('user-agent') ?? undefined,
+        details: {
+          method: request.method,
+          hasToken: !!csrfToken,
+          hasCookie: !!csrfCookie
+        }
+      })
+      
+      return new NextResponse(
+        JSON.stringify({ error: 'Invalid CSRF token' }),
+        { 
+          status: 403,
+          headers: {
+            'Content-Type': 'application/json',
+            ...Object.fromEntries(response.headers.entries())
+          }
+        }
+      )
+    }
   }
 
   // Clean up old rate limit entries periodically

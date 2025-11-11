@@ -22,39 +22,20 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
 
   const checkAdminSession = async () => {
     try {
-      // Check localStorage for admin session
-      const adminSession = localStorage.getItem("admin_session")
-      const expiry = localStorage.getItem("admin_session_expiry")
-
-      if (!adminSession || !expiry) {
-        setIsAuthenticated(false)
-        setLoading(false)
-        return
-      }
-
-      // Check if session expired
-      const expiryTime = parseInt(expiry, 10)
-      if (Date.now() > expiryTime) {
-        localStorage.removeItem("admin_session")
-        localStorage.removeItem("admin_session_expiry")
-        setIsAuthenticated(false)
-        setLoading(false)
-        return
-      }
-
-      // Verify session with server
+      // Verify session with server (cookies are sent automatically)
       const response = await fetch("/api/admin/auth", {
         method: "GET",
-        headers: {
-          "x-admin-session": adminSession,
-        },
+        credentials: 'include', // Include cookies
       })
 
       if (response.ok) {
-        setIsAuthenticated(true)
+        const data = await response.json()
+        if (data.authenticated) {
+          setIsAuthenticated(true)
+        } else {
+          setIsAuthenticated(false)
+        }
       } else {
-        localStorage.removeItem("admin_session")
-        localStorage.removeItem("admin_session_expiry")
         setIsAuthenticated(false)
       }
     } catch (error) {

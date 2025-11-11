@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { logger } from "@/utils/logger"
 import { verifyTOTP, getAdmin2FASecret, is2FAEnabled, generateQRCode, generate2FASecret } from "@/lib/admin-2fa"
+import { adminLoginLimiter, getClientIP } from "@/lib/rate-limit"
+import { verifyPassword } from "@/lib/password"
+import { createAdminSession, setAdminSessionCookie, verifyAdminSession, getAdminSessionCookie } from "@/lib/admin-session"
 
 /**
  * Admin Authentication API
- * Supports password + 2FA authentication
+ * Supports password + 2FA authentication with rate limiting and secure sessions
  */
 
 interface LoginRequest {
@@ -18,13 +21,51 @@ export async function POST(request: NextRequest) {
     const body: LoginRequest = await request.json()
     const { password, totpCode, step = 'password' } = body
 
-    // Get admin password from environment variable
-    const adminPassword = process.env.ADMIN_PASSWORD || "admin123" // Default for development
+    // Get client IP for rate limiting
+    const clientIP = getClientIP(request)
+
+    // Apply rate limiting
+    try {
+      await adminLoginLimiter.check(5, clientIP) // 5 attempts per 15 minutes
+    } catch (rateLimitResult: any) {
+      logger.warn("Admin login rate limited", { ip: clientIP })
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Too many login attempts. Please try again in 15 minutes.',
+          rateLimited: true,
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000))
+          }
+        }
+      )
+    }
+
+    // Get admin password hash from environment variable
+    // If ADMIN_PASSWORD_HASH is set, use it; otherwise fall back to plain password for backward compatibility
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin123" // Fallback for development
 
     if (step === 'password') {
       // Step 1: Verify password
-      if (!password || password !== adminPassword) {
-        logger.warn("Admin login attempt failed - invalid password")
+      let passwordValid = false
+      
+      if (adminPasswordHash) {
+        // Use password hashing if hash is configured
+        passwordValid = await verifyPassword(password, adminPasswordHash)
+      } else {
+        // Fallback to plain password comparison (for backward compatibility)
+        passwordValid = password === adminPassword
+      }
+
+      if (!password || !passwordValid) {
+        logger.warn("Admin login attempt failed - invalid password", { ip: clientIP })
         return NextResponse.json(
           { success: false, error: "Invalid password", step: 'password' },
           { status: 401 }
@@ -43,7 +84,11 @@ export async function POST(request: NextRequest) {
           requires2FA: true,
         })
       } else {
-        // No 2FA enabled, login successful
+        // No 2FA enabled, login successful - create secure session
+        const sessionToken = createAdminSession()
+        await setAdminSessionCookie(sessionToken)
+        
+        logger.info("Admin login successful", { ip: clientIP })
         return NextResponse.json({
           success: true,
           step: 'complete',
@@ -60,8 +105,17 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Verify password was already checked (in a real app, use session tokens)
-      if (!password || password !== adminPassword) {
+      // Verify password was already checked
+      let passwordValid = false
+      
+      if (adminPasswordHash) {
+        passwordValid = await verifyPassword(password, adminPasswordHash)
+      } else {
+        passwordValid = password === adminPassword
+      }
+
+      if (!password || !passwordValid) {
+        logger.warn("Admin login attempt failed - invalid password in 2FA step", { ip: clientIP })
         return NextResponse.json(
           { success: false, error: "Invalid password", step: 'password' },
           { status: 401 }
@@ -73,7 +127,11 @@ export async function POST(request: NextRequest) {
         const isValid = verifyTOTP(totpCode, secret)
 
         if (isValid) {
-          logger.info("Admin login successful with 2FA")
+          // Create secure session
+          const sessionToken = createAdminSession()
+          await setAdminSessionCookie(sessionToken)
+          
+          logger.info("Admin login successful with 2FA", { ip: clientIP })
           return NextResponse.json({
             success: true,
             step: 'complete',
@@ -81,7 +139,7 @@ export async function POST(request: NextRequest) {
             requires2FA: true,
           })
         } else {
-          logger.warn("Admin login attempt failed - invalid 2FA code")
+          logger.warn("Admin login attempt failed - invalid 2FA code", { ip: clientIP })
           return NextResponse.json(
             { success: false, error: "Invalid 2FA code", step: '2fa' },
             { status: 401 }
@@ -131,11 +189,17 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Verify admin session
-    const sessionToken = request.headers.get("x-admin-session")
-
-    if (sessionToken === "authenticated") {
-      return NextResponse.json({ authenticated: true })
+    // Verify admin session using secure cookie-based session
+    const sessionToken = await getAdminSessionCookie()
+    
+    if (sessionToken) {
+      const session = verifyAdminSession(sessionToken)
+      if (session && session.authenticated) {
+        return NextResponse.json({ 
+          authenticated: true,
+          expiresAt: session.expiresAt
+        })
+      }
     }
 
     return NextResponse.json(
