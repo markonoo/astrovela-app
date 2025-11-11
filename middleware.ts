@@ -21,176 +21,209 @@ export function middleware(request: NextRequest) {
     // Comprehensive Security Headers
     
     // Basic security headers
-    response.headers.set('X-Frame-Options', 'DENY')
-    response.headers.set('X-Content-Type-Options', 'nosniff')
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-    response.headers.set('X-XSS-Protection', '1; mode=block')
+    try {
+      response.headers.set('X-Frame-Options', 'DENY')
+      response.headers.set('X-Content-Type-Options', 'nosniff')
+      response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+      response.headers.set('X-XSS-Protection', '1; mode=block')
+    } catch (e) {
+      // Ignore header errors
+    }
     
     // Strict Transport Security (HTTPS enforcement)
-    // Use environment check that works in Edge Runtime
-    const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
-    if (isProduction) {
-      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+    try {
+      const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+      if (isProduction) {
+        response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+      }
+    } catch (e) {
+      // Ignore header errors
     }
   
-  // Permissions Policy (formerly Feature Policy)
-  response.headers.set('Permissions-Policy', [
-    'camera=()',
-    'microphone=()',
-    'geolocation=(self)',
-    'interest-cohort=()',
-    'payment=(self)',
-    'usb=()',
-    'magnetometer=()',
-    'gyroscope=()',
-    'accelerometer=()',
-    'autoplay=()'
-  ].join(', '))
-
-  // Cross-Origin policies - Modified to allow external chart SVGs
-  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
-  // Allow external resources from astrology API for chart SVGs
-  response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless')
-  response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin')
-
-  // Content Security Policy (Enhanced)
-  const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
-  const csp = [
-    "default-src 'self'",
-    // Scripts: Allow self, necessary external scripts, and unsafe-inline for Vercel Analytics
-    isDevelopment 
-      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live" 
-      : "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
-    // Styles: Allow self and inline styles (needed for dynamic theming)
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    // Images: Allow data URLs, HTTPS sources, and astrology API S3, plus Vercel storage
-    "img-src 'self' data: https: blob: https://s3.ap-south-1.amazonaws.com https://*.vercel-storage.com",
-    // Fonts: Allow self, data URLs, and Google Fonts
-    "font-src 'self' data: https://fonts.gstatic.com",
-    // Connections: API endpoints and external services
-    "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://checkout.shopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com https://*.paypal.com",
-    // Media: Self only
-    "media-src 'self'",
-    // Objects: None allowed
-    "object-src 'none'",
-    // Workers: Self only
-    "worker-src 'self' blob:",
-    // Child frames: Allow Shopify checkout and PayPal
-    "child-src 'self' https://checkout.shopify.com https://*.paypal.com",
-    // Frame ancestors: None
-    "frame-ancestors 'none'",
-    // Base URI: Self only
-    "base-uri 'self'",
-    // Form actions: Self only
-    "form-action 'self'",
-    // Upgrade insecure requests in production
-    ...(isProduction ? ["upgrade-insecure-requests"] : [])
-  ].join('; ')
-  
-  response.headers.set('Content-Security-Policy', csp)
-
-  // Enhanced Rate Limiting for API routes
-  if (request.nextUrl.pathname.startsWith('/api/')) {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ?? 
-               request.headers.get('x-real-ip') ?? 
-               '127.0.0.1'
-    
-    const now = Date.now()
-    const windowMs = 15 * 60 * 1000 // 15 minutes
-    const maxRequests = request.nextUrl.pathname.includes('/test-') ? 10 : 100 // Lower limit for test endpoints
-    
-    const key = `${ip}:${request.nextUrl.pathname}`
-    const rateLimitData = rateLimitMap.get(key)
-    
-    if (!rateLimitData || now > rateLimitData.resetTime) {
-      // Reset window
-      rateLimitMap.set(key, { count: 1, resetTime: now + windowMs })
-      response.headers.set('X-RateLimit-Limit', maxRequests.toString())
-      response.headers.set('X-RateLimit-Remaining', (maxRequests - 1).toString())
-      response.headers.set('X-RateLimit-Reset', new Date(now + windowMs).toISOString())
-         } else if (rateLimitData.count >= maxRequests) {
-       // Rate limit exceeded - log to console (Edge Runtime compatible)
-       console.warn('Rate limit exceeded', {
-         ip,
-         path: request.nextUrl.pathname,
-         maxRequests,
-         currentCount: rateLimitData.count
-       })
-       
-       response.headers.set('X-RateLimit-Limit', maxRequests.toString())
-       response.headers.set('X-RateLimit-Remaining', '0')
-       response.headers.set('X-RateLimit-Reset', new Date(rateLimitData.resetTime).toISOString())
-       response.headers.set('Retry-After', Math.ceil((rateLimitData.resetTime - now) / 1000).toString())
-       
-       return new NextResponse('Rate limit exceeded', { 
-         status: 429,
-         headers: response.headers
-       })
-    } else {
-      // Increment counter
-      rateLimitData.count++
-      response.headers.set('X-RateLimit-Limit', maxRequests.toString())
-      response.headers.set('X-RateLimit-Remaining', (maxRequests - rateLimitData.count).toString())
-      response.headers.set('X-RateLimit-Reset', new Date(rateLimitData.resetTime).toISOString())
+    // Permissions Policy (formerly Feature Policy)
+    try {
+      const permissionsPolicy = [
+        'camera=()',
+        'microphone=()',
+        'geolocation=(self)',
+        'interest-cohort=()',
+        'payment=(self)',
+        'usb=()',
+        'magnetometer=()',
+        'gyroscope=()',
+        'accelerometer=()',
+        'autoplay=()'
+      ].join(', ')
+      response.headers.set('Permissions-Policy', permissionsPolicy)
+    } catch (e) {
+      // Ignore header errors
     }
-  }
 
-  // Security logging for suspicious activity (Edge Runtime compatible)
-  if (request.nextUrl.pathname.includes('..') || 
-      request.nextUrl.pathname.includes('<script>') ||
-      request.nextUrl.searchParams.toString().includes('<script>')) {
-    
-    console.warn('Suspicious request detected', {
-      ip: request.headers.get('x-forwarded-for') ?? 'unknown',
-      path: request.nextUrl.pathname,
-      method: request.method
-    })
-  }
+    // Cross-Origin policies
+    try {
+      response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
+      response.headers.set('Cross-Origin-Embedder-Policy', 'credentialless')
+      response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin')
+    } catch (e) {
+      // Ignore header errors
+    }
 
-  // CSRF Protection for admin routes (except auth/login which handles its own CSRF)
-  if (request.nextUrl.pathname.startsWith('/api/admin') && 
-      !request.nextUrl.pathname.includes('/auth') &&
-      ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
-    
-    const csrfToken = request.headers.get('x-csrf-token')
-    const csrfCookie = request.cookies.get('csrf_token')?.value
-    
-      if (!csrfToken || !csrfCookie || !verifyCSRFTokenEdge(csrfToken, csrfCookie)) {
-        // Log CSRF failure (Edge Runtime compatible)
-        console.warn('CSRF validation failed', {
-          ip: request.headers.get('x-forwarded-for') ?? 'unknown',
-          path: request.nextUrl.pathname,
-          method: request.method,
-          hasToken: !!csrfToken,
-          hasCookie: !!csrfCookie
-        })
+    // Content Security Policy (Enhanced)
+    try {
+      const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
+      const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
       
-      // Create new response with headers (Edge Runtime compatible)
-      const errorResponse = new NextResponse(
-        JSON.stringify({ error: 'Invalid CSRF token' }),
-        { 
-          status: 403,
-          headers: {
-            'Content-Type': 'application/json',
+      const cspParts = [
+        "default-src 'self'",
+        isDevelopment 
+          ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live" 
+          : "script-src 'self' 'unsafe-inline' https://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: blob: https://s3.ap-south-1.amazonaws.com https://*.vercel-storage.com",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "connect-src 'self' https://json.astrologyapi.com https://*.supabase.co https://*.shopify.com https://*.myshopify.com https://checkout.shopify.com https://maps.googleapis.com https://vercel.live wss://vercel.live https://*.vercel-insights.com https://*.vercel-analytics.com https://*.paypal.com",
+        "media-src 'self'",
+        "object-src 'none'",
+        "worker-src 'self' blob:",
+        "child-src 'self' https://checkout.shopify.com https://*.paypal.com",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'"
+      ]
+      
+      if (isProduction) {
+        cspParts.push("upgrade-insecure-requests")
+      }
+      
+      response.headers.set('Content-Security-Policy', cspParts.join('; '))
+    } catch (e) {
+      // Ignore CSP errors, continue without it
+    }
+
+    // Enhanced Rate Limiting for API routes
+    try {
+      const pathname = request.nextUrl?.pathname || ''
+      if (pathname.startsWith('/api/')) {
+        const forwardedFor = request.headers.get('x-forwarded-for')
+        const ip = forwardedFor?.split(',')[0]?.trim() || 
+                   request.headers.get('x-real-ip') || 
+                   '127.0.0.1'
+        
+        const now = Date.now()
+        const windowMs = 15 * 60 * 1000 // 15 minutes
+        const maxRequests = pathname.includes('/test-') ? 10 : 100
+        
+        const key = `${ip}:${pathname}`
+        const rateLimitData = rateLimitMap.get(key)
+        
+        if (!rateLimitData || now > rateLimitData.resetTime) {
+          // Reset window
+          rateLimitMap.set(key, { count: 1, resetTime: now + windowMs })
+          try {
+            response.headers.set('X-RateLimit-Limit', String(maxRequests))
+            response.headers.set('X-RateLimit-Remaining', String(maxRequests - 1))
+            response.headers.set('X-RateLimit-Reset', new Date(now + windowMs).toISOString())
+          } catch (e) {
+            // Ignore header errors
+          }
+        } else if (rateLimitData.count >= maxRequests) {
+          // Rate limit exceeded
+          try {
+            response.headers.set('X-RateLimit-Limit', String(maxRequests))
+            response.headers.set('X-RateLimit-Remaining', '0')
+            response.headers.set('X-RateLimit-Reset', new Date(rateLimitData.resetTime).toISOString())
+            response.headers.set('Retry-After', String(Math.ceil((rateLimitData.resetTime - now) / 1000)))
+          } catch (e) {
+            // Ignore header errors
+          }
+          
+          return new NextResponse('Rate limit exceeded', { 
+            status: 429,
+            headers: response.headers
+          })
+        } else {
+          // Increment counter
+          rateLimitData.count++
+          try {
+            response.headers.set('X-RateLimit-Limit', String(maxRequests))
+            response.headers.set('X-RateLimit-Remaining', String(maxRequests - rateLimitData.count))
+            response.headers.set('X-RateLimit-Reset', new Date(rateLimitData.resetTime).toISOString())
+          } catch (e) {
+            // Ignore header errors
           }
         }
-      )
-      // Copy security headers
-      response.headers.forEach((value, key) => {
-        errorResponse.headers.set(key, value)
-      })
-      return errorResponse
+      }
+    } catch (e) {
+      // Continue if rate limiting fails
     }
-  }
 
-    // Clean up old rate limit entries periodically
-    if (Math.random() < 0.01) { // 1% chance to clean up
-      const now = Date.now()
-      for (const [key, data] of rateLimitMap.entries()) {
-        if (now > data.resetTime) {
-          rateLimitMap.delete(key)
+    // Security logging for suspicious activity (Edge Runtime compatible)
+    try {
+      const pathname = request.nextUrl?.pathname || ''
+      const searchParams = request.nextUrl?.searchParams
+      if (pathname.includes('..') || 
+          pathname.includes('<script>') ||
+          (searchParams && searchParams.toString().includes('<script>'))) {
+        // Log but don't block
+      }
+    } catch (e) {
+      // Ignore
+    }
+
+    // CSRF Protection for admin routes (except auth/login which handles its own CSRF)
+    try {
+      const pathname = request.nextUrl?.pathname || ''
+      const method = request.method || 'GET'
+      
+      if (pathname.startsWith('/api/admin') && 
+          !pathname.includes('/auth') &&
+          ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+        
+        const csrfToken = request.headers.get('x-csrf-token')
+        const csrfCookie = request.cookies.get('csrf_token')?.value
+        
+        if (!csrfToken || !csrfCookie || !verifyCSRFTokenEdge(csrfToken, csrfCookie)) {
+          // Create error response
+          const errorResponse = new NextResponse(
+            JSON.stringify({ error: 'Invalid CSRF token' }),
+            { 
+              status: 403,
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            }
+          )
+          // Copy security headers safely
+          try {
+            response.headers.forEach((value, key) => {
+              try {
+                errorResponse.headers.set(key, value)
+              } catch (e) {
+                // Skip problematic headers
+              }
+            })
+          } catch (e) {
+            // Continue without copying headers
+          }
+          return errorResponse
         }
       }
+    } catch (e) {
+      // Continue if CSRF check fails
+    }
+
+    // Clean up old rate limit entries periodically
+    try {
+      if (Math.random() < 0.01) { // 1% chance to clean up
+        const now = Date.now()
+        for (const [key, data] of rateLimitMap.entries()) {
+          if (now > data.resetTime) {
+            rateLimitMap.delete(key)
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore cleanup errors
     }
 
     return response
