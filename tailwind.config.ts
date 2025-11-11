@@ -157,6 +157,19 @@ const config: Config = {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        spring: {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "50%": { transform: "scale(1.02)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        scaleIn: {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        scaleOut: {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "100%": { transform: "scale(0.95)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -171,21 +184,6 @@ const config: Config = {
         "spring-smooth": "spring 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "scale-in": "scaleIn 0.2s cubic-bezier(0, 0, 0.2, 1)",
         "scale-out": "scaleOut 0.15s cubic-bezier(0.4, 0, 1, 1)",
-      },
-      keyframes: {
-        spring: {
-          "0%": { transform: "scale(0.95)", opacity: "0" },
-          "50%": { transform: "scale(1.02)" },
-          "100%": { transform: "scale(1)", opacity: "1" },
-        },
-        scaleIn: {
-          "0%": { transform: "scale(0.95)", opacity: "0" },
-          "100%": { transform: "scale(1)", opacity: "1" },
-        },
-        scaleOut: {
-          "0%": { transform: "scale(1)", opacity: "1" },
-          "100%": { transform: "scale(0.95)", opacity: "0" },
-        },
       },
     },
   },
