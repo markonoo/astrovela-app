@@ -14,21 +14,24 @@ function verifyCSRFTokenEdge(token: string | null, cookieToken: string | undefin
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 
 export function middleware(request: NextRequest) {
-  // Create response
-  const response = NextResponse.next()
+  try {
+    // Create response
+    const response = NextResponse.next()
 
-  // Comprehensive Security Headers
-  
-  // Basic security headers
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  
-  // Strict Transport Security (HTTPS enforcement)
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
-  }
+    // Comprehensive Security Headers
+    
+    // Basic security headers
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.set('X-XSS-Protection', '1; mode=block')
+    
+    // Strict Transport Security (HTTPS enforcement)
+    // Use environment check that works in Edge Runtime
+    const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (isProduction) {
+      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+    }
   
   // Permissions Policy (formerly Feature Policy)
   response.headers.set('Permissions-Policy', [
@@ -51,7 +54,7 @@ export function middleware(request: NextRequest) {
   response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin')
 
   // Content Security Policy (Enhanced)
-  const isDevelopment = process.env.NODE_ENV === 'development'
+  const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
   const csp = [
     "default-src 'self'",
     // Scripts: Allow self, necessary external scripts, and unsafe-inline for Vercel Analytics
@@ -81,7 +84,7 @@ export function middleware(request: NextRequest) {
     // Form actions: Self only
     "form-action 'self'",
     // Upgrade insecure requests in production
-    ...(process.env.NODE_ENV === 'production' ? ["upgrade-insecure-requests"] : [])
+    ...(isProduction ? ["upgrade-insecure-requests"] : [])
   ].join('; ')
   
   response.headers.set('Content-Security-Policy', csp)
@@ -162,30 +165,43 @@ export function middleware(request: NextRequest) {
           hasCookie: !!csrfCookie
         })
       
-      return new NextResponse(
+      // Create new response with headers (Edge Runtime compatible)
+      const errorResponse = new NextResponse(
         JSON.stringify({ error: 'Invalid CSRF token' }),
         { 
           status: 403,
           headers: {
             'Content-Type': 'application/json',
-            ...Object.fromEntries(response.headers.entries())
           }
         }
       )
+      // Copy security headers
+      response.headers.forEach((value, key) => {
+        errorResponse.headers.set(key, value)
+      })
+      return errorResponse
     }
   }
 
-  // Clean up old rate limit entries periodically
-  if (Math.random() < 0.01) { // 1% chance to clean up
-    const now = Date.now()
-    for (const [key, data] of rateLimitMap.entries()) {
-      if (now > data.resetTime) {
-        rateLimitMap.delete(key)
+    // Clean up old rate limit entries periodically
+    if (Math.random() < 0.01) { // 1% chance to clean up
+      const now = Date.now()
+      for (const [key, data] of rateLimitMap.entries()) {
+        if (now > data.resetTime) {
+          rateLimitMap.delete(key)
+        }
       }
     }
-  }
 
-  return response
+    return response
+  } catch (error) {
+    // Fallback: return basic response if middleware fails
+    console.error('Middleware error:', error)
+    const fallbackResponse = NextResponse.next()
+    fallbackResponse.headers.set('X-Frame-Options', 'DENY')
+    fallbackResponse.headers.set('X-Content-Type-Options', 'nosniff')
+    return fallbackResponse
+  }
 }
 
 export const config = {
