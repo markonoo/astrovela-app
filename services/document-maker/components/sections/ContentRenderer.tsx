@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ContentSection } from '@/types/content';
+import { ContentSection } from '../../types/content';
 
 interface ContentRendererProps {
   sections: ContentSection[];

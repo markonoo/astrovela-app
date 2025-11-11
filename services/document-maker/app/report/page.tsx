@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { PageData } from '@/types/content';
+import { PageData } from '../../types/content';
 import { ScrollHeader } from '@/components/ui/ScrollHeader';
 import { PageRenderer } from '@/components/pages/PageRenderer';
 import { loadPagesData, getAvailablePages, canUseReplaceStateSafely } from '@/lib/content';

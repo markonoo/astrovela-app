@@ -1,4 +1,4 @@
-import { PageData } from '@/types/content';
+import { PageData } from '../types/content';
 
 // Content loader utility
 export async function loadPageData(pageNumber: number): Promise<PageData | null> {

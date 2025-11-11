@@ -1,7 +1,7 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import { PageData } from '@/types/content';
+import { PageData } from '../../types/content';
 
 // Lazy load page renderer for better performance
 const PageRenderer = lazy(() => 

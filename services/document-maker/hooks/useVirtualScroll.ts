@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { PageData } from '@/types/content';
+import { PageData } from '../types/content';
 
 interface UseVirtualScrollProps {
   pages: PageData[];

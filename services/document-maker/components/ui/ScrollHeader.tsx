@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { ScrollHeaderProps } from '@/types/content';
+import { ScrollHeaderProps } from '../../types/content';
 
 export function ScrollHeader({ total, current, deepLinkingEnabled, onJump }: ScrollHeaderProps) {
   const pct = useMemo(() => Math.round((current / total) * 100), [current, total]);

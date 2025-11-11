@@ -1,4 +1,4 @@
-import { PageData } from '@/types/content';
+import { PageData } from '../../types/content';
 import { Page } from '@/components/ui/Page';
 import { ContentRenderer } from '@/components/sections/ContentRenderer';
 
