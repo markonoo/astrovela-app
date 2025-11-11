@@ -42,7 +42,7 @@ model AppEntitlement {
   id            String   @id @default(cuid())
   userId        Int      @unique
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  email         String   @index
+  email         String
   plan          String   @default("trial") // "trial" | "active" | "canceled" | "expired"
   freeUntil     DateTime
   hasReport     Boolean  @default(false)
