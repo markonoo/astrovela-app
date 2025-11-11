@@ -43,16 +43,16 @@ export async function GET(request: NextRequest) {
 
     const userData = {
       name: dbUser.name || quizResponse?.firstName || user.user_metadata?.name,
-      firstName: quizResponse?.firstName || null,
-      lastName: quizResponse?.lastName || null,
-      birthDate: birthDateFormatted,
-      birthTime: quizResponse?.birthTime || null,
-      birthPlace: quizResponse?.birthPlace || null,
-      coverColor: quizResponse?.coverDesign || null,
-      gender: quizResponse?.gender || null,
-      sunSign: chartInterpretation?.sun_sign || null,
-      moonSign: chartInterpretation?.moon_sign || null,
-      risingSign: null,
+      firstName: quizResponse?.firstName || undefined,
+      lastName: quizResponse?.lastName || undefined,
+      birthDate: birthDateFormatted ?? undefined,
+      birthTime: quizResponse?.birthTime || undefined,
+      birthPlace: quizResponse?.birthPlace || undefined,
+      coverColor: quizResponse?.coverDesign || undefined,
+      gender: quizResponse?.gender || undefined,
+      sunSign: chartInterpretation?.sun_sign || undefined,
+      moonSign: chartInterpretation?.moon_sign || undefined,
+      risingSign: undefined,
     }
 
     // Load and personalize pages
