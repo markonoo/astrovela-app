@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         expiringSoon,
         conversionRate: `${conversionRate}%`,
       },
-      byPlan: entitlementsByPlan.map(item => ({
+      byPlan: entitlementsByPlan.map((item: { plan: string; _count: number }) => ({
         plan: item.plan,
         count: item._count,
       })),
@@ -97,4 +97,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
 
