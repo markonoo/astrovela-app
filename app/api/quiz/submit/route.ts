@@ -6,7 +6,10 @@ import { logger } from '@/utils/logger'
 export async function POST(request: Request) {
   try {
     // Create Supabase client inside function to ensure env vars are loaded
-    const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    // During build time, env vars might not be available - use placeholder values
+    const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+    const supabaseAnonKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     
     const quizData = await request.json()
     
