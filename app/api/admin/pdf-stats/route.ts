@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma"
 import { logger } from "@/utils/logger"
 import { requireAdminAuth } from "@/lib/admin-auth"
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 /**
  * Admin API: Get PDF/Document Maker Statistics
  * Returns metrics about PDF generation and document maker usage

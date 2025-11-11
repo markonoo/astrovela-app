@@ -3,6 +3,9 @@ import { requireAdminAuth } from "@/lib/admin-auth"
 import { getAuditLogs, getAuditStatistics } from "@/lib/admin-audit"
 import { logger } from "@/utils/logger"
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 /**
  * Admin Audit Log API
  * Returns audit logs with filtering and pagination

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { runDataRetentionCleanup } from "@/lib/data-retention"
 import { logger } from "@/utils/logger"
 
+// Force dynamic rendering (uses request.headers)
+export const dynamic = 'force-dynamic'
+
 /**
  * Cron Job: Data Retention Cleanup
  * Runs automatically to clean up old data per retention policies

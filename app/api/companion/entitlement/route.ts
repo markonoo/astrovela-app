@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma"
 import { EntitlementResponse } from "@/types/api"
 import { logger } from "@/utils/logger"
 
+// Force dynamic rendering (uses request.headers)
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Get user from Supabase auth
