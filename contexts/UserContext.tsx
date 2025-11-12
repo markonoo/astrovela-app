@@ -18,9 +18,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Get current user on mount
     const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user ?? null);
-      setLoading(false);
+      try {
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user ?? null);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
     getUser();
 
