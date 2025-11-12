@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'astrovela',
     images: [
       {
-        url: '/images/og-image.png', // Create this image
+        url: '/images/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'astrovela - Personalized Astrology',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'astrovela - Personalized Astrology for Self-Discovery',
     description: 'Create your personalized astrology book with custom natal charts and deep insights.',
-    images: ['/images/og-image.png'],
+    images: ['/images/og-image.svg'],
   },
   robots: {
     index: true,
@@ -92,6 +92,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#28293d" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="AstroVela" />
       </head>
