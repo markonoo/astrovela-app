@@ -53,3 +53,4 @@ export function CookieBannerWrapper() {
   return <CookieBanner onAccept={handleAccept} onReject={handleReject} onCustomize={handleCustomize} />
 }
 
+

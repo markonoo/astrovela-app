@@ -416,3 +416,4 @@ curl -H "Authorization: Bearer TOKEN" http://localhost:3000/api/companion/today
 
 
 
+

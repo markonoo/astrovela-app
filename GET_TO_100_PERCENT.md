@@ -407,3 +407,4 @@ const decrypted = decrypt(encrypted)
 
 **Ready to implement?** Start with Step 1 (Input Validation) - it's the quickest win with high security impact!
 
+
