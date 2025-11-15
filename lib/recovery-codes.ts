@@ -65,6 +65,12 @@ export function generateRecoveryCodes(): { plain: string[]; hashed: string[] } {
  * Returns true if valid and marks it as used
  */
 export async function verifyRecoveryCode(code: string): Promise<boolean> {
+  // Skip if DATABASE_URL is not set
+  if (!process.env.DATABASE_URL) {
+    console.warn('Recovery code verification skipped (DATABASE_URL not set)')
+    return false
+  }
+
   try {
     const hashedCode = hashRecoveryCode(code.toUpperCase().replace(/\s/g, ''))
     
@@ -123,6 +129,11 @@ export async function storeRecoveryCodes(hashedCodes: string[]): Promise<void> {
  * Get count of remaining unused recovery codes
  */
 export async function getRemainingRecoveryCodesCount(): Promise<number> {
+  // Skip if DATABASE_URL is not set
+  if (!process.env.DATABASE_URL) {
+    return 0
+  }
+
   try {
     return await prisma.adminRecoveryCode.count({
       where: { used: false },

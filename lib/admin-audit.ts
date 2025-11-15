@@ -37,10 +37,13 @@ export interface CreateAuditLogParams {
  * This function is designed to never throw errors - audit logging should never break the app
  */
 export async function logAdminAction(params: CreateAuditLogParams): Promise<void> {
+  // Skip database operations entirely if DATABASE_URL is not set
+  if (!process.env.DATABASE_URL) {
+    logger.info('Audit logging skipped (DATABASE_URL not set)', { action: params.action })
+    return
+  }
+
   try {
-    // Test if database connection is available
-    await prisma.$connect()
-    
     await prisma.adminAuditLog.create({
       data: {
         adminId: params.adminId || 'unknown',
@@ -56,13 +59,10 @@ export async function logAdminAction(params: CreateAuditLogParams): Promise<void
     // Don't throw - audit logging failures shouldn't break the app
     // Just log to console/logger and continue
     const errorMsg = error?.message || String(error)
-    logger.warn('Audit logging skipped (database unavailable)', { 
+    logger.warn('Audit logging skipped (database error)', { 
       error: errorMsg,
       action: params.action 
     })
-  } finally {
-    // Ensure we don't leave connections hanging
-    await prisma.$disconnect().catch(() => {})
   }
 }
 

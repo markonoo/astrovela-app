@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Personalized Ebook is Ready!</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f7f7f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f7f7f7;">
+        <tr>
+            <td style="padding: 40px 20px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #28293d; padding: 30px 40px; text-align: center;">
+                            <img src="https://yourdomain.com/images/astrovela-logo.png" alt="AstroVela" width="180" style="display: block; margin: 0 auto;">
+                        </td>
+                    </tr>
+                    
+                    <!-- Hero Section -->
+                    <tr>
+                        <td style="padding: 40px 40px 30px; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 12px; padding: 40px; margin-bottom: 30px;">
+                                <p style="margin: 0 0 15px; font-size: 48px;">🎉</p>
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #28293d; line-height: 1.3;">
+                                    Your Personalized Ebook<br>is Ready to Download!
+                                </h1>
+                            </div>
+                            
+                            <p style="margin: 0 0 30px; font-size: 16px; line-height: 1.6; color: #4d4d4d;">
+                                Hi {{firstName}}, your cosmic journey begins now! We've created your unique 200+ page astrology book based on your exact birth chart.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Download CTA -->
+                    <tr>
+                        <td style="padding: 0 40px 40px; text-align: center;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td style="border-radius: 50px; background-color: #28293d; text-align: center; box-shadow: 0 4px 12px rgba(40, 41, 61, 0.3);">
+                                        <a href="{{downloadUrl}}" style="display: inline-block; padding: 20px 60px; font-size: 18px; font-weight: 700; color: #fbbf24; text-decoration: none;">
+                                            📥 Download Your Ebook Now
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="margin: 20px 0 0; font-size: 13px; color: #9b9b9b;">
+                                Download link expires in 30 days
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- What's Inside -->
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 25px;">
+                                <h2 style="margin: 0 0 20px; font-size: 20px; font-weight: 700; color: #28293d; text-align: center;">
+                                    What's Inside Your Book
+                                </h2>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 12px 0; font-size: 15px; color: #4d4d4d; border-bottom: 1px solid #e8e8e8;">
+                                            <strong>✨ Your Birth Chart Analysis</strong><br>
+                                            <span style="font-size: 14px; color: #6b6b6b;">Complete breakdown of your cosmic blueprint</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; font-size: 15px; color: #4d4d4d; border-bottom: 1px solid #e8e8e8;">
+                                            <strong>💕 Relationship Insights</strong><br>
+                                            <span style="font-size: 14px; color: #6b6b6b;">Compatibility guide and love forecast</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; font-size: 15px; color: #4d4d4d; border-bottom: 1px solid #e8e8e8;">
+                                            <strong>🎯 Career & Life Path</strong><br>
+                                            <span style="font-size: 14px; color: #6b6b6b;">Professional guidance tailored to you</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; font-size: 15px; color: #4d4d4d;">
+                                            <strong>🌱 Personal Growth Guide</strong><br>
+                                            <span style="font-size: 14px; color: #6b6b6b;">Transform challenges into opportunities</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- App Promotion (if applicable) -->
+                    {{#if hasAppAccess}}
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 8px; padding: 25px; text-align: center;">
+                                <p style="margin: 0 0 15px; font-size: 20px; font-weight: 700; color: #ffffff;">
+                                    📱 Don't Forget Your App Access!
+                                </p>
+                                <p style="margin: 0 0 20px; font-size: 14px; color: #e9d5ff; line-height: 1.6;">
+                                    Get daily horoscopes, compatibility reports, and personalized insights on the go.
+                                </p>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                                    <tr>
+                                        <td style="border-radius: 25px; background-color: #ffffff;">
+                                            <a href="{{appLoginUrl}}" style="display: inline-block; padding: 12px 30px; font-size: 14px; font-weight: 600; color: #8b5cf6; text-decoration: none;">
+                                                Access App Now
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/if}}
+                    
+                    <!-- Tips -->
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <div style="background-color: #fef9e7; border-radius: 8px; padding: 20px; border-left: 4px solid #fbbf24;">
+                                <p style="margin: 0 0 10px; font-size: 16px; font-weight: 600; color: #28293d;">
+                                    💡 Pro Tip
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                    Read your book in a quiet space where you can reflect. Take notes on insights that resonate with you—they're your roadmap to transformation!
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Support -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #f9f9f9; border-top: 1px solid #e8e8e8; text-align: center;">
+                            <h3 style="margin: 0 0 15px; font-size: 16px; font-weight: 700; color: #28293d;">
+                                Need Help Downloading?
+                            </h3>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                Having trouble? Contact us at <a href="mailto:hello@astrovela.de" style="color: #fbbf24; text-decoration: none; font-weight: 600;">hello@astrovela.de</a><br>
+                                We'll respond within 24 hours.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #28293d; color: #ffffff; text-align: center;">
+                            <p style="margin: 0 0 15px; font-size: 14px;">
+                                Enjoy your cosmic journey! 🌟
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #9b9b9b;">
+                                Nova Ventures UG • Gandersheimer Weg 20, 22459 Hamburg, Germany<br>
+                                <a href="{{unsubscribeUrl}}" style="color: #fbbf24; text-decoration: underline;">Unsubscribe</a>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+

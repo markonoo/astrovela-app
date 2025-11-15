@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Welcome to AstroVela!</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f7f7f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f7f7f7;">
+        <tr>
+            <td style="padding: 40px 20px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #28293d; padding: 30px 40px; text-align: center;">
+                            <img src="https://yourdomain.com/images/astrovela-logo.png" alt="AstroVela" width="180" style="display: block; margin: 0 auto;">
+                        </td>
+                    </tr>
+                    
+                    <!-- Success Message -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px; text-align: center;">
+                            <div style="display: inline-block; width: 80px; height: 80px; background-color: #d4edda; border-radius: 50%; line-height: 80px; font-size: 40px; margin-bottom: 20px;">
+                                ✓
+                            </div>
+                            <h1 style="margin: 0 0 15px; font-size: 28px; font-weight: 700; color: #28293d;">
+                                Thank You, {{firstName}}!
+                            </h1>
+                            <p style="margin: 0; font-size: 18px; color: #6b6b6b;">
+                                Your order has been confirmed
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Order Details -->
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 25px; border: 1px solid #e8e8e8;">
+                                <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 700; color: #28293d;">
+                                    Order Details
+                                </h2>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 10px 0; font-size: 14px; color: #6b6b6b; border-bottom: 1px solid #e8e8e8;">
+                                            Order Number:
+                                        </td>
+                                        <td style="padding: 10px 0; font-size: 14px; font-weight: 600; color: #28293d; text-align: right; border-bottom: 1px solid #e8e8e8;">
+                                            #{{orderNumber}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px 0; font-size: 14px; color: #6b6b6b; border-bottom: 1px solid #e8e8e8;">
+                                            Order Date:
+                                        </td>
+                                        <td style="padding: 10px 0; font-size: 14px; font-weight: 600; color: #28293d; text-align: right; border-bottom: 1px solid #e8e8e8;">
+                                            {{orderDate}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding: 20px 0 10px;">
+                                            <strong style="font-size: 15px; color: #28293d;">Items Ordered:</strong>
+                                        </td>
+                                    </tr>
+                                    {{#each items}}
+                                    <tr>
+                                        <td style="padding: 8px 0; font-size: 14px; color: #4d4d4d;">
+                                            {{this.name}}
+                                        </td>
+                                        <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #28293d; text-align: right;">
+                                            €{{this.price}}
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                    <tr>
+                                        <td style="padding: 15px 0 0; font-size: 16px; font-weight: 700; color: #28293d; border-top: 2px solid #28293d;">
+                                            Total:
+                                        </td>
+                                        <td style="padding: 15px 0 0; font-size: 16px; font-weight: 700; color: #28293d; text-align: right; border-top: 2px solid #28293d;">
+                                            €{{totalPrice}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- What's Next -->
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <h2 style="margin: 0 0 20px; font-size: 20px; font-weight: 700; color: #28293d;">
+                                What Happens Next?
+                            </h2>
+                            
+                            {{#if hasEbook}}
+                            <div style="background-color: #fef9e7; border-radius: 8px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #fbbf24;">
+                                <p style="margin: 0 0 10px; font-size: 16px; font-weight: 600; color: #28293d;">
+                                    📖 Your Ebook
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                    Your personalized ebook is being prepared and will be delivered to <strong>{{email}}</strong> within the next hour.
+                                </p>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if hasPaperback}}
+                            <div style="background-color: #e7f3ff; border-radius: 8px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+                                <p style="margin: 0 0 10px; font-size: 16px; font-weight: 600; color: #28293d;">
+                                    📦 Your Paperback
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                    Your physical book will be printed and shipped within 3-5 business days. You'll receive tracking information via email.
+                                </p>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if hasApp}}
+                            <div style="background-color: #f0e7ff; border-radius: 8px; padding: 20px; border-left: 4px solid #8b5cf6;">
+                                <p style="margin: 0 0 10px; font-size: 16px; font-weight: 600; color: #28293d;">
+                                    📱 Your App Access
+                                </p>
+                                <p style="margin: 0 0 15px; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                    Your AstroVela app account is ready! Access daily horoscopes, compatibility reports, and more.
+                                </p>
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="border-radius: 25px; background-color: #8b5cf6;">
+                                            <a href="{{appLoginUrl}}" style="display: inline-block; padding: 12px 30px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none;">
+                                                Access App Now
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            {{/if}}
+                        </td>
+                    </tr>
+                    
+                    <!-- Support -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #f9f9f9; border-top: 1px solid #e8e8e8;">
+                            <h3 style="margin: 0 0 15px; font-size: 16px; font-weight: 700; color: #28293d;">
+                                Need Help?
+                            </h3>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4d4d4d;">
+                                Our support team is here for you! Email us at <a href="mailto:hello@astrovela.de" style="color: #fbbf24; text-decoration: none; font-weight: 600;">hello@astrovela.de</a> and we'll respond within 24 hours.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #28293d; color: #ffffff; text-align: center;">
+                            <p style="margin: 0 0 15px; font-size: 14px;">
+                                Thank you for choosing AstroVela! 🌟
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #9b9b9b;">
+                                Nova Ventures UG • Gandersheimer Weg 20, 22459 Hamburg, Germany<br>
+                                <a href="{{unsubscribeUrl}}" style="color: #fbbf24; text-decoration: underline;">Unsubscribe</a>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
