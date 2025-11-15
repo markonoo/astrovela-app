@@ -72,7 +72,16 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const passwordValid = await verifyPassword(password)
+      const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
+      if (!adminPasswordHash) {
+        logger.error("ADMIN_PASSWORD_HASH not configured")
+        return NextResponse.json(
+          { error: "Admin authentication not configured" },
+          { status: 500 }
+        )
+      }
+
+      const passwordValid = await verifyPassword(password, adminPasswordHash)
       
       if (!passwordValid) {
         logger.warn("Invalid password attempt", { clientIP })
