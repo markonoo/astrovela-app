@@ -69,13 +69,13 @@ export async function POST(request: NextRequest) {
       if (!password || !passwordValid) {
         logger.warn("Admin login attempt failed - invalid password", { ip: clientIP })
         
-        // Log failed login attempt
-        await logAdminLogin(
+        // Log failed login attempt (don't await to prevent blocking on DB errors)
+        logAdminLogin(
           false,
           clientIP,
           request.headers.get('user-agent') || undefined,
           { step: 'password', reason: 'invalid_password' }
-        )
+        ).catch(err => logger.error("Audit log failed", err))
         
         return NextResponse.json(
           { success: false, error: "Invalid password", step: 'password' },
@@ -90,17 +90,17 @@ export async function POST(request: NextRequest) {
         // SECURITY: 2FA is REQUIRED - Don't allow login without it
         logger.error("2FA not configured for admin account", { ip: clientIP })
         
-        await logAdminLogin(
+        logAdminLogin(
           false,
           clientIP,
           request.headers.get('user-agent') || undefined,
           { step: 'password', reason: '2fa_not_configured' }
-        )
+        ).catch(err => logger.error("Audit log failed", err))
         
         return NextResponse.json(
           { 
             success: false, 
-            error: "2FA is required but not configured. Please contact system administrator to set up 2FA at /admin/2fa-setup",
+            error: "2FA is required but not configured. Please contact system administrator to set up 2FA at /olivialimon-admin/2fa-setup",
             step: 'password',
             requires2FA: true,
             setupRequired: true
@@ -178,13 +178,13 @@ export async function POST(request: NextRequest) {
           const sessionToken = createAdminSession()
           await setAdminSessionCookie(sessionToken)
           
-          // Log successful login
-          await logAdminLogin(
+          // Log successful login (don't await to prevent blocking on DB errors)
+          logAdminLogin(
             true,
             clientIP,
             request.headers.get('user-agent') || undefined,
             { step: '2fa', requires2FA: true, authMethod }
-          )
+          ).catch(err => logger.error("Audit log failed", err))
           
           // Get remaining recovery codes for response
           const remainingCodes = await getRemainingRecoveryCodesCount()
@@ -202,13 +202,13 @@ export async function POST(request: NextRequest) {
         } else {
           logger.warn(`Admin login attempt failed - invalid ${authMethod}`, { ip: clientIP })
           
-          // Log failed attempt
-          await logAdminLogin(
+          // Log failed attempt (don't await to prevent blocking on DB errors)
+          logAdminLogin(
             false,
             clientIP,
             request.headers.get('user-agent') || undefined,
             { step: '2fa', reason: `invalid_${authMethod}` }
-          )
+          ).catch(err => logger.error("Audit log failed", err))
           
           return NextResponse.json(
             { 
