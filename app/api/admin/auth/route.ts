@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const sessionToken = getAdminSessionCookie(request)
+    const sessionToken = await getAdminSessionCookie()
     
     if (!sessionToken) {
       return NextResponse.json(
@@ -219,7 +219,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const session = await verifyAdminSession(sessionToken)
+    const session = verifyAdminSession(sessionToken)
     
     if (!session) {
       return NextResponse.json(
@@ -230,7 +230,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       authenticated: true,
-      adminId: session.adminId,
       expiresAt: session.expiresAt
     })
 
