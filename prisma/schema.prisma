@@ -170,3 +170,13 @@ model Consent {
   @@index([consentType])
   @@index([granted])
 }
+
+model AdminRecoveryCode {
+  id        String    @id @default(cuid())
+  code      String    @unique // Hashed recovery code
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  
+  @@index([used])
+}

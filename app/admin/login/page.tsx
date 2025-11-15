@@ -18,6 +18,8 @@ export default function AdminLoginPage() {
   const [totpCode, setTotpCode] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [useRecoveryCode, setUseRecoveryCode] = useState(false)
+  const [lowRecoveryCodes, setLowRecoveryCodes] = useState(false)
   const router = useRouter()
   const csrfToken = useCSRF()
 
@@ -113,6 +115,10 @@ export default function AdminLoginPage() {
       const data = await response.json()
 
       if (response.ok && data.success) {
+        // Check if recovery codes are low
+        if (data.lowRecoveryCodes) {
+          setLowRecoveryCodes(true)
+        }
         completeLogin()
       } else {
         setError(data.error || "Invalid 2FA code")
@@ -190,26 +196,38 @@ export default function AdminLoginPage() {
           ) : (
             <form onSubmit={handle2FASubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="totpCode">Authentication Code</Label>
+                <Label htmlFor="totpCode">
+                  {useRecoveryCode ? 'Recovery Code' : 'Authentication Code'}
+                </Label>
                 <Input
                   id="totpCode"
                   type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]{6}"
-                  maxLength={6}
+                  inputMode={useRecoveryCode ? "text" : "numeric"}
+                  pattern={useRecoveryCode ? undefined : "[0-9]{6}"}
+                  maxLength={useRecoveryCode ? 12 : 6}
                   value={totpCode}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '').slice(0, 6)
-                    setTotpCode(value)
+                    if (useRecoveryCode) {
+                      // Allow alphanumeric with hyphens for recovery codes
+                      const value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '')
+                      setTotpCode(value)
+                    } else {
+                      // Only digits for TOTP
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                      setTotpCode(value)
+                    }
                   }}
-                  placeholder="000000"
+                  placeholder={useRecoveryCode ? "XXXX-XXXX-XX" : "000000"}
                   required
                   disabled={loading}
-                  className="w-full text-center text-2xl tracking-widest font-mono"
+                  className={`w-full text-center ${useRecoveryCode ? 'text-lg' : 'text-2xl'} tracking-widest font-mono`}
                   autoFocus
                 />
                 <p className="text-xs text-gray-500 text-center">
-                  Open your authenticator app (Google Authenticator, Authy, etc.) and enter the 6-digit code
+                  {useRecoveryCode 
+                    ? 'Enter one of your recovery codes (format: XXXX-XXXX-XX)'
+                    : 'Open your authenticator app (Google Authenticator, Authy, etc.) and enter the 6-digit code'
+                  }
                 </p>
               </div>
 
@@ -221,13 +239,32 @@ export default function AdminLoginPage() {
               )}
 
               <div className="space-y-2">
-                <Button type="submit" className="w-full" disabled={loading || totpCode.length !== 6}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || (!useRecoveryCode && totpCode.length !== 6) || (useRecoveryCode && totpCode.length < 10)}
+                >
                   {loading ? "Verifying..." : "Verify & Login"}
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full" 
+                
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-sm"
+                  onClick={() => {
+                    setUseRecoveryCode(!useRecoveryCode)
+                    setTotpCode("")
+                    setError(null)
+                  }}
+                  disabled={loading}
+                >
+                  {useRecoveryCode ? "Use authenticator app instead" : "Use recovery code instead"}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
                   onClick={handleBack}
                   disabled={loading}
                 >

@@ -15,7 +15,7 @@ export default function Home() {
   const closeDrawer = () => setIsDrawerOpen(false)
 
   return (
-    <>
+    <div className="min-h-screen bg-[#f7f7f7]">
       {/* Header */}
       <header className="container mx-auto px-4 py-4 md:py-6 flex justify-between items-center">
         <div className="flex items-center">
@@ -63,7 +63,7 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
-    </>
+    </div>
   )
 }
 

@@ -150,7 +150,7 @@ ADMIN_JWT_SECRET=generate-random-32-character-secret-here
 # CSRF secret for token generation (generate random 32+ character string)
 CSRF_SECRET=generate-random-32-character-secret-here
 
-# Admin 2FA Secret (optional but recommended)
+# Admin 2FA Secret (REQUIRED in production)
 # Generate via /admin/2fa-setup endpoint, then add here
 ADMIN_2FA_SECRET=your_2fa_secret_key_here
 ```
@@ -164,15 +164,33 @@ ADMIN_2FA_SECRET=your_2fa_secret_key_here
 - `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH`: Yes (hash recommended)
 - `ADMIN_JWT_SECRET`: Yes (for secure sessions)
 - `CSRF_SECRET`: Yes (for CSRF protection)
-- `ADMIN_2FA_SECRET`: No (optional, but highly recommended for production)
+- `ADMIN_2FA_SECRET`: **YES in production** (optional in development)
 
 **Security Notes:**
 - Use `ADMIN_PASSWORD_HASH` instead of plain `ADMIN_PASSWORD` in production
 - Generate strong random secrets for JWT and CSRF (32+ characters)
-- Enable 2FA by setting `ADMIN_2FA_SECRET` for enhanced security
+- **2FA is MANDATORY in production** - The app will throw an error if not configured
+- Recovery codes are automatically generated after 2FA setup
+- Store recovery codes securely (password manager recommended)
 - Never commit these values to git
 - Rotate secrets periodically
 - Use different secrets for development and production
+
+**2FA Setup Process:**
+1. Set `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH` in environment
+2. Visit `/admin/2fa-setup` (requires password authentication)
+3. Scan QR code with Google Authenticator, Authy, or similar app
+4. Save the generated `ADMIN_2FA_SECRET` to your environment variables
+5. Generate recovery codes at `/admin/recovery-codes`
+6. Store recovery codes securely (each code is single-use)
+7. Redeploy with `ADMIN_2FA_SECRET` set
+
+**Recovery Codes:**
+- Generated at `/admin/recovery-codes` (requires admin authentication)
+- 10 codes per generation, each single-use
+- Use when 2FA device is unavailable
+- Regenerate when running low (< 3 remaining)
+- Stored securely hashed in database
 
 ---
 

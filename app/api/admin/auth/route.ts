@@ -5,6 +5,7 @@ import { adminLoginLimiter, getClientIP } from "@/lib/rate-limit"
 import { verifyPassword } from "@/lib/password"
 import { createAdminSession, setAdminSessionCookie, verifyAdminSession, getAdminSessionCookie } from "@/lib/admin-session"
 import { logAdminLogin, logAdminLogout } from "@/lib/admin-audit"
+import { verifyRecoveryCode, getRemainingRecoveryCodesCount } from "@/lib/recovery-codes"
 
 /**
  * Admin Authentication API
@@ -82,38 +83,39 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Check if 2FA is enabled
+      // Check if 2FA is enabled - IT IS NOW MANDATORY
       const twoFAEnabled = is2FAEnabled()
 
-      if (twoFAEnabled) {
-        // Return success but require 2FA
-        return NextResponse.json({
-          success: true,
-          step: '2fa',
-          message: "Password verified. Please enter your 2FA code.",
-          requires2FA: true,
-        })
-      } else {
-        // No 2FA enabled, login successful - create secure session
-        const sessionToken = createAdminSession()
-        await setAdminSessionCookie(sessionToken)
+      if (!twoFAEnabled) {
+        // SECURITY: 2FA is REQUIRED - Don't allow login without it
+        logger.error("2FA not configured for admin account", { ip: clientIP })
         
-        // Log successful login
         await logAdminLogin(
-          true,
+          false,
           clientIP,
           request.headers.get('user-agent') || undefined,
-          { step: 'password', requires2FA: false }
+          { step: 'password', reason: '2fa_not_configured' }
         )
         
-        logger.info("Admin login successful", { ip: clientIP })
-        return NextResponse.json({
-          success: true,
-          step: 'complete',
-          message: "Authentication successful",
-          requires2FA: false,
-        })
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: "2FA is required but not configured. Please contact system administrator to set up 2FA at /admin/2fa-setup",
+            step: 'password',
+            requires2FA: true,
+            setupRequired: true
+          },
+          { status: 403 }
+        )
       }
+
+      // 2FA is enabled and REQUIRED - proceed to 2FA verification
+      return NextResponse.json({
+        success: true,
+        step: '2fa',
+        message: "Password verified. Please enter your 2FA code.",
+        requires2FA: true,
+      })
     } else if (step === '2fa') {
       // Step 2: Verify 2FA code
       if (!totpCode) {
@@ -141,42 +143,81 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        const secret = getAdmin2FASecret()
-        const isValid = verifyTOTP(totpCode, secret)
+        let isValid = false
+        let authMethod = '2fa'
+        
+        // Check if it's a recovery code (format: XXXX-XXXX-XX)
+        const isRecoveryCode = totpCode.replace(/\s/g, '').length >= 10
+        
+        if (isRecoveryCode) {
+          // Try recovery code verification
+          isValid = await verifyRecoveryCode(totpCode)
+          authMethod = 'recovery_code'
+          
+          if (isValid) {
+            // Get remaining recovery codes count
+            const remainingCodes = await getRemainingRecoveryCodesCount()
+            logger.info("Admin login with recovery code", { 
+              ip: clientIP, 
+              remainingCodes 
+            })
+            
+            // Warn if running low on recovery codes
+            if (remainingCodes < 3) {
+              logger.warn("Low recovery codes remaining", { remainingCodes })
+            }
+          }
+        } else {
+          // Try TOTP verification
+          const secret = getAdmin2FASecret()
+          isValid = verifyTOTP(totpCode, secret)
+        }
 
         if (isValid) {
           // Create secure session
           const sessionToken = createAdminSession()
           await setAdminSessionCookie(sessionToken)
           
-          // Log successful login with 2FA
+          // Log successful login
           await logAdminLogin(
             true,
             clientIP,
             request.headers.get('user-agent') || undefined,
-            { step: '2fa', requires2FA: true }
+            { step: '2fa', requires2FA: true, authMethod }
           )
           
-          logger.info("Admin login successful with 2FA", { ip: clientIP })
+          // Get remaining recovery codes for response
+          const remainingCodes = await getRemainingRecoveryCodesCount()
+          
+          logger.info(`Admin login successful with ${authMethod}`, { ip: clientIP })
           return NextResponse.json({
             success: true,
             step: 'complete',
             message: "Authentication successful",
             requires2FA: true,
+            authMethod,
+            remainingRecoveryCodes: remainingCodes,
+            lowRecoveryCodes: remainingCodes < 3,
           })
         } else {
-          logger.warn("Admin login attempt failed - invalid 2FA code", { ip: clientIP })
+          logger.warn(`Admin login attempt failed - invalid ${authMethod}`, { ip: clientIP })
           
-          // Log failed 2FA attempt
+          // Log failed attempt
           await logAdminLogin(
             false,
             clientIP,
             request.headers.get('user-agent') || undefined,
-            { step: '2fa', reason: 'invalid_2fa_code' }
+            { step: '2fa', reason: `invalid_${authMethod}` }
           )
           
           return NextResponse.json(
-            { success: false, error: "Invalid 2FA code", step: '2fa' },
+            { 
+              success: false, 
+              error: isRecoveryCode 
+                ? "Invalid or already used recovery code" 
+                : "Invalid 2FA code", 
+              step: '2fa' 
+            },
             { status: 401 }
           )
         }

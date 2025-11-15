@@ -13,6 +13,8 @@
 - ✅ Rate limiting (5 attempts per 15 min)
 - ✅ CSRF protection (double-submit cookie)
 - ✅ Password hashing (bcrypt, 12 rounds)
+- ✅ **MANDATORY 2FA (TOTP)** ✅ NEW
+- ✅ **Recovery codes system** ✅ NEW
 
 ### Phase 2: Admin Audit & Monitoring ✅ 100%
 - ✅ Complete audit logging system
@@ -63,7 +65,39 @@
 
 ## 🆕 Latest Additions (Getting to 100%)
 
-### 1. Input Validation ✅
+### 1. Mandatory 2FA + Recovery Codes ✅
+**Files Created:**
+- `lib/recovery-codes.ts` - Recovery code generation and verification
+- `app/api/admin/recovery-codes/route.ts` - Recovery codes management API
+- `app/admin/recovery-codes/page.tsx` - Recovery codes UI
+
+**Files Updated:**
+- `lib/admin-2fa.ts` - Enforces 2FA in production
+- `app/api/admin/auth/route.ts` - Supports recovery code authentication
+- `app/admin/login/page.tsx` - Recovery code login option
+- `app/admin/preview/page.tsx` - Link to recovery codes management
+- `prisma/schema.prisma` - AdminRecoveryCode model
+
+**Features:**
+- 2FA is MANDATORY in production (app throws error if not configured)
+- Recovery codes for backup authentication (10 codes per generation)
+- Each recovery code is single-use
+- Codes stored securely hashed (SHA-256)
+- Format: XXXX-XXXX-XX (easy to read, no ambiguous characters)
+- Low code warnings (< 3 remaining)
+- Audit logging for recovery code usage
+- Download/copy codes functionality
+- Comprehensive setup instructions
+
+**Security Benefits:**
+- Prevents admin lockout if 2FA device is lost
+- Each code can only be used once
+- Codes are hashed in database (never stored plain)
+- Automatic warnings when running low
+- Full audit trail of usage
+- Silicon Valley standard security practice
+
+### 2. Input Validation ✅
 **Files Created:**
 - `lib/validation.ts` - Zod schemas for all API inputs
 
@@ -190,6 +224,7 @@
 ADMIN_JWT_SECRET=your-secret-here
 CSRF_SECRET=your-secret-here
 ADMIN_PASSWORD_HASH=hash-from-setup-script
+ADMIN_2FA_SECRET=generate-via-2fa-setup  # MANDATORY in production
 
 # Data Encryption (Optional)
 ENCRYPT_SENSITIVE_DATA=true
@@ -205,6 +240,32 @@ CRON_SECRET=your-cron-secret
 # Age Verification
 REQUIRE_AGE_VERIFICATION=true
 ```
+
+**Admin Access Setup:**
+1. **Password Setup:**
+   ```bash
+   npm run setup-admin-password
+   # Copy the generated hash to ADMIN_PASSWORD_HASH
+   ```
+
+2. **2FA Setup (MANDATORY in production):**
+   - Visit: `https://your-domain.com/admin/2fa-setup`
+   - Scan QR code with Google Authenticator/Authy
+   - Save `ADMIN_2FA_SECRET` to environment variables
+   - Redeploy with new secret
+
+3. **Recovery Codes (Highly Recommended):**
+   - Login to admin panel: `https://your-domain.com/admin/login`
+   - Navigate to: `https://your-domain.com/admin/recovery-codes`
+   - Generate and securely store 10 recovery codes
+   - Use when 2FA device is unavailable
+
+**Admin Pages:**
+- `/admin/login` - Admin login (password + 2FA)
+- `/admin/preview` - Admin dashboard
+- `/admin/2fa-setup` - Configure 2FA
+- `/admin/recovery-codes` - Manage recovery codes
+- `/admin/audit` - View audit logs
 
 **Database Migrations:**
 ```bash
@@ -238,6 +299,7 @@ npx prisma db push
 - `lib/breach-detection.ts`
 - `lib/admin-audit.ts`
 - `lib/admin-auth.ts`
+- `lib/recovery-codes.ts` ✅
 
 **API Routes:**
 - `app/api/user/data/route.ts`
@@ -248,11 +310,13 @@ npx prisma db push
 - `app/api/admin/audit/route.ts`
 - `app/api/admin/cleanup/route.ts`
 - `app/api/admin/breach/route.ts`
+- `app/api/admin/recovery-codes/route.ts` ✅
 - `app/api/cron/cleanup/route.ts` ✅
 - `app/api/storage/signed-url/route.ts`
 
 **UI Components:**
 - `app/admin/audit/page.tsx`
+- `app/admin/recovery-codes/page.tsx` ✅
 - `app/settings/privacy/page.tsx`
 - `components/consent/CookieBanner.tsx`
 - `components/consent/ConsentManager.tsx`
@@ -280,6 +344,8 @@ npx prisma db push
 - [x] CSRF protection works
 - [x] Rate limiting active
 - [x] Password hashing verified
+- [x] 2FA mandatory in production
+- [x] Recovery codes system working
 
 ### Compliance
 - [x] User data access works

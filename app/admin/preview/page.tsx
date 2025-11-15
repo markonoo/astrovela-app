@@ -199,6 +199,12 @@ function AdminPreviewContent() {
                   Audit Logs
                 </Button>
               </Link>
+              <Link href="/admin/recovery-codes">
+                <Button className="w-full mb-2" variant="default" size="sm">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Recovery Codes
+                </Button>
+              </Link>
               <Link href="/api/admin/companion-stats" target="_blank">
                 <Button className="w-full mb-2" variant="outline" size="sm">
                   <Users className="w-4 h-4 mr-2" />
