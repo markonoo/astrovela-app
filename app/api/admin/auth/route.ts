@@ -20,7 +20,16 @@ interface LoginRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Log incoming request
+    logger.info("Admin auth request received", {
+      method: request.method,
+      url: request.url,
+      headers: Object.fromEntries(request.headers.entries())
+    })
+
     const body: LoginRequest = await request.json()
+    logger.info("Request body parsed", { step: body.step, hasPassword: !!body.password, hasTotpCode: !!body.totpCode })
+    
     const { password, totpCode, step = 'password' } = body
 
     // Get client IP for rate limiting
@@ -249,10 +258,25 @@ export async function POST(request: NextRequest) {
       { success: false, error: "Invalid request" },
       { status: 400 }
     )
-  } catch (error) {
-    logger.error("Admin auth error", error)
+  } catch (error: any) {
+    logger.error("Admin auth error", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
+    
+    // Always return detailed error for debugging
     return NextResponse.json(
-      { success: false, error: "Authentication failed" },
+      { 
+        success: false, 
+        error: "Authentication failed",
+        debug: {
+          message: error.message,
+          name: error.name,
+          // Only include stack in non-production
+          ...(process.env.NODE_ENV !== 'production' && { stack: error.stack })
+        }
+      },
       { status: 500 }
     )
   }
