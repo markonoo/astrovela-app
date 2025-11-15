@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Shield, Download, Copy, CheckCircle2, AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react"
-import { AdminProtectedRoute } from "@/components/admin-protected-route"
+import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute"
 import Link from "next/link"
 
 export default function RecoveryCodesPage() {
