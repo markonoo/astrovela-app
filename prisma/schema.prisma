@@ -7,76 +7,112 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model QuizResponse {
-  id          String   @id @default(cuid())
-  email       String
-  answers     Json
-  birthDate   Json
-  birthPlace  String?
-  birthTime   String?
-  firstName   String?
-  lastName    String?
-  gender      String?
-  createdAt   DateTime @default(now())
-  coverDesign String?
-  session_id  String?
-  userId      Int?
-  user        User?    @relation(fields: [userId], references: [id])
+model AdminAuditLog {
+  id        String   @id
+  adminId   String?
+  action    String
+  resource  String?
+  ipAddress String?
+  userAgent String?
+  success   Boolean
+  details   Json?
+  createdAt DateTime @default(now())
 
-  @@index([session_id])
-  @@index([userId])
+  @@index([action])
+  @@index([adminId])
+  @@index([createdAt])
+  @@index([success])
 }
 
-model User {
-  id                       Int                        @id @default(autoincrement())
-  email                    String                     @unique
-  name                     String?
-  createdAt                DateTime                   @default(now())
-  deletedAt                DateTime?
-  deletionRequestedAt      DateTime?
-  chartImages              ChartImage[]
-  NatalChartInterpretation NatalChartInterpretation[]
-  quizResponses            QuizResponse[]
-  appEntitlement           AppEntitlement?
-  dataExportRequests       DataExportRequest[]
-  deletionRequests         DeletionRequest[]
-  consents                 Consent[]
+model AdminRecoveryCode {
+  id        String    @id
+  code      String    @unique
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([used])
 }
 
 model AppEntitlement {
-  id            String   @id @default(cuid())
-  userId        Int      @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  email         String
-  plan          String   @default("trial") // "trial" | "active" | "canceled" | "expired"
-  freeUntil     DateTime
-  hasReport     Boolean  @default(false)
-  purchaseDate  DateTime?
-  shopifyOrderId String?
+  id               String    @id
+  userId           Int       @unique
+  email            String
+  plan             String    @default("trial")
+  freeUntil        DateTime
+  hasReport        Boolean   @default(false)
+  purchaseDate     DateTime?
+  shopifyOrderId   String?
   stripeCustomerId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  User             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([email])
-  @@index([plan])
   @@index([freeUntil])
+  @@index([plan])
 }
 
 model ChartImage {
-  id                       String                     @id @default(cuid())
-  userId                   Int?
-  imageUrl                 String
-  birthData                Json
-  chartType                String?
-  createdAt                DateTime                   @default(now())
-  email                    String?
-  session_id               String?
-  user                     User?                      @relation(fields: [userId], references: [id])
-  NatalChartInterpretation NatalChartInterpretation[]
+  id         String   @id
+  userId     Int?
+  imageUrl   String
+  birthData  Json
+  chartType  String?
+  createdAt  DateTime @default(now())
+  email      String?
+  session_id String?
+  User       User?    @relation(fields: [userId], references: [id])
 }
 
+model Consent {
+  id          String   @id
+  userId      Int?
+  sessionId   String?
+  consentType String
+  granted     Boolean
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([consentType])
+  @@index([granted])
+  @@index([sessionId])
+  @@index([userId])
+}
+
+model DataExportRequest {
+  id        String   @id
+  userId    Int
+  format    String
+  status    String   @default("pending")
+  fileUrl   String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@index([status])
+  @@index([userId])
+}
+
+model DeletionRequest {
+  id          String    @id
+  userId      Int
+  reason      String?
+  status      String    @default("pending")
+  scheduledAt DateTime
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([userId])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model NatalChartInterpretation {
-  id                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                 Int?
   chartImageId           String?
   session_id             String?
@@ -96,87 +132,42 @@ model NatalChartInterpretation {
   modes                  Json?
   modes_description      String?
   dominant_sign          Json?
-  created_at             DateTime?   @default(now()) @db.Timestamptz(6)
+  created_at             DateTime? @default(now()) @db.Timestamptz(6)
   sun_sign               String?
   moon_sign              String?
-  ChartImage             ChartImage? @relation(fields: [chartImageId], references: [id], onUpdate: NoAction)
-  User                   User?       @relation(fields: [userId], references: [id], onUpdate: NoAction)
 
   @@index([chartImageId])
   @@index([userId])
 }
 
-model AdminAuditLog {
-  id        String   @id @default(cuid())
-  adminId   String?  // Admin identifier (email or session ID)
-  action    String   // "login", "login_failed", "data_access", "data_modify", "logout", etc.
-  resource  String?  // What resource was accessed (e.g., "/api/admin/companion-stats")
-  ipAddress String?
-  userAgent String?
-  success   Boolean
-  details   Json?    // Additional context
-  createdAt DateTime @default(now())
-  
-  @@index([adminId])
-  @@index([action])
-  @@index([createdAt])
-  @@index([success])
-}
+model QuizResponse {
+  id          String   @id
+  email       String
+  answers     Json
+  birthDate   Json
+  birthPlace  String?
+  birthTime   String?
+  firstName   String?
+  lastName    String?
+  gender      String?
+  createdAt   DateTime @default(now())
+  coverDesign String?
+  session_id  String?
+  userId      Int?
+  User        User?    @relation(fields: [userId], references: [id])
 
-model DataExportRequest {
-  id        String   @id @default(cuid())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  format    String   // "json" | "csv"
-  status    String   @default("pending") // "pending" | "processing" | "completed" | "failed"
-  fileUrl   String?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  
+  @@index([session_id])
   @@index([userId])
-  @@index([status])
-  @@index([expiresAt])
 }
 
-model DeletionRequest {
-  id            String   @id @default(cuid())
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reason        String?
-  status        String   @default("pending") // "pending" | "processing" | "completed" | "failed"
-  scheduledAt   DateTime
-  completedAt   DateTime?
-  createdAt     DateTime @default(now())
-  
-  @@index([userId])
-  @@index([status])
-  @@index([scheduledAt])
-}
-
-model Consent {
-  id            String   @id @default(cuid())
-  userId        Int?
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessionId     String?  // For anonymous users
-  consentType   String   // "cookies", "marketing", "analytics"
-  granted       Boolean
-  ipAddress     String?
-  userAgent     String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  @@index([userId])
-  @@index([sessionId])
-  @@index([consentType])
-  @@index([granted])
-}
-
-model AdminRecoveryCode {
-  id        String    @id @default(cuid())
-  code      String    @unique // Hashed recovery code
-  used      Boolean   @default(false)
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-  
-  @@index([used])
+model User {
+  id                  Int             @id @default(autoincrement())
+  email               String          @unique
+  name                String?
+  createdAt           DateTime        @default(now())
+  deletedAt           DateTime?
+  deletionRequestedAt DateTime?
+  AppEntitlement      AppEntitlement?
+  ChartImage          ChartImage[]
+  QuizResponse        QuizResponse[]
 }

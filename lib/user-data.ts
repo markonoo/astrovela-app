@@ -57,7 +57,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      quizResponses: {
+      QuizResponse: {
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -70,7 +70,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
           gender: true,
         },
       },
-      chartImages: {
+      ChartImage: {
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -79,16 +79,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
           createdAt: true,
         },
       },
-      NatalChartInterpretation: {
-        orderBy: { created_at: 'desc' },
-        select: {
-          id: true,
-          sun_sign: true,
-          moon_sign: true,
-          created_at: true,
-        },
-      },
-      appEntitlement: {
+      AppEntitlement: {
         select: {
           id: true,
           plan: true,
@@ -108,7 +99,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
   // Build data sources list
   const dataSources: Array<{ type: string; description: string; collectedAt: Date }> = []
   
-  user.quizResponses.forEach(qr => {
+  user.QuizResponse.forEach(qr => {
     dataSources.push({
       type: 'Quiz Response',
       description: 'Birth data and quiz answers',
@@ -116,7 +107,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
     })
   })
 
-  user.chartImages.forEach(ci => {
+  user.ChartImage.forEach(ci => {
     dataSources.push({
       type: 'Chart Image',
       description: 'Astrology chart visualization',
@@ -124,21 +115,11 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
     })
   })
 
-  user.NatalChartInterpretation.forEach(nci => {
-    if (nci.created_at) {
-      dataSources.push({
-        type: 'Chart Interpretation',
-        description: 'Astrological interpretation data',
-        collectedAt: nci.created_at,
-      })
-    }
-  })
-
-  if (user.appEntitlement) {
+  if (user.AppEntitlement) {
     dataSources.push({
       type: 'Entitlement',
       description: 'Subscription and access information',
-      collectedAt: user.appEntitlement.createdAt,
+      collectedAt: user.AppEntitlement.createdAt,
     })
   }
 
@@ -147,7 +128,7 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
 
   // Decrypt birth data if encrypted
   const useEncryption = process.env.ENCRYPT_SENSITIVE_DATA === 'true'
-  const decryptedQuizResponses = user.quizResponses.map(qr => ({
+  const decryptedQuizResponses = user.QuizResponse.map(qr => ({
     ...qr,
     birthDate: useEncryption && typeof qr.birthDate === 'string'
       ? decryptBirthData(qr.birthDate)
@@ -162,14 +143,9 @@ export async function getUserDataSummary(userId: number): Promise<UserDataSummar
       createdAt: user.createdAt,
     },
     quizResponses: decryptedQuizResponses,
-    chartImages: user.chartImages,
-    chartInterpretations: user.NatalChartInterpretation.map(ci => ({
-      id: ci.id,
-      sunSign: ci.sun_sign,
-      moonSign: ci.moon_sign,
-      createdAt: ci.created_at,
-    })),
-    entitlements: user.appEntitlement ? [user.appEntitlement] : [],
+    chartImages: user.ChartImage,
+    chartInterpretations: [], // NatalChartInterpretation relation removed from User model
+    entitlements: user.AppEntitlement ? [user.AppEntitlement] : [],
     dataSources,
   }
 }

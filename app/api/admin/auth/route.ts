@@ -145,27 +145,37 @@ export async function POST(request: NextRequest) {
       try {
         let isValid = false
         let authMethod = '2fa'
+        let remainingCodes = 0
         
         // Check if it's a recovery code (format: XXXX-XXXX-XX)
         const isRecoveryCode = totpCode.replace(/\s/g, '').length >= 10
         
         if (isRecoveryCode) {
-          // Try recovery code verification
-          isValid = await verifyRecoveryCode(totpCode)
-          authMethod = 'recovery_code'
-          
-          if (isValid) {
-            // Get remaining recovery codes count
-            const remainingCodes = await getRemainingRecoveryCodesCount()
-            logger.info("Admin login with recovery code", { 
-              ip: clientIP, 
-              remainingCodes 
-            })
+          // Try recovery code verification (gracefully handle if table doesn't exist)
+          try {
+            isValid = await verifyRecoveryCode(totpCode)
+            authMethod = 'recovery_code'
             
-            // Warn if running low on recovery codes
-            if (remainingCodes < 3) {
-              logger.warn("Low recovery codes remaining", { remainingCodes })
+            if (isValid) {
+              // Get remaining recovery codes count
+              try {
+                remainingCodes = await getRemainingRecoveryCodesCount()
+                logger.info("Admin login with recovery code", { 
+                  ip: clientIP, 
+                  remainingCodes 
+                })
+                
+                // Warn if running low on recovery codes
+                if (remainingCodes < 3) {
+                  logger.warn("Low recovery codes remaining", { remainingCodes })
+                }
+              } catch (err) {
+                logger.warn("Could not get recovery codes count", { error: String(err) })
+              }
             }
+          } catch (err) {
+            logger.warn("Recovery code verification failed (table may not exist)", { error: String(err) })
+            isValid = false
           }
         } else {
           // Try TOTP verification
@@ -186,8 +196,13 @@ export async function POST(request: NextRequest) {
             { step: '2fa', requires2FA: true, authMethod }
           ).catch(err => logger.error("Audit log failed", err))
           
-          // Get remaining recovery codes for response
-          const remainingCodes = await getRemainingRecoveryCodesCount()
+          // Get remaining recovery codes for response (optional)
+          try {
+            remainingCodes = await getRemainingRecoveryCodesCount()
+          } catch (err) {
+            logger.warn("Could not get recovery codes count", { error: String(err) })
+            remainingCodes = 0
+          }
           
           logger.info(`Admin login successful with ${authMethod}`, { ip: clientIP })
           return NextResponse.json({
@@ -197,7 +212,7 @@ export async function POST(request: NextRequest) {
             requires2FA: true,
             authMethod,
             remainingRecoveryCodes: remainingCodes,
-            lowRecoveryCodes: remainingCodes < 3,
+            lowRecoveryCodes: remainingCodes > 0 && remainingCodes < 3,
           })
         } else {
           logger.warn(`Admin login attempt failed - invalid ${authMethod}`, { ip: clientIP })

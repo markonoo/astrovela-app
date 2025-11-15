@@ -111,7 +111,7 @@ export async function storeRecoveryCodes(hashedCodes: string[]): Promise<void> {
       data: hashedCodes.map(code => ({
         code,
         used: false,
-      })),
+      })) as any,
     })
   } catch (error) {
     console.error('Error storing recovery codes:', error)

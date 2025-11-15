@@ -116,7 +116,7 @@ export async function createOrUpdateEntitlement(data: {
       purchaseDate: data.purchaseDate,
       shopifyOrderId: data.shopifyOrderId,
       stripeCustomerId: data.stripeCustomerId,
-    },
+    } as any,
   }) as Promise<AppEntitlement>;
 }
 

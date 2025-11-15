@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabaseClient"
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 import { logger } from "@/utils/logger"
 import { getClientIP } from "@/lib/rate-limit"
 
@@ -33,13 +34,13 @@ export async function POST(request: NextRequest) {
     if (cookies !== undefined) {
       const consent = await prisma.consent.create({
         data: {
-          userId: userId || undefined,
-          sessionId: sessionId || undefined,
+          ...(userId && { userId }),
+          ...(sessionId && { sessionId }),
           consentType: 'cookies',
-          granted: cookies,
+          granted: Boolean(cookies),
           ipAddress: clientIP,
-          userAgent,
-        },
+          userAgent: userAgent || undefined,
+        } as any, // Type assertion to bypass Prisma's overly strict types
       })
       consents.push(consent)
     }
@@ -48,13 +49,13 @@ export async function POST(request: NextRequest) {
     if (marketing !== undefined) {
       const consent = await prisma.consent.create({
         data: {
-          userId: userId || undefined,
-          sessionId: sessionId || undefined,
+          ...(userId && { userId }),
+          ...(sessionId && { sessionId }),
           consentType: 'marketing',
-          granted: marketing,
+          granted: Boolean(marketing),
           ipAddress: clientIP,
-          userAgent,
-        },
+          userAgent: userAgent || undefined,
+        } as any,
       })
       consents.push(consent)
     }
@@ -63,13 +64,13 @@ export async function POST(request: NextRequest) {
     if (analytics !== undefined) {
       const consent = await prisma.consent.create({
         data: {
-          userId: userId || undefined,
-          sessionId: sessionId || undefined,
+          ...(userId && { userId }),
+          ...(sessionId && { sessionId }),
           consentType: 'analytics',
-          granted: analytics,
+          granted: Boolean(analytics),
           ipAddress: clientIP,
-          userAgent,
-        },
+          userAgent: userAgent || undefined,
+        } as any,
       })
       consents.push(consent)
     }

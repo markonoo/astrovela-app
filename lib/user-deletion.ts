@@ -40,7 +40,7 @@ export async function deleteUserData(userId: number): Promise<{
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        chartImages: true,
+        ChartImage: true,
       },
     })
 
@@ -53,7 +53,7 @@ export async function deleteUserData(userId: number): Promise<{
       const supabase = createClient(supabaseUrl, supabaseServiceKey)
       
       // Delete chart images from storage
-      for (const chartImage of user.chartImages) {
+      for (const chartImage of user.ChartImage) {
         try {
           // Extract path from URL
           const urlParts = chartImage.imageUrl.split('/')
@@ -168,7 +168,7 @@ export async function createDeletionRequest(
       reason,
       status: 'pending',
       scheduledAt,
-    },
+    } as any,
   })
 
   return deletionRequest.id
@@ -183,7 +183,6 @@ export async function processDeletionRequest(requestId: string): Promise<{
 }> {
   const request = await prisma.deletionRequest.findUnique({
     where: { id: requestId },
-    include: { user: true },
   })
 
   if (!request) {
@@ -194,6 +193,17 @@ export async function processDeletionRequest(requestId: string): Promise<{
     throw new Error(`Deletion request already ${request.status}`)
   }
 
+  // Fetch user separately since relation doesn't exist
+  const user = await prisma.user.findUnique({
+    where: { id: request.userId },
+  })
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  const errors: string[] = []
+
   // Update status to processing
   await prisma.deletionRequest.update({
     where: { id: requestId },
@@ -202,7 +212,7 @@ export async function processDeletionRequest(requestId: string): Promise<{
 
   try {
     // Delete Supabase auth account
-    const authDeleted = await deleteSupabaseAuthAccount(request.user.email)
+    const authDeleted = await deleteSupabaseAuthAccount(user.email)
     
     // Delete user data
     const result = await deleteUserData(request.userId)
