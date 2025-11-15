@@ -41,7 +41,7 @@ function AdminPreviewContent() {
       console.error("Logout error:", error)
     } finally {
       // Redirect regardless of API call success
-      window.location.href = "/admin/login"
+      window.location.href = "/olivialimon-admin/login"
     }
   }
 
@@ -82,7 +82,7 @@ function AdminPreviewContent() {
               <CardDescription>Preview the interactive astrology report</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href="/admin/preview/document-generator">
+              <Link href="/olivialimon-admin/preview/document-generator">
                 <Button className="w-full" variant="default">
                   <Eye className="w-4 h-4 mr-2" />
                   View Document Generator
@@ -193,13 +193,13 @@ function AdminPreviewContent() {
               <CardDescription>View application metrics</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Link href="/admin/audit">
+              <Link href="/olivialimon-admin/audit">
                 <Button className="w-full mb-2" variant="default" size="sm">
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Audit Logs
                 </Button>
               </Link>
-              <Link href="/admin/recovery-codes">
+              <Link href="/olivialimon-admin/recovery-codes">
                 <Button className="w-full mb-2" variant="default" size="sm">
                   <Settings className="w-4 h-4 mr-2" />
                   Recovery Codes

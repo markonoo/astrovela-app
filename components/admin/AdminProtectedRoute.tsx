@@ -47,7 +47,7 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   }
 
   const handleLogin = () => {
-    router.push("/admin/login")
+    router.push("/olivialimon-admin/login")
   }
 
   if (loading) {

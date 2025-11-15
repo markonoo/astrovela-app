@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
         if (response.ok) {
           const data = await response.json()
           if (data.authenticated) {
-            router.push("/admin/preview")
+            router.push("/olivialimon-admin/preview")
           }
         }
       } catch (error) {
@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
   const completeLogin = () => {
     // Session is already set by server via httpOnly cookie
     // Just redirect to admin dashboard
-    router.push("/admin/preview")
+    router.push("/olivialimon-admin/preview")
   }
 
   const handleBack = () => {
@@ -281,7 +281,7 @@ export default function AdminLoginPage() {
             </p>
             <div className="text-center">
               <a 
-                href="/admin/2fa-setup" 
+                href="/olivialimon-admin/2fa-setup" 
                 className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
               >
                 Setup Two-Factor Authentication

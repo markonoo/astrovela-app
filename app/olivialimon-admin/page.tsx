@@ -7,7 +7,7 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace("/admin/login")
+    router.replace("/olivialimon-admin/login")
   }, [router])
 
   return (
@@ -16,6 +16,7 @@ export default function AdminPage() {
     </div>
   )
 }
+
 
 
 

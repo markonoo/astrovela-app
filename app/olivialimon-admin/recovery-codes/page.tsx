@@ -109,7 +109,7 @@ Keep these codes in a secure location (password manager, encrypted file, etc.)
             <h1 className="text-3xl font-bold text-gray-900">Recovery Codes</h1>
             <p className="text-gray-600 mt-1">Backup authentication for admin access</p>
           </div>
-          <Link href="/admin/preview">
+          <Link href="/olivialimon-admin/preview">
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard

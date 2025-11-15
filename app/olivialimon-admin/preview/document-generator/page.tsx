@@ -120,7 +120,7 @@ function DocumentGeneratorPreviewContent() {
     <div className="min-h-screen bg-neutral-100 pb-12 md:pb-4">
       {/* Back Button */}
       <div className="sticky top-0 z-50 bg-white border-b px-4 py-2">
-        <Link href="/admin/preview">
+        <Link href="/olivialimon-admin/preview">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Admin Dashboard

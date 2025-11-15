@@ -290,3 +290,4 @@ vercel --prod
 **Status:** Ready to deploy for testing! 🚀  
 **Next Action:** Verify Shopify variables, then deploy to Vercel
 
+
