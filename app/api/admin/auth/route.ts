@@ -10,6 +10,7 @@ import { verifyRecoveryCode, getRemainingRecoveryCodesCount } from "@/lib/recove
 /**
  * Admin Authentication API
  * Supports password + 2FA authentication with rate limiting and secure sessions
+ * Route: /api/admin/auth (POST, GET)
  */
 
 interface LoginRequest {
