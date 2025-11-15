@@ -15,6 +15,6 @@ export async function saveQuizResponse(quizData: QuizState) {
       firstName: quizData.firstName || '',
       lastName: quizData.lastName || '',
       gender: quizData.gender || ''
-    }
+    } as any
   })
 }

@@ -144,7 +144,7 @@ export async function createExportRequest(
       format,
       status: 'pending',
       expiresAt,
-    },
+    } as any,
   })
 
   return exportRequest.id
