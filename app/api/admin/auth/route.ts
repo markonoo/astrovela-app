@@ -30,18 +30,19 @@ export async function POST(request: NextRequest) {
 
     const clientIP = getClientIP(request)
     
-    // Rate limiting
-    const rateLimitResult = await adminLoginLimiter.check(clientIP)
-    if (!rateLimitResult.allowed) {
-      logger.warn("Rate limit exceeded", { clientIP, remaining: rateLimitResult.remaining })
+    // Rate limiting: 5 attempts per 15 minutes
+    try {
+      await adminLoginLimiter.check(5, clientIP)
+    } catch (rateLimitResult: any) {
+      logger.warn("Admin login rate limited", { ip: clientIP })
       return NextResponse.json(
         { error: "Too many login attempts. Please try again later." },
         { 
           status: 429,
           headers: {
-            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
-            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-            'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString()
+            'X-RateLimit-Limit': String(rateLimitResult.limit || 5),
+            'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
+            'X-RateLimit-Reset': new Date(rateLimitResult.reset || Date.now()).toISOString()
           }
         }
       )
