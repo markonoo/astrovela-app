@@ -1,0 +1,1 @@
+This file forces Vercel to rebuild the /api/admin/auth route
