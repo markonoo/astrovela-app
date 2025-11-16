@@ -307,3 +307,5 @@ Shopify automatically generates plain text from HTML, but you can customize it i
 **Best Practice:** Always test both HTML and plain text versions before sending to customers.
 
 
+
+

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useUser } from "@/contexts/UserContext"
 import { Paywall } from "@/components/companion/paywall"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CompanionShell } from "@/components/companion/CompanionShell"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Heart, CheckCircle, XCircle, Calendar } from "lucide-react"
 import { compatibilityData, getCompatibility } from "@/lib/zodiac-compatibility"
@@ -78,9 +78,11 @@ export default function LovePage() {
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-apple-gray-4 border-t-apple-gray-1"></div>
-      </div>
+      <CompanionShell title="Compatibility" activeTab="compatibility">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
+        </div>
+      </CompanionShell>
     )
   }
 
@@ -94,144 +96,140 @@ export default function LovePage() {
   ]
 
   return (
-    <div className="container mx-auto px-6 py-8 md:px-8 md:py-12 md:pt-32">
-      <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-10 animate-fadeIn">Love & Compatibility</h1>
-
-      {/* Sign Selector */}
-      <Card className="mb-8 border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-        <CardHeader className="px-6 py-5">
-          <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Compare Signs</CardTitle>
-          <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Select your sign and your partner's sign</CardDescription>
-        </CardHeader>
-        <CardContent className="px-6 py-6 space-y-5">
-          <div>
-            <label className="text-[15px] leading-[20px] font-medium text-apple-gray-1 mb-3 block">Your Sign</label>
-            <Select value={userSign} onValueChange={setUserSign}>
-              <SelectTrigger className="rounded-apple-md border-apple-gray-4 h-11">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-apple-md">
-                {zodiacSigns.map((sign) => (
-                  <SelectItem key={sign} value={sign} className="text-[15px]">
-                    {sign.charAt(0).toUpperCase() + sign.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <CompanionShell title="Compatibility" activeTab="compatibility">
+      <div className="px-4 mt-6 space-y-6 mb-24">
+        {/* Sign Selector */}
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+          <h2 className="text-[20px] leading-[28px] font-semibold text-white mb-1">Compare Signs</h2>
+          <p className="text-[15px] leading-[20px] text-white/60 mb-5">Select your sign and your partner's sign</p>
+          <div className="space-y-4">
+            <div>
+              <label className="text-[15px] leading-[20px] font-medium text-white/80 mb-2 block">Your Sign</label>
+              <Select value={userSign} onValueChange={setUserSign}>
+                <SelectTrigger className="rounded-xl border-white/20 bg-white/8 text-white h-12">
+                  <SelectValue className="text-white" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-white/20 bg-[#0b0e2e]">
+                  {zodiacSigns.map((sign) => (
+                    <SelectItem key={sign} value={sign} className="text-[15px] text-white focus:bg-white/10">
+                      {sign.charAt(0).toUpperCase() + sign.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-[15px] leading-[20px] font-medium text-white/80 mb-2 block">Their Sign</label>
+              <Select value={partnerSign} onValueChange={setPartnerSign}>
+                <SelectTrigger className="rounded-xl border-white/20 bg-white/8 text-white h-12">
+                  <SelectValue className="text-white" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-white/20 bg-[#0b0e2e]">
+                  {zodiacSigns.map((sign) => (
+                    <SelectItem key={sign} value={sign} className="text-[15px] text-white focus:bg-white/10">
+                      {sign.charAt(0).toUpperCase() + sign.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div>
-            <label className="text-[15px] leading-[20px] font-medium text-apple-gray-1 mb-3 block">Their Sign</label>
-            <Select value={partnerSign} onValueChange={setPartnerSign}>
-              <SelectTrigger className="rounded-apple-md border-apple-gray-4 h-11">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-apple-md">
-                {zodiacSigns.map((sign) => (
-                  <SelectItem key={sign} value={sign} className="text-[15px]">
-                    {sign.charAt(0).toUpperCase() + sign.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Compatibility Results */}
-      {compatibility && (
-        <div className="space-y-6">
-          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-            <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-t-apple-lg px-6 py-5">
-              <div className="flex items-center space-x-3">
-                <Heart className="w-5 h-5 text-pink-500" />
-                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Compatibility</CardTitle>
+        {/* Compatibility Results */}
+        {compatibility && (
+          <div className="space-y-6">
+            {/* Overall Compatibility Score */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="w-6 h-6 text-pink-400" />
+                <h3 className="text-[20px] leading-[28px] font-semibold text-white">Compatibility</h3>
               </div>
-            </CardHeader>
-            <CardContent className="px-6 py-6">
               <div className="mb-4">
-                <div className="text-[32px] leading-[40px] font-bold text-apple-gray-1 mb-3">
+                <div className="text-[48px] leading-[56px] font-bold text-white mb-3">
                   {compatibility.score}/10
                 </div>
-                <p className="text-[17px] leading-[24px] text-apple-gray-2">{compatibility.overview}</p>
+                <p className="text-[17px] leading-[24px] text-white/80">{compatibility.overview}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-              <CardHeader className="px-6 py-5">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-apple-green-DEFAULT" />
-                  <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Green Flags</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="px-6 py-6">
-                <ul className="space-y-3">
-                  {compatibility.greenFlags.map((flag: string, i: number) => (
-                    <li key={i} className="flex items-start">
-                      <span className="text-apple-green-DEFAULT mr-3 text-lg">✓</span>
-                      <span className="text-[15px] leading-[20px] text-apple-gray-2">{flag}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            {/* Green Flags */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <CheckCircle className="w-6 h-6 text-green-400" />
+                <h3 className="text-[20px] leading-[28px] font-semibold text-white">Green Flags</h3>
+              </div>
+              <ul className="space-y-3">
+                {compatibility.greenFlags.map((flag: string, i: number) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="text-green-400 text-lg mt-0.5">✓</span>
+                    <span className="text-[15px] leading-[20px] text-white/80 flex-1">{flag}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-              <CardHeader className="px-6 py-5">
-                <div className="flex items-center space-x-3">
-                  <XCircle className="w-5 h-5 text-apple-red-DEFAULT" />
-                  <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Red Flags</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="px-6 py-6">
-                <ul className="space-y-3">
-                  {compatibility.redFlags.map((flag: string, i: number) => (
-                    <li key={i} className="flex items-start">
-                      <span className="text-apple-red-DEFAULT mr-3 text-lg">⚠</span>
-                      <span className="text-[15px] leading-[20px] text-apple-gray-2">{flag}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+            {/* Red Flags */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <XCircle className="w-6 h-6 text-red-400" />
+                <h3 className="text-[20px] leading-[28px] font-semibold text-white">Red Flags</h3>
+              </div>
+              <ul className="space-y-3">
+                {compatibility.redFlags.map((flag: string, i: number) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="text-red-400 text-lg mt-0.5">⚠</span>
+                    <span className="text-[15px] leading-[20px] text-white/80 flex-1">{flag}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {compatibility.dateIdeas && (
-            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-t-apple-lg px-6 py-5">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-purple-500" />
-                  <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Ideal Date Ideas</CardTitle>
+            {/* Date Ideas */}
+            {compatibility.dateIdeas && compatibility.dateIdeas.length > 0 && (
+              <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Calendar className="w-6 h-6 text-purple-400" />
+                  <h3 className="text-[20px] leading-[28px] font-semibold text-white">Ideal Date Ideas</h3>
                 </div>
-              </CardHeader>
-              <CardContent className="px-6 py-6">
                 <ul className="space-y-3">
                   {compatibility.dateIdeas.map((idea: string, i: number) => (
-                    <li key={i} className="flex items-start">
-                      <span className="text-purple-500 mr-3 text-lg">💫</span>
-                      <span className="text-[15px] leading-[20px] text-apple-gray-2">{idea}</span>
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="text-purple-400 text-lg mt-0.5">💫</span>
+                      <span className="text-[15px] leading-[20px] text-white/80 flex-1">{idea}</span>
                     </li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
+              </div>
+            )}
 
-      {/* This Week in Love */}
-      <Card className="mt-8 border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-        <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-t-apple-lg px-6 py-5">
-          <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">This Week in Love</CardTitle>
-        </CardHeader>
-        <CardContent className="px-6 py-6">
-          <p className="text-[17px] leading-[24px] text-apple-gray-2">
+            {/* Compatibility Metrics */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="rounded-[20px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-4 text-center">
+                <p className="text-[13px] leading-[18px] text-white/60 mb-2">Communication</p>
+                <p className="text-[24px] leading-[32px] font-bold text-white">85%</p>
+              </div>
+              <div className="rounded-[20px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-4 text-center">
+                <p className="text-[13px] leading-[18px] text-white/60 mb-2">Emotional</p>
+                <p className="text-[24px] leading-[32px] font-bold text-white">72%</p>
+              </div>
+              <div className="rounded-[20px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-4 text-center">
+                <p className="text-[13px] leading-[18px] text-white/60 mb-2">Physical</p>
+                <p className="text-[24px] leading-[32px] font-bold text-white">90%</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* This Week in Love */}
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+          <h3 className="text-[20px] leading-[28px] font-semibold text-white mb-4">This Week in Love</h3>
+          <p className="text-[17px] leading-[24px] text-white/80">
             Venus transits bring harmony to relationships this week. Single? This is a favorable time for new connections. 
             In a relationship? Focus on quality time and open communication.
           </p>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </CompanionShell>
   )
 }

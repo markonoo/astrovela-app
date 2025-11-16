@@ -129,11 +129,11 @@ function AuditLogContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-12">
+    <div className="min-h-screen bg-gradient-to-b from-apple-gray-5 to-apple-gray-6 p-6 md:p-12 safe-area-inset-top">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Audit Logs</h1>
-          <p className="text-lg text-gray-600">
+        <div className="mb-8 animate-fadeIn">
+          <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-2">Admin Audit Logs</h1>
+          <p className="text-[17px] leading-[24px] text-apple-gray-2">
             View all admin actions and security events
           </p>
         </div>
@@ -141,33 +141,33 @@ function AuditLogContent() {
         {/* Statistics Cards */}
         {stats && (
           <div className="grid md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Total Logs</CardTitle>
+            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+              <CardHeader className="pb-2 px-6 py-5">
+                <CardTitle className="text-[15px] leading-[20px] font-medium text-apple-gray-2">Total Logs</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalLogs}</div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-green-600">Successful Logins</CardTitle>
+            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+              <CardHeader className="pb-2 px-6 py-5">
+                <CardTitle className="text-[15px] leading-[20px] font-medium text-green-600">Successful Logins</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">{stats.successfulLogins}</div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-red-600">Failed Logins</CardTitle>
+            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+              <CardHeader className="pb-2 px-6 py-5">
+                <CardTitle className="text-[15px] leading-[20px] font-medium text-red-600">Failed Logins</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">{stats.failedLogins}</div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-blue-600">Data Access</CardTitle>
+            <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+              <CardHeader className="pb-2 px-6 py-5">
+                <CardTitle className="text-[15px] leading-[20px] font-medium text-blue-600">Data Access</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600">{stats.dataAccessCount}</div>
@@ -177,10 +177,10 @@ function AuditLogContent() {
         )}
 
         {/* Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Filters</CardTitle>
-            <CardDescription>Filter audit logs by action, admin, or date range</CardDescription>
+        <Card className="mb-6 border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+          <CardHeader className="px-6 py-5">
+            <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Filters</CardTitle>
+            <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Filter audit logs by action, admin, or date range</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-4 gap-4">
@@ -246,10 +246,10 @@ function AuditLogContent() {
         </Card>
 
         {/* Audit Logs Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Audit Logs</CardTitle>
-            <CardDescription>Recent admin actions and security events</CardDescription>
+        <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+          <CardHeader className="px-6 py-5">
+            <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Audit Logs</CardTitle>
+            <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Recent admin actions and security events</CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
@@ -265,7 +265,7 @@ function AuditLogContent() {
                 <p className="text-gray-600">Loading audit logs...</p>
               </div>
             ) : logs.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-apple-gray-3">
                 No audit logs found
               </div>
             ) : (
@@ -283,17 +283,17 @@ function AuditLogContent() {
                     </thead>
                     <tbody>
                       {logs.map((log) => (
-                        <tr key={log.id} className="border-b hover:bg-gray-50">
-                          <td className="p-2 text-xs text-gray-600">
+                        <tr key={log.id} className="border-b hover:bg-apple-gray-5/50">
+                          <td className="p-2 text-xs text-apple-gray-3">
                             {new Date(log.createdAt).toLocaleString()}
                           </td>
                           <td className={`p-2 font-medium ${getActionColor(log.action)}`}>
                             {log.action}
                           </td>
-                          <td className="p-2 text-gray-600 text-xs">
+                          <td className="p-2 text-apple-gray-3 text-xs">
                             {log.resource || '-'}
                           </td>
-                          <td className="p-2 text-gray-600 text-xs">
+                          <td className="p-2 text-apple-gray-3 text-xs">
                             {log.ipAddress || '-'}
                           </td>
                           <td className="p-2">
@@ -319,7 +319,7 @@ function AuditLogContent() {
                   >
                     Previous
                   </Button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-apple-gray-3">
                     Page {page + 1}
                   </span>
                   <Button

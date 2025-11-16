@@ -43,18 +43,39 @@
 
 ---
 
-### 2. Environment Variables Template
-**Status:** ⚠️ Missing  
+### 2. Post‑Purchase Email Service Implementation
+**Status:** ❌ Not Started  
 **Priority:** HIGH  
-**Estimated Time:** 30 minutes
+**Estimated Time:** 2-3 hours
 
-- [ ] **Create `.env.example` file**
-  - Document all required variables
-  - Include descriptions for each variable
-  - Mark optional vs required
-- [ ] **Add environment validation**
-  - Validate critical variables on app startup
-  - Show clear error messages for missing variables
+- [ ] **Create email sending service (`lib/email-service.ts`)**
+  - Use Resend (recommended) or SendGrid
+  - Function: `sendCompanionAppWelcomeEmail(...)` as per `EMAIL_NOTIFICATION_SPEC.md`
+- [ ] **Add environment keys**
+  - `RESEND_API_KEY` or `SENDGRID_API_KEY`, and from-address
+- [ ] **Wire into Shopify webhook**
+  - Call after entitlement creation in `app/api/shopify/webhook/route.ts`
+- [ ] **Test end-to-end**
+  - Make test purchase → verify email receipt
+
+**References:**
+- `EMAIL_NOTIFICATION_SPEC.md`
+- `email-templates/` (7 HTML templates + guide)
+- `ENV_TEMPLATE.md` (email keys included)
+
+---
+
+### 3. Environment Variables Template
+**Status:** ✅ Complete  
+**Priority:** HIGH  
+**Estimated Time:** 30 minutes (consumer action: copy template → `.env.local`)
+
+- [x] **Template available**
+  - `ENV_TEMPLATE.md` documents all required variables with sources
+- [x] **Environment validation present**
+  - `utils/environment.ts` validates critical variables in production
+- [ ] **Create `.env.local` from template**
+  - Populate values locally and in deployment platform
 
 **Template Should Include:**
 ```env
@@ -86,7 +107,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 3. Testing Setup
+### 4. Testing Setup
 **Status:** ❌ Not Started  
 **Priority:** MEDIUM  
 **Estimated Time:** 4-6 hours
@@ -115,7 +136,7 @@ SENTRY_AUTH_TOKEN=
 
 ## 🟡 MEDIUM PRIORITY (Nice to Have)
 
-### 4. Documentation
+### 5. Documentation
 **Status:** 🟡 Partial  
 **Priority:** MEDIUM  
 **Estimated Time:** 2-3 hours
@@ -141,7 +162,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 5. Code Refactoring
+### 6. Code Refactoring
 **Status:** 🟡 Partial  
 **Priority:** MEDIUM  
 **Estimated Time:** 3-4 hours
@@ -163,7 +184,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 6. Transit API Enhancement
+### 7. Transit API Enhancement
 **Status:** ⚠️ Simplified (Hardcoded)  
 **Priority:** LOW  
 **Estimated Time:** 2-3 hours
@@ -185,7 +206,7 @@ SENTRY_AUTH_TOKEN=
 
 ## 🟢 LOW PRIORITY (Future Enhancements)
 
-### 7. Performance Optimizations
+### 8. Performance Optimizations
 **Status:** 🟡 Partial  
 **Priority:** LOW  
 **Estimated Time:** 2-3 hours
@@ -206,7 +227,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 8. Advanced Features (Phase 2)
+### 9. Advanced Features (Phase 2)
 **Status:** 📋 Documented  
 **Priority:** LOW  
 **Estimated Time:** Varies
@@ -232,7 +253,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 9. Monitoring & Analytics
+### 10. Monitoring & Analytics
 **Status:** ✅ Infrastructure Ready  
 **Priority:** LOW  
 **Estimated Time:** 1-2 hours
@@ -253,7 +274,7 @@ SENTRY_AUTH_TOKEN=
 
 ---
 
-### 10. Accessibility
+### 11. Accessibility
 **Status:** 🟡 Partial  
 **Priority:** LOW  
 **Estimated Time:** 2-3 hours
@@ -312,17 +333,18 @@ SENTRY_AUTH_TOKEN=
 1. ✅ **Design System** - COMPLETE
 2. ✅ **Mobile Responsiveness** - COMPLETE
 3. ⚠️ **Code Cleanup** - Remove console.log (50+ instances)
-4. ⚠️ **Environment Template** - Create .env.example
+4. ⚠️ **Email Service Implementation** - Post‑purchase welcome email via webhook
+5. ✅ **Environment Template** - COMPLETE (`ENV_TEMPLATE.md` + validation present)
 
 ### Important (Should Do Soon)
-5. 📋 **Testing Setup** - Add test framework and critical tests
-6. 📋 **Documentation** - Add JSDoc comments
-7. 📋 **Code Refactoring** - Split large files
+6. 📋 **Testing Setup** - Add test framework and critical tests
+7. 📋 **Documentation** - Add JSDoc comments
+8. 📋 **Code Refactoring** - Split large files
 
 ### Nice to Have (Future)
-8. 📋 **Transit API** - Real implementation vs hardcoded
-9. 📋 **Performance** - Bundle optimization
-10. 📋 **Advanced Features** - Phase 2 features
+9. 📋 **Transit API** - Real implementation vs hardcoded
+10. 📋 **Performance** - Bundle optimization
+11. 📋 **Advanced Features** - Phase 2 features
 
 ---
 
@@ -346,18 +368,22 @@ SENTRY_AUTH_TOKEN=
    - Highest impact, quick win
    - Improves production readiness
 
-2. **Create .env.example** (30 minutes)
-   - Critical for deployment
-   - Helps other developers
+2. **Implement post‑purchase email service** (2-3 hours)
+   - Add `lib/email-service.ts` (Resend/SendGrid)
+   - Wire into `app/api/shopify/webhook/route.ts`
+   - Test with a sandbox purchase
 
-3. **Set up basic testing** (4-6 hours)
+3. **Create `.env.local` from `ENV_TEMPLATE.md`** (30 minutes)
+   - Ensure Shopify + email keys present for local/dev
+
+4. **Set up basic testing** (4-6 hours)
    - Critical path tests first
    - Expand later
 
 ---
 
-**Last Updated:** 2025-01-27  
-**Status:** Code cleanup in progress (~10% complete)
+**Last Updated:** 2025-11-16  
+**Status:** Code cleanup in progress (~10% complete); Email service not started
 
 ## ✅ Recent Progress
 
@@ -368,7 +394,7 @@ SENTRY_AUTH_TOKEN=
 - 📋 **Remaining:** ~73 console.log statements across 21 API route files + 25 component files
 
 ### Environment Template
-- ✅ Created `.env.example` template (ENV_TEMPLATE.md exists, .env.example blocked by gitignore - this is expected)
+- ✅ `ENV_TEMPLATE.md` created and complete (use to create `.env.local`; `.env.example` is gitignored by design)
 
 See `CLEANUP_PROGRESS.md` for detailed progress tracking.
 

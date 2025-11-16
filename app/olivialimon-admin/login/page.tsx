@@ -143,9 +143,9 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6 p-6 safe-area-inset-top">
+      <Card className="w-full max-w-md border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+        <CardHeader className="space-y-1 px-6 py-5">
           <div className="flex items-center justify-center mb-4">
             <div className={`rounded-full p-3 ${step === '2fa' ? 'bg-purple-100' : 'bg-blue-100'}`}>
               {step === '2fa' ? (
@@ -155,16 +155,16 @@ export default function AdminLoginPage() {
               )}
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">
+          <CardTitle className="text-[22px] leading-[28px] font-semibold text-apple-gray-1 text-center">
             {step === '2fa' ? 'Two-Factor Authentication' : 'Admin Login'}
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 text-center">
             {step === '2fa' 
               ? 'Enter the 6-digit code from your authenticator app'
               : 'Enter your admin password to access the preview dashboard'}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-6 py-6">
           {step === 'password' ? (
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -276,13 +276,13 @@ export default function AdminLoginPage() {
           )}
 
           <div className="mt-6 pt-6 border-t space-y-3">
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-[12px] leading-[16px] text-center text-apple-gray-3">
               Admin access is restricted. Contact the system administrator for credentials.
             </p>
             <div className="text-center">
               <a 
                 href="/olivialimon-admin/2fa-setup" 
-                className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                className="text-[12px] leading-[16px] text-blue-600 hover:text-blue-800 hover:underline"
               >
                 Setup Two-Factor Authentication
               </a>

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useUser } from "@/contexts/UserContext"
 import { Paywall } from "@/components/companion/paywall"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Settings as SettingsIcon, User, Bell, Shield } from "lucide-react"
+import { CompanionShell } from "@/components/companion/CompanionShell"
+import { User, Bell, Shield } from "lucide-react"
 import Link from "next/link"
 import { EntitlementData } from "@/types/api"
 import { logger } from "@/utils/logger"
@@ -33,9 +33,11 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-apple-gray-4 border-t-apple-gray-1"></div>
-      </div>
+      <CompanionShell title="Settings" activeTab="horoscope">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
+        </div>
+      </CompanionShell>
     )
   }
 
@@ -44,65 +46,54 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8 md:px-8 md:py-12 md:pt-32">
-      <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-10 animate-fadeIn">Settings</h1>
-
-      <div className="space-y-6">
-        <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-          <CardHeader className="px-6 py-5">
-            <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 text-apple-gray-2" />
-              <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Account</CardTitle>
+    <CompanionShell title="Settings" activeTab="horoscope">
+      <div className="px-4 mt-6 space-y-6 mb-24">
+        {/* Account Card */}
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <User className="w-6 h-6 text-blue-400" />
+            <h2 className="text-[20px] leading-[28px] font-semibold text-white">Account</h2>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <div className="text-[13px] leading-[18px] text-white/60 mb-1">Email</div>
+              <div className="text-[17px] leading-[24px] font-medium text-white">{user.email}</div>
             </div>
-          </CardHeader>
-          <CardContent className="px-6 py-6">
-            <div className="space-y-4">
+            {user.user_metadata?.name && (
               <div>
-                <div className="text-[13px] leading-[18px] text-apple-gray-2 mb-1">Email</div>
-                <div className="text-[17px] leading-[24px] font-medium text-apple-gray-1">{user.email}</div>
+                <div className="text-[13px] leading-[18px] text-white/60 mb-1">Name</div>
+                <div className="text-[17px] leading-[24px] font-medium text-white">{user.user_metadata.name}</div>
               </div>
-              {user.user_metadata?.name && (
-                <div>
-                  <div className="text-[13px] leading-[18px] text-apple-gray-2 mb-1">Name</div>
-                  <div className="text-[17px] leading-[24px] font-medium text-apple-gray-1">{user.user_metadata.name}</div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        </div>
 
-        <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-          <CardHeader className="px-6 py-5">
-            <div className="flex items-center space-x-3">
-              <Shield className="w-5 h-5 text-apple-gray-2" />
-              <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Subscription</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 py-6">
-            <Link
-              href="/companion/billing"
-              className="block w-full text-center py-3.5 px-6 border-2 border-apple-gray-1 text-apple-gray-1 rounded-apple-md text-[17px] leading-[24px] font-semibold hover:bg-apple-gray-5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
-            >
-              Manage Billing
-            </Link>
-          </CardContent>
-        </Card>
+        {/* Subscription Card */}
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Shield className="w-6 h-6 text-purple-400" />
+            <h2 className="text-[20px] leading-[28px] font-semibold text-white">Subscription</h2>
+          </div>
+          <Link
+            href="/companion/billing"
+            className="block w-full text-center py-3.5 px-6 border-2 border-white/20 text-white rounded-xl text-[17px] leading-[24px] font-semibold hover:bg-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
+          >
+            Manage Billing
+          </Link>
+        </div>
 
-        <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-          <CardHeader className="px-6 py-5">
-            <div className="flex items-center space-x-3">
-              <Bell className="w-5 h-5 text-apple-gray-2" />
-              <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Notifications</CardTitle>
-            </div>
-            <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Manage your notification preferences</CardDescription>
-          </CardHeader>
-          <CardContent className="px-6 py-6">
-            <p className="text-[15px] leading-[20px] text-apple-gray-2">
-              Notification settings coming soon. For now, you'll receive email updates about your subscription.
-            </p>
-          </CardContent>
-        </Card>
+        {/* Notifications Card */}
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Bell className="w-6 h-6 text-yellow-400" />
+            <h2 className="text-[20px] leading-[28px] font-semibold text-white">Notifications</h2>
+          </div>
+          <p className="text-[15px] leading-[20px] text-white/60 mb-1">Manage your notification preferences</p>
+          <p className="text-[15px] leading-[20px] text-white/80">
+            Notification settings coming soon. For now, you'll receive email updates about your subscription.
+          </p>
+        </div>
       </div>
-    </div>
+    </CompanionShell>
   )
 }

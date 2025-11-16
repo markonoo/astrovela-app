@@ -54,13 +54,13 @@ function AdminPreviewContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-12">
+    <div className="min-h-screen bg-gradient-to-b from-apple-gray-5 to-apple-gray-6 p-6 md:p-12 safe-area-inset-top">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10 flex items-center justify-between">
+        <div className="mb-10 flex items-center justify-between animate-fadeIn">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Preview Dashboard</h1>
-            <p className="text-lg text-gray-600">
+            <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-2">Admin Preview Dashboard</h1>
+            <p className="text-[17px] leading-[24px] text-apple-gray-2">
               Access all features and preview the application
             </p>
           </div>
@@ -73,15 +73,15 @@ function AdminPreviewContent() {
         {/* Main Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Document Generator Preview */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <FileText className="w-6 h-6 text-blue-600" />
-                <CardTitle>Document Generator</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Document Generator</CardTitle>
               </div>
-              <CardDescription>Preview the interactive astrology report</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Preview the interactive astrology report</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="px-6 py-6 space-y-3">
               <Link href="/olivialimon-admin/preview/document-generator">
                 <Button className="w-full" variant="default">
                   <Eye className="w-4 h-4 mr-2" />
@@ -98,15 +98,15 @@ function AdminPreviewContent() {
           </Card>
 
           {/* Book Cover Designer */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <Palette className="w-6 h-6 text-purple-600" />
-                <CardTitle>Book Cover Designer</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Book Cover Designer</CardTitle>
               </div>
-              <CardDescription>Design custom book covers</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Design custom book covers</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-6 py-6">
               <Link href="/book-designer">
                 <Button className="w-full" variant="default">
                   <Palette className="w-4 h-4 mr-2" />
@@ -117,15 +117,15 @@ function AdminPreviewContent() {
           </Card>
 
           {/* Companion App Features */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <Sparkles className="w-6 h-6 text-yellow-600" />
-                <CardTitle>Companion App</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Companion App</CardTitle>
               </div>
-              <CardDescription>Astrology companion features</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Astrology companion features</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-6 py-6 space-y-2">
               <Link href="/companion">
                 <Button className="w-full mb-2" variant="default" size="sm">
                   <Calendar className="w-4 h-4 mr-2" />
@@ -160,15 +160,15 @@ function AdminPreviewContent() {
           </Card>
 
           {/* Quiz Flow */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <Layout className="w-6 h-6 text-green-600" />
-                <CardTitle>Quiz Flow</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Quiz Flow</CardTitle>
               </div>
-              <CardDescription>User onboarding quiz</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">User onboarding quiz</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-6 py-6 space-y-2">
               <Link href="/quiz">
                 <Button className="w-full" variant="default">
                   <Layout className="w-4 h-4 mr-2" />
@@ -184,15 +184,15 @@ function AdminPreviewContent() {
           </Card>
 
           {/* Admin Stats */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="w-6 h-6 text-indigo-600" />
-                <CardTitle>Admin Statistics</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Admin Statistics</CardTitle>
               </div>
-              <CardDescription>View application metrics</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">View application metrics</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-6 py-6 space-y-2">
               <Link href="/olivialimon-admin/audit">
                 <Button className="w-full mb-2" variant="default" size="sm">
                   <BarChart3 className="w-4 h-4 mr-2" />
@@ -227,15 +227,15 @@ function AdminPreviewContent() {
           </Card>
 
           {/* Other Pages */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+            <CardHeader className="px-6 py-5">
               <div className="flex items-center space-x-2">
                 <BookOpen className="w-6 h-6 text-red-600" />
-                <CardTitle>Other Pages</CardTitle>
+                <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Other Pages</CardTitle>
               </div>
-              <CardDescription>Additional application pages</CardDescription>
+              <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Additional application pages</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="px-6 py-6 space-y-2">
               <Link href="/pricing">
                 <Button className="w-full mb-2" variant="outline" size="sm">
                   Pricing
@@ -261,12 +261,12 @@ function AdminPreviewContent() {
         </div>
 
         {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common admin tasks</CardDescription>
+        <Card className="mb-8 border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
+          <CardHeader className="px-6 py-5">
+            <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Quick Actions</CardTitle>
+            <CardDescription className="text-[15px] leading-[20px] text-apple-gray-2 mt-1">Common admin tasks</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 py-6">
             <div className="grid md:grid-cols-3 gap-4">
               <Link href="/api/health" target="_blank">
                 <Button variant="outline" className="w-full">
@@ -288,8 +288,8 @@ function AdminPreviewContent() {
         </Card>
 
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="bg-blue-50 border border-blue-200 rounded-apple-lg p-4">
+          <p className="text-[13px] leading-[18px] text-blue-800">
             <strong>Note:</strong> This is a preview/admin dashboard. Some features may require authentication 
             or database setup to function fully. Use this page to explore the application structure and UI.
           </p>

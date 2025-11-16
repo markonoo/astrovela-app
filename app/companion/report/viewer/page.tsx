@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useUser } from "@/contexts/UserContext"
 import { Paywall } from "@/components/companion/paywall"
+import { CompanionShell } from "@/components/companion/CompanionShell"
 import { PageData } from "@/types/document-maker"
 import { ScrollHeader } from "@/components/document-maker/ui/ScrollHeader"
 import { PageRenderer } from "@/components/document-maker/pages/PageRenderer"
@@ -143,12 +144,14 @@ export default function ReportViewerPage() {
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-apple-gray-4 border-t-apple-gray-1 mx-auto"></div>
-          <p className="mt-4 text-[17px] leading-[24px] text-apple-gray-2">Loading your astrology report...</p>
+      <CompanionShell title="Your Report" activeTab="horoscope">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white mx-auto"></div>
+            <p className="mt-4 text-[17px] leading-[24px] text-white/60">Loading your astrology report...</p>
+          </div>
         </div>
-      </div>
+      </CompanionShell>
     )
   }
 
@@ -157,77 +160,83 @@ export default function ReportViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 pb-12 md:pb-4">
-      <ScrollHeader
-        total={totalPages}
-        current={currentPage}
-        deepLinkingEnabled={deepLinkingEnabled}
-        onJump={jump}
-      />
-      
-      <div className="scroll-snap-container mx-auto max-w-full md:max-w-[220mm] px-2 md:px-4">
-        {pages.map((pageData) => (
-          <PageRenderer key={pageData.id} pageData={pageData} />
-        ))}
-      </div>
-      
-      <style jsx>{`
-        .scroll-snap-container {
-          scroll-snap-type: y mandatory;
-          -webkit-overflow-scrolling: touch;
-        }
-        section[id^="p-"] {
-          scroll-snap-align: start;
-        }
-        .page-container {
-          width: 100%;
-          max-width: 210mm;
-          height: auto;
-          min-height: 297mm;
-          aspect-ratio: 210 / 297;
-          margin: 12px auto;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          background: white;
-          position: relative;
-        }
-        @media (max-width: 768px) {
+    <CompanionShell title="Your Report" activeTab="horoscope">
+      <div className="px-4 mt-6 flex flex-col items-center gap-6 mb-24">
+        <ScrollHeader
+          total={totalPages}
+          current={currentPage}
+          deepLinkingEnabled={deepLinkingEnabled}
+          onJump={jump}
+        />
+        
+        <div className="scroll-snap-container w-full max-w-full md:max-w-[220mm]">
+          {pages.map((pageData) => (
+            <div
+              key={pageData.id}
+              className="w-full max-w-[210mm] rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] overflow-hidden mb-6"
+            >
+              <PageRenderer pageData={pageData} />
+            </div>
+          ))}
+        </div>
+        
+        <style jsx>{`
+          .scroll-snap-container {
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+          }
+          section[id^="p-"] {
+            scroll-snap-align: start;
+          }
           .page-container {
-            width: calc(100% - 16px);
-            margin: 8px auto;
-            min-height: auto;
+            width: 100%;
+            max-width: 210mm;
+            height: auto;
+            min-height: 297mm;
             aspect-ratio: 210 / 297;
+            margin: 0 auto;
+            background: white;
+            position: relative;
           }
-        }
-        .page-content {
-          position: absolute;
-          inset: 16mm;
-          padding: 12px;
-        }
-        @media (max-width: 768px) {
+          @media (max-width: 768px) {
+            .page-container {
+              width: calc(100% - 16px);
+              margin: 8px auto;
+              min-height: auto;
+              aspect-ratio: 210 / 297;
+            }
+          }
           .page-content {
-            inset: 8px;
-            padding: 8px;
-            font-size: 12px;
+            position: absolute;
+            inset: 16mm;
+            padding: 12px;
           }
-        }
-        .page-number {
-          position: absolute;
-          bottom: 10mm;
-          left: 0;
-          right: 0;
-          text-align: center;
-          font-size: 9pt;
-          letter-spacing: 0.08em;
-          color: #666;
-        }
-        @media (max-width: 768px) {
+          @media (max-width: 768px) {
+            .page-content {
+              inset: 8px;
+              padding: 8px;
+              font-size: 12px;
+            }
+          }
           .page-number {
-            bottom: 8px;
-            font-size: 8pt;
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9pt;
+            letter-spacing: 0.08em;
+            color: #666;
           }
-        }
-      `}</style>
-    </div>
+          @media (max-width: 768px) {
+            .page-number {
+              bottom: 8px;
+              font-size: 8pt;
+            }
+          }
+        `}</style>
+      </div>
+    </CompanionShell>
   )
 }
 

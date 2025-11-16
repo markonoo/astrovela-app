@@ -107,17 +107,17 @@ function DocumentGeneratorPreviewContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-apple-gray-5 to-apple-gray-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading document generator preview...</p>
+          <p className="mt-4 text-apple-gray-2">Loading document generator preview...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 pb-12 md:pb-4">
+    <div className="min-h-screen bg-gradient-to-b from-apple-gray-5 to-apple-gray-6 pb-12 md:pb-4 safe-area-inset-top">
       {/* Back Button */}
       <div className="sticky top-0 z-50 bg-white border-b px-4 py-2">
         <Link href="/olivialimon-admin/preview">
@@ -135,7 +135,7 @@ function DocumentGeneratorPreviewContent() {
         onJump={jump}
       />
       
-      <div className="scroll-snap-container mx-auto max-w-full md:max-w-[220mm] px-2 md:px-4">
+      <div className="scroll-snap-container mx-auto max-w-full md:max-w-[220mm] px-2 md:px-4 animate-fadeIn">
         {pages.map((pageData) => (
           <PageRenderer key={pageData.id} pageData={pageData} />
         ))}
