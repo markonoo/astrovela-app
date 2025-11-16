@@ -73,17 +73,29 @@ export function getAdmin2FASecret(): string {
 
 /**
  * Check if 2FA is enabled for admin
- * In production, 2FA is MANDATORY for security compliance
+ * Returns false if not configured, allowing the route to handle it gracefully
  */
 export function is2FAEnabled(): boolean {
   const enabled = !!process.env.ADMIN_2FA_SECRET
+  return enabled
+}
+
+/**
+ * Check if 2FA is properly configured for production
+ * This should be called separately to validate configuration
+ */
+export function validate2FAConfig(): { valid: boolean; error?: string } {
+  const enabled = is2FAEnabled()
   
   // SECURITY: In production, 2FA MUST be configured
   if (process.env.NODE_ENV === 'production' && !enabled) {
-    throw new Error('CRITICAL SECURITY ERROR: 2FA must be configured in production environment. Set ADMIN_2FA_SECRET in environment variables.')
+    return {
+      valid: false,
+      error: 'CRITICAL SECURITY ERROR: 2FA must be configured in production environment. Set ADMIN_2FA_SECRET in environment variables.'
+    }
   }
   
-  return enabled
+  return { valid: true }
 }
 
 
