@@ -1,11 +1,9 @@
 /**
  * Admin Session Management
  * Secure session handling using JWT tokens and httpOnly cookies
- * Compatible with Vercel Edge Runtime
  */
 
 import jwt from 'jsonwebtoken'
-import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'change-me-in-production-use-strong-secret'
@@ -67,65 +65,34 @@ export function verifyAdminSession(token: string): AdminSession | null {
 }
 
 /**
- * Add session cookie to a NextResponse
- * Use this in API routes to set the cookie on the response
+ * Set admin session cookie (httpOnly, secure)
  */
-export function addSessionCookie(response: NextResponse, token: string): NextResponse {
-  response.cookies.set('admin_session', token, {
+export async function setAdminSessionCookie(token: string): Promise<void> {
+  const cookieStore = await cookies()
+  
+  cookieStore.set('admin_session', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: SESSION_DURATION / 1000, // Convert to seconds
     path: '/'
   })
-  return response
 }
 
 /**
- * Get admin session cookie from request
- */
-export function getSessionCookieFromRequest(request: Request): string | null {
-  const cookieHeader = request.headers.get('cookie')
-  if (!cookieHeader) return null
-  
-  const cookies = cookieHeader.split(';').map(c => c.trim())
-  const sessionCookie = cookies.find(c => c.startsWith('admin_session='))
-  
-  if (!sessionCookie) return null
-  
-  return sessionCookie.split('=')[1] || null
-}
-
-/**
- * Get admin session cookie (for server components using cookies())
+ * Get admin session cookie
  */
 export async function getAdminSessionCookie(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies()
-    return cookieStore.get('admin_session')?.value || null
-  } catch (error) {
-    return null
-  }
+  const cookieStore = await cookies()
+  return cookieStore.get('admin_session')?.value || null
 }
 
 /**
- * Clear admin session cookie on a NextResponse
- */
-export function clearSessionCookie(response: NextResponse): NextResponse {
-  response.cookies.delete('admin_session')
-  return response
-}
-
-/**
- * Clear admin session cookie (for server components)
+ * Clear admin session cookie
  */
 export async function clearAdminSessionCookie(): Promise<void> {
-  try {
-    const cookieStore = await cookies()
-    cookieStore.delete('admin_session')
-  } catch (error) {
-    // Ignore errors in edge runtime
-  }
+  const cookieStore = await cookies()
+  cookieStore.delete('admin_session')
 }
 
 /**
@@ -152,4 +119,10 @@ export async function getAdminSession(): Promise<AdminSession | null> {
   
   return verifyAdminSession(token)
 }
+
+
+
+
+
+
 

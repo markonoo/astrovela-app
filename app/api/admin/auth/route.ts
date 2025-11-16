@@ -3,7 +3,7 @@ import { logger } from "@/utils/logger"
 import { verifyTOTP, getAdmin2FASecret, is2FAEnabled } from "@/lib/admin-2fa"
 import { adminLoginLimiter, getClientIP } from "@/lib/rate-limit"
 import { verifyPassword } from "@/lib/password"
-import { createAdminSession, setAdminSessionCookie, verifyAdminSession, getAdminSessionCookie } from "@/lib/admin-session"
+import { createAdminSession, addSessionCookie, verifyAdminSession, getSessionCookieFromRequest } from "@/lib/admin-session"
 
 /**
  * Admin Authentication API
@@ -114,13 +114,13 @@ export async function POST(request: NextRequest) {
         logger.warn("Login without 2FA (development mode)", { clientIP })
         const sessionToken = createAdminSession()
 
-        // Set cookie BEFORE creating response
-        await setAdminSessionCookie(sessionToken)
-        
-        return NextResponse.json({
+        // Create response and add cookie
+        const response = NextResponse.json({
           success: true,
           message: "Login successful (development mode - no 2FA)"
         })
+        
+        return addSessionCookie(response, sessionToken)
       }
     }
 
@@ -157,16 +157,15 @@ export async function POST(request: NextRequest) {
       logger.info("2FA successful, creating session", { clientIP })
       const sessionToken = createAdminSession()
 
-      // Set cookie BEFORE creating response
-      await setAdminSessionCookie(sessionToken)
-      
       logger.info("Admin login successful", { clientIP, method: "2FA" })
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: "Login successful",
         remainingRecoveryCodes: 0, // Disabled for debugging
         lowRecoveryCodes: false
       })
+      
+      return addSessionCookie(response, sessionToken)
     }
 
     return NextResponse.json(
@@ -209,7 +208,7 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const sessionToken = await getAdminSessionCookie()
+    const sessionToken = getSessionCookieFromRequest(request)
     
     if (!sessionToken) {
       return NextResponse.json(

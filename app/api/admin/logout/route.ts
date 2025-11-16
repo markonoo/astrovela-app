@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { clearAdminSessionCookie, getAdminSessionCookie } from "@/lib/admin-session"
+import { clearSessionCookie, getSessionCookieFromRequest } from "@/lib/admin-session"
 import { logger } from "@/utils/logger"
 import { logAdminLogout } from "@/lib/admin-audit"
 import { getClientIP } from "@/lib/rate-limit"
@@ -14,9 +14,7 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || undefined
     
     // Get session before clearing (for logging)
-    const sessionToken = await getAdminSessionCookie()
-    
-    await clearAdminSessionCookie()
+    const sessionToken = getSessionCookieFromRequest(request)
     
     // Log logout
     await logAdminLogout(
@@ -27,10 +25,12 @@ export async function POST(request: NextRequest) {
     
     logger.info("Admin logout successful")
     
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: "Logged out successfully"
     })
+    
+    return clearSessionCookie(response)
   } catch (error) {
     logger.error("Admin logout error", error)
     return NextResponse.json(
