@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getCSRFTokenFromCookie, verifyCSRFToken } from "@/lib/csrf"
+import { verifyTOTP, getAdmin2FASecret } from "@/lib/admin-2fa"
+import { adminLoginLimiter, getClientIP } from "@/lib/rate-limit"
 
 /**
  * Admin Authentication API
@@ -17,9 +20,24 @@ interface LoginRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: protect against brute force
+    try {
+      const ip = getClientIP(request)
+      await adminLoginLimiter.check(5, ip)
+    } catch {
+      return NextResponse.json({ error: "Too many login attempts" }, { status: 429 })
+    }
+
     // Parse body first to catch any JSON errors
     const body: LoginRequest = await request.json()
     const { password, step = 'password' } = body
+
+    // CSRF double-submit verification (header vs cookie)
+    const headerToken = request.headers.get("x-csrf-token")
+    const cookieToken = await getCSRFTokenFromCookie()
+    if (!headerToken || !cookieToken || !verifyCSRFToken(headerToken, cookieToken)) {
+      return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 })
+    }
 
     if (step === 'password') {
       if (!password) {
@@ -78,7 +96,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (step === '2fa') {
-      // Import JWT for 2FA step
+      // Validate TOTP
+      const { totpCode } = body
+      if (!totpCode) {
+        return NextResponse.json({ error: "2FA code is required" }, { status: 400 })
+      }
+
+      let secret: string
+      try {
+        secret = getAdmin2FASecret()
+      } catch {
+        return NextResponse.json({ error: "2FA not configured" }, { status: 500 })
+      }
+
+      const valid = verifyTOTP(totpCode, secret)
+      if (!valid) {
+        return NextResponse.json({ error: "Invalid 2FA code" }, { status: 401 })
+      }
+
+      // Issue session after successful 2FA
       const jwt = await import("jsonwebtoken")
       const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'change-me-in-production'
       const now = Date.now()
