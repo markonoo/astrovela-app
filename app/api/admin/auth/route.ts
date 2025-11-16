@@ -17,10 +17,7 @@ interface LoginRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    // Import required modules at the start
-    const bcryptModule = await import("bcrypt")
-    const jwtModule = await import("jsonwebtoken")
-
+    // Parse body first to catch any JSON errors
     const body: LoginRequest = await request.json()
     const { password, step = 'password' } = body
 
@@ -34,7 +31,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Admin authentication not configured" }, { status: 500 })
       }
 
-      const passwordValid = await bcryptModule.default.compare(password, adminPasswordHash)
+      // Import bcrypt only when needed
+      const bcrypt = await import("bcrypt")
+      const passwordValid = await bcrypt.default.compare(password, adminPasswordHash)
       
       if (!passwordValid) {
         return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
@@ -49,11 +48,13 @@ export async function POST(request: NextRequest) {
           message: "Please enter your 2FA code"
         })
       } else {
+        // No 2FA - create session
+        const jwt = await import("jsonwebtoken")
         const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'change-me-in-production'
         const now = Date.now()
         const expiresAt = now + (4 * 60 * 60 * 1000)
         
-        const sessionToken = jwtModule.default.sign(
+        const sessionToken = jwt.default.sign(
           { authenticated: true, expiresAt, issuedAt: now, type: 'admin' },
           JWT_SECRET,
           { expiresIn: '4h' }
@@ -77,11 +78,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (step === '2fa') {
+      // Import JWT for 2FA step
+      const jwt = await import("jsonwebtoken")
       const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'change-me-in-production'
       const now = Date.now()
       const expiresAt = now + (4 * 60 * 60 * 1000)
       
-      const sessionToken = jwtModule.default.sign(
+      const sessionToken = jwt.default.sign(
         { authenticated: true, expiresAt, issuedAt: now, type: 'admin' },
         JWT_SECRET,
         { expiresIn: '4h' }
