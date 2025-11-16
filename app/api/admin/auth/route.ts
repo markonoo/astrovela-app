@@ -114,13 +114,13 @@ export async function POST(request: NextRequest) {
         logger.warn("Login without 2FA (development mode)", { clientIP })
         const sessionToken = createAdminSession()
 
-        const response = NextResponse.json({
+        // Set cookie BEFORE creating response
+        await setAdminSessionCookie(sessionToken)
+        
+        return NextResponse.json({
           success: true,
           message: "Login successful (development mode - no 2FA)"
         })
-
-        await setAdminSessionCookie(sessionToken)
-        return response
       }
     }
 
@@ -157,17 +157,16 @@ export async function POST(request: NextRequest) {
       logger.info("2FA successful, creating session", { clientIP })
       const sessionToken = createAdminSession()
 
-      const response = NextResponse.json({
+      // Set cookie BEFORE creating response
+      await setAdminSessionCookie(sessionToken)
+      
+      logger.info("Admin login successful", { clientIP, method: "2FA" })
+      return NextResponse.json({
         success: true,
         message: "Login successful",
         remainingRecoveryCodes: 0, // Disabled for debugging
         lowRecoveryCodes: false
       })
-
-      await setAdminSessionCookie(sessionToken)
-      
-      logger.info("Admin login successful", { clientIP, method: "2FA" })
-      return response
     }
 
     return NextResponse.json(
