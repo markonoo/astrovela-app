@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        if (data.requires2FA) {
+        if (data.requiresTwoFactor) {
           // Move to 2FA step
           setStep('2fa')
         } else {
