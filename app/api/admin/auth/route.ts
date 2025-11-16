@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 
 /**
- * Admin Authentication API - Step-by-step import testing
+ * Admin Authentication API
+ * Supports password + 2FA authentication with secure sessions
  */
+
+// Force Node.js runtime - bcrypt requires native bindings that don't work in Edge Runtime
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 interface LoginRequest {
   password: string
@@ -57,6 +62,7 @@ export async function POST(request: NextRequest) {
       
       if (twoFAEnabled) {
         return NextResponse.json({
+          success: true,
           requiresTwoFactor: true,
           message: "Please enter your 2FA code"
         })
