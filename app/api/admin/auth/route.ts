@@ -17,27 +17,9 @@ interface LoginRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    // Step 1: Try to import bcrypt
-    let bcryptModule
-    try {
-      bcryptModule = await import("bcrypt")
-    } catch (error) {
-      return NextResponse.json({
-        error: "Failed to import bcrypt",
-        details: error instanceof Error ? error.message : String(error)
-      }, { status: 500 })
-    }
-
-    // Step 2: Try to import jwt
-    let jwtModule
-    try {
-      jwtModule = await import("jsonwebtoken")
-    } catch (error) {
-      return NextResponse.json({
-        error: "Failed to import jsonwebtoken",
-        details: error instanceof Error ? error.message : String(error)
-      }, { status: 500 })
-    }
+    // Import required modules at the start
+    const bcryptModule = await import("bcrypt")
+    const jwtModule = await import("jsonwebtoken")
 
     const body: LoginRequest = await request.json()
     const { password, step = 'password' } = body
