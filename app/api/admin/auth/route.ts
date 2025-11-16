@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Import bcrypt only when needed
-      const bcrypt = await import("bcrypt")
+      const bcrypt = await import("bcryptjs")
       const passwordValid = await bcrypt.default.compare(password, adminPasswordHash)
       
       if (!passwordValid) {

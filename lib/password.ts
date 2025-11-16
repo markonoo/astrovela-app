@@ -3,7 +3,7 @@
  * Password hashing, verification, and strength validation
  */
 
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const SALT_ROUNDS = 12
 
