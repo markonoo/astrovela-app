@@ -246,3 +246,4 @@ ADMIN_2FA_SECRET = your-2fa-secret-here
 **Issue:** Bcrypt hash dollar sign escaping in Next.js environment variables  
 **Status:** ✅ Resolved
 
+

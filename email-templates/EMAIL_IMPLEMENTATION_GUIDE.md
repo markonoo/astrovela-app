@@ -423,3 +423,4 @@ Contact: hello@astrovela.de
 **Version:** 1.0  
 **Templates:** 7 HTML emails + implementation guide
 
+

@@ -291,3 +291,4 @@ vercel --prod
 **Next Action:** Verify Shopify variables, then deploy to Vercel
 
 
+

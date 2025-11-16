@@ -103,3 +103,4 @@ Once you test and report results, I'll know whether:
 **Commit:** `fbf05840` - "fix: Simplify admin auth route - remove database dependencies for debugging 405 error"
 **Deployed:** Waiting for Vercel (~2-3 minutes)
 
+

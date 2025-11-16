@@ -141,7 +141,7 @@ model NatalChartInterpretation {
 }
 
 model QuizResponse {
-  id          String   @id
+  id          String   @id @default(cuid())
   email       String
   answers     Json
   birthDate   Json
