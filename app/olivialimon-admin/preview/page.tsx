@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute"
 import { 
   BookOpen, 
@@ -21,15 +19,53 @@ import {
   Compass,
   Layout,
   ExternalLink,
-  LogOut
+  LogOut,
+  TrendingUp,
+  DollarSign,
+  Activity
 } from "lucide-react"
+import { format } from "date-fns"
+
+interface AuraStats {
+  summary: {
+    totalEntitlements: number
+    activeSubscriptions: number
+    expiredTrials: number
+    usersWithReports: number
+    recentEntitlements: number
+    expiringSoon: number
+    conversionRate: string
+  }
+  byPlan: Array<{
+    plan: string
+    count: number
+  }>
+  timestamp: string
+}
 
 function AdminPreviewContent() {
   const [mounted, setMounted] = useState(false)
+  const [auraStats, setAuraStats] = useState<AuraStats | null>(null)
+  const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
     setMounted(true)
+    fetchStats()
   }, [])
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/admin/aura-stats")
+      if (response.ok) {
+        const data = await response.json()
+        setAuraStats(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch stats:", error)
+    } finally {
+      setLoadingStats(false)
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -45,252 +81,354 @@ function AdminPreviewContent() {
     }
   }
 
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Good Morning"
+    if (hour < 18) return "Good Afternoon"
+    return "Good Evening"
+  }
+
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-900"></div>
+      <div className="min-h-screen bg-gradient-to-b from-[#050719] via-[#090b25] to-[#0b0e2e] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-12">
+    <div className="min-h-screen bg-gradient-to-b from-[#050719] via-[#090b25] to-[#0b0e2e] text-white p-6 md:p-12 safe-area-inset-top">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Preview Dashboard</h1>
-            <p className="text-lg text-gray-600">
-              Access all features and preview the application
-            </p>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-[32px] leading-[40px] font-bold text-white mb-2">{getGreeting()}!</h1>
+              <p className="text-[15px] leading-[20px] text-white/60">
+                {format(new Date(), "EEEE, MMMM d, yyyy")}
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
           </div>
-          <Button onClick={handleLogout} variant="outline">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+
+          {/* Quick Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {/* Total Users */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] leading-[18px] text-white/60">Total Users</span>
+                <Users className="w-5 h-5 text-white/60" />
+              </div>
+              {loadingStats ? (
+                <div className="h-8 w-20 bg-white/10 rounded animate-pulse"></div>
+              ) : (
+                <>
+                  <div className="text-[32px] leading-[40px] font-bold text-white mb-1">
+                    {auraStats?.summary.totalEntitlements.toLocaleString() || "0"}
+                  </div>
+                  <div className="text-[13px] leading-[18px] text-green-400 flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    {auraStats?.summary.recentEntitlements || 0} new this month
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Active Subscriptions */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] leading-[18px] text-white/60">Active Subscriptions</span>
+                <Activity className="w-5 h-5 text-white/60" />
+              </div>
+              {loadingStats ? (
+                <div className="h-8 w-20 bg-white/10 rounded animate-pulse"></div>
+              ) : (
+                <>
+                  <div className="text-[32px] leading-[40px] font-bold text-white mb-1">
+                    {auraStats?.summary.activeSubscriptions.toLocaleString() || "0"}
+                  </div>
+                  <div className="text-[13px] leading-[18px] text-white/60">
+                    {auraStats?.summary.conversionRate} conversion rate
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Users with Reports */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] leading-[18px] text-white/60">Reports Generated</span>
+                <FileText className="w-5 h-5 text-white/60" />
+              </div>
+              {loadingStats ? (
+                <div className="h-8 w-20 bg-white/10 rounded animate-pulse"></div>
+              ) : (
+                <>
+                  <div className="text-[32px] leading-[40px] font-bold text-white mb-1">
+                    {auraStats?.summary.usersWithReports.toLocaleString() || "0"}
+                  </div>
+                  <div className="text-[13px] leading-[18px] text-white/60">
+                    Users with reports
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Expiring Soon */}
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] leading-[18px] text-white/60">Expiring Soon</span>
+                <Calendar className="w-5 h-5 text-white/60" />
+              </div>
+              {loadingStats ? (
+                <div className="h-8 w-20 bg-white/10 rounded animate-pulse"></div>
+              ) : (
+                <>
+                  <div className="text-[32px] leading-[40px] font-bold text-white mb-1">
+                    {auraStats?.summary.expiringSoon.toLocaleString() || "0"}
+                  </div>
+                  <div className="text-[13px] leading-[18px] text-yellow-400">
+                    Trials expiring in 7 days
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Main Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Document Generator Preview */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <CardTitle>Document Generator</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] flex items-center justify-center">
+                <FileText className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>Preview the interactive astrology report</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Document Generator</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">Preview the interactive astrology report</p>
+              </div>
+            </div>
+            <div className="space-y-3">
               <Link href="/olivialimon-admin/preview/document-generator">
-                <Button className="w-full" variant="default">
-                  <Eye className="w-4 h-4 mr-2" />
+                <button className="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[15px] leading-[20px] font-medium shadow-[0_0_16px_rgba(122,91,255,0.5)] hover:shadow-[0_0_20px_rgba(122,91,255,0.7)] transition-all flex items-center justify-center gap-2">
+                  <Eye className="w-4 h-4" />
                   View Document Generator
-                </Button>
+                </button>
               </Link>
               <Link href="/aura/report/viewer">
-                <Button className="w-full" variant="outline">
-                  <ExternalLink className="w-4 h-4 mr-2" />
+                <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2">
+                  <ExternalLink className="w-4 h-4" />
                   Full Report Viewer
-                </Button>
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Book Cover Designer */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Palette className="w-6 h-6 text-purple-600" />
-                <CardTitle>Book Cover Designer</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff4de1] to-[#ff6b9d] flex items-center justify-center">
+                <Palette className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>Design custom book covers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/book-designer">
-                <Button className="w-full" variant="default">
-                  <Palette className="w-4 h-4 mr-2" />
-                  Open Designer
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Book Cover Designer</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">Design custom book covers</p>
+              </div>
+            </div>
+            <Link href="/book-designer">
+              <button className="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[15px] leading-[20px] font-medium shadow-[0_0_16px_rgba(122,91,255,0.5)] hover:shadow-[0_0_20px_rgba(122,91,255,0.7)] transition-all flex items-center justify-center gap-2">
+                <Palette className="w-4 h-4" />
+                Open Designer
+              </button>
+            </Link>
+          </div>
 
           {/* Aura App Features */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-6 h-6 text-yellow-600" />
-                <CardTitle>Aura App</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ffcc00] to-[#ff9500] flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>Astrology aura features</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Aura App</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">Astrology aura features</p>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Link href="/aura">
-                <Button className="w-full mb-2" variant="default" size="sm">
-                  <Calendar className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[14px] leading-[20px] font-medium shadow-[0_0_12px_rgba(122,91,255,0.4)] hover:shadow-[0_0_16px_rgba(122,91,255,0.6)] transition-all flex items-center justify-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4" />
                   Today's Insights
-                </Button>
+                </button>
               </Link>
               <Link href="/aura/weekly">
-                <Button className="w-full mb-2" variant="outline" size="sm">
-                  <Calendar className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4" />
                   Weekly Outlook
-                </Button>
+                </button>
               </Link>
               <Link href="/aura/love">
-                <Button className="w-full mb-2" variant="outline" size="sm">
-                  <Heart className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2 mb-2">
+                  <Heart className="w-4 h-4" />
                   Love & Compatibility
-                </Button>
+                </button>
               </Link>
               <Link href="/aura/career">
-                <Button className="w-full mb-2" variant="outline" size="sm">
-                  <Briefcase className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2 mb-2">
+                  <Briefcase className="w-4 h-4" />
                   Career & Timing
-                </Button>
+                </button>
               </Link>
               <Link href="/aura/explore">
-                <Button className="w-full" variant="outline" size="sm">
-                  <Compass className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2">
+                  <Compass className="w-4 h-4" />
                   Explore Astrology
-                </Button>
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Quiz Flow */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Layout className="w-6 h-6 text-green-600" />
-                <CardTitle>Quiz Flow</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#34c759] to-[#30d158] flex items-center justify-center">
+                <Layout className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>User onboarding quiz</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Quiz Flow</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">User onboarding quiz</p>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Link href="/quiz">
-                <Button className="w-full" variant="default">
-                  <Layout className="w-4 h-4 mr-2" />
+                <button className="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[15px] leading-[20px] font-medium shadow-[0_0_16px_rgba(122,91,255,0.5)] hover:shadow-[0_0_20px_rgba(122,91,255,0.7)] transition-all flex items-center justify-center gap-2">
+                  <Layout className="w-4 h-4" />
                   Start Quiz
-                </Button>
+                </button>
               </Link>
               <Link href="/reset-quiz">
-                <Button className="w-full" variant="outline">
+                <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all">
                   Reset Quiz
-                </Button>
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Admin Stats */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="w-6 h-6 text-indigo-600" />
-                <CardTitle>Admin Statistics</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5ac8fa] to-[#007aff] flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>View application metrics</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Admin Statistics</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">View application metrics</p>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Link href="/olivialimon-admin/audit">
-                <Button className="w-full mb-2" variant="default" size="sm">
-                  <BarChart3 className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[14px] leading-[20px] font-medium shadow-[0_0_12px_rgba(122,91,255,0.4)] hover:shadow-[0_0_16px_rgba(122,91,255,0.6)] transition-all flex items-center justify-center gap-2 mb-2">
+                  <BarChart3 className="w-4 h-4" />
                   Audit Logs
-                </Button>
+                </button>
               </Link>
               <Link href="/olivialimon-admin/recovery-codes">
-                <Button className="w-full mb-2" variant="default" size="sm">
-                  <Settings className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[14px] leading-[20px] font-medium shadow-[0_0_12px_rgba(122,91,255,0.4)] hover:shadow-[0_0_16px_rgba(122,91,255,0.6)] transition-all flex items-center justify-center gap-2 mb-2">
+                  <Settings className="w-4 h-4" />
                   Recovery Codes
-                </Button>
+                </button>
               </Link>
               <Link href="/api/admin/aura-stats" target="_blank">
-                <Button className="w-full mb-2" variant="outline" size="sm">
-                  <Users className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2 mb-2">
+                  <Users className="w-4 h-4" />
                   Aura Stats
-                </Button>
+                </button>
               </Link>
               <Link href="/api/admin/pdf-stats" target="_blank">
-                <Button className="w-full mb-2" variant="outline" size="sm">
-                  <FileText className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2 mb-2">
+                  <FileText className="w-4 h-4" />
                   PDF Stats
-                </Button>
+                </button>
               </Link>
               <Link href="/dashboard/monitoring">
-                <Button className="w-full" variant="outline" size="sm">
-                  <Settings className="w-4 h-4 mr-2" />
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all flex items-center justify-center gap-2">
+                  <Settings className="w-4 h-4" />
                   Monitoring Dashboard
-                </Button>
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Other Pages */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <BookOpen className="w-6 h-6 text-red-600" />
-                <CardTitle>Other Pages</CardTitle>
+          <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff3b30] to-[#ff6961] flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-white" />
               </div>
-              <CardDescription>Additional application pages</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              <div>
+                <h3 className="text-[18px] leading-[24px] font-semibold text-white">Other Pages</h3>
+                <p className="text-[13px] leading-[18px] text-white/60">Additional application pages</p>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Link href="/pricing">
-                <Button className="w-full mb-2" variant="outline" size="sm">
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all mb-2">
                   Pricing
-                </Button>
+                </button>
               </Link>
               <Link href="/natal-chart">
-                <Button className="w-full mb-2" variant="outline" size="sm">
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all mb-2">
                   Natal Chart
-                </Button>
+                </button>
               </Link>
               <Link href="/help-center">
-                <Button className="w-full mb-2" variant="outline" size="sm">
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all mb-2">
                   Help Center
-                </Button>
+                </button>
               </Link>
               <Link href="/contact-us">
-                <Button className="w-full" variant="outline" size="sm">
+                <button className="w-full py-2.5 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[14px] leading-[20px] font-medium transition-all">
                   Contact Us
-                </Button>
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common admin tasks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Link href="/api/health" target="_blank">
-                <Button variant="outline" className="w-full">
-                  Health Check
-                </Button>
-              </Link>
-              <Link href="/api/test-quiz-responses" target="_blank">
-                <Button variant="outline" className="w-full">
-                  Test Quiz API
-                </Button>
-              </Link>
-              <Link href="/api/test-session-tracking" target="_blank">
-                <Button variant="outline" className="w-full">
-                  Test Session Tracking
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 mb-8">
+          <h3 className="text-[20px] leading-[28px] font-semibold text-white mb-2">Quick Actions</h3>
+          <p className="text-[13px] leading-[18px] text-white/60 mb-4">Common admin tasks</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link href="/api/health" target="_blank">
+              <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all">
+                Health Check
+              </button>
+            </Link>
+            <Link href="/api/test-quiz-responses" target="_blank">
+              <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all">
+                Test Quiz API
+              </button>
+            </Link>
+            <Link href="/api/test-session-tracking" target="_blank">
+              <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all">
+                Test Session Tracking
+              </button>
+            </Link>
+          </div>
+        </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Note:</strong> This is a preview/admin dashboard. Some features may require authentication 
+        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-4 border border-white/10">
+          <p className="text-[13px] leading-[18px] text-white/80">
+            <strong className="text-white">Note:</strong> This is a preview/admin dashboard. Some features may require authentication 
             or database setup to function fully. Use this page to explore the application structure and UI.
           </p>
         </div>
