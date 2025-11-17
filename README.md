@@ -1,4 +1,4 @@
-# AstroVela Companion App
+# AstroVela Aura App
 
 A personal astrology control center that extends static PDF reports with ongoing, personalized astrology content. Built with Next.js 14/15, featuring a beautiful Apple-inspired design system and full mobile responsiveness.
 
@@ -88,10 +88,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 AstroBook/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
-│   ├── companion/         # Companion app pages
+│   ├── aura/              # Aura app pages
 │   └── quiz/              # Quiz flow pages
 ├── components/            # React components
-│   ├── companion/         # Companion app components
+│   ├── aura/              # Aura app components
 │   ├── quiz/              # Quiz components
 │   └── ui/                # UI components
 ├── lib/                   # Utility libraries
@@ -118,7 +118,7 @@ See `DESIGN_SYSTEM.md` for complete design tokens.
 ## 📚 Documentation
 
 - `CODEBASE_INVENTORY.md` - Complete codebase overview
-- `COMPANION_APP_IMPLEMENTATION.md` - Companion app features
+- `COMPANION_APP_IMPLEMENTATION.md` - Aura app features
 - `DESIGN_SYSTEM.md` - Design tokens and guidelines
 - `ENV_TEMPLATE.md` - Environment variables reference
 - `REMAINING_TODOS.md` - Known issues and improvements

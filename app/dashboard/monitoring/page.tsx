@@ -73,7 +73,7 @@ interface MarketingAnalytics {
   platforms: MarketingPlatformStatus[];
 }
 
-interface CompanionAppStats {
+interface AuraAppStats {
   summary: {
     totalEntitlements: number;
     activeSubscriptions: number;
@@ -113,7 +113,7 @@ export default function MonitoringDashboard() {
   const [shopifyAnalytics, setShopifyAnalytics] = useState<ShopifyAnalytics | null>(null);
   const [shopifyConnection, setShopifyConnection] = useState<ShopifyConnection | null>(null);
   const [marketingAnalytics, setMarketingAnalytics] = useState<MarketingAnalytics | null>(null);
-  const [companionAppStats, setCompanionAppStats] = useState<CompanionAppStats | null>(null);
+  const [auraAppStats, setAuraAppStats] = useState<AuraAppStats | null>(null);
   const [pdfStats, setPdfStats] = useState<PDFStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -210,21 +210,21 @@ export default function MonitoringDashboard() {
     }
   };
 
-  const fetchCompanionAppStats = async () => {
+  const fetchAuraAppStats = async () => {
     try {
-      console.log('📱 Fetching Companion App stats...');
+      console.log('📱 Fetching Aura App stats...');
       
-      const response = await fetch('/api/admin/companion-stats');
+      const response = await fetch('/api/admin/aura-stats');
       
       if (response.ok) {
         const stats = await response.json();
-        setCompanionAppStats(stats);
-        console.log('✅ Companion App stats loaded:', stats);
+        setAuraAppStats(stats);
+        console.log('✅ Aura App stats loaded:', stats);
       } else {
-        console.error('❌ Companion App stats error:', response.status);
+        console.error('❌ Aura App stats error:', response.status);
       }
     } catch (err) {
-      console.error('Error fetching Companion App stats:', err);
+      console.error('Error fetching Aura App stats:', err);
     }
   };
 
@@ -254,7 +254,7 @@ export default function MonitoringDashboard() {
       fetchSecurityData(),
       fetchShopifyData(),
       fetchMarketingData(),
-      fetchCompanionAppStats(),
+      fetchAuraAppStats(),
       fetchPDFStats()
     ]);
     setLastRefresh(new Date());
@@ -876,36 +876,36 @@ export default function MonitoringDashboard() {
             📱 Companion App Analytics
           </h2>
           
-          {companionAppStats ? (
+          {auraAppStats ? (
             <div className="space-y-6">
               {/* Summary Metrics */}
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <div className="bg-blue-50 p-4 rounded border">
                   <h3 className="font-medium text-blue-700">Total Entitlements</h3>
                   <p className="text-2xl font-bold text-blue-600">
-                    {companionAppStats.summary.totalEntitlements}
+                    {auraAppStats.summary.totalEntitlements}
                   </p>
                 </div>
                 <div className="bg-green-50 p-4 rounded border">
                   <h3 className="font-medium text-green-700">Active Subscriptions</h3>
                   <p className="text-2xl font-bold text-green-600">
-                    {companionAppStats.summary.activeSubscriptions}
+                    {auraAppStats.summary.activeSubscriptions}
                   </p>
                   <p className="text-sm text-green-600">
-                    {companionAppStats.summary.conversionRate} conversion
+                    {auraAppStats.summary.conversionRate} conversion
                   </p>
                 </div>
                 <div className="bg-yellow-50 p-4 rounded border">
                   <h3 className="font-medium text-yellow-700">Expiring Soon</h3>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {companionAppStats.summary.expiringSoon}
+                    {auraAppStats.summary.expiringSoon}
                   </p>
                   <p className="text-sm text-yellow-600">Next 7 days</p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded border">
                   <h3 className="font-medium text-purple-700">Users with Reports</h3>
                   <p className="text-2xl font-bold text-purple-600">
-                    {companionAppStats.summary.usersWithReports}
+                    {auraAppStats.summary.usersWithReports}
                   </p>
                 </div>
               </div>
@@ -914,7 +914,7 @@ export default function MonitoringDashboard() {
               <div>
                 <h3 className="font-medium text-gray-700 mb-3">📊 Entitlements by Plan</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {companionAppStats.byPlan.map((item) => (
+                  {auraAppStats.byPlan.map((item) => (
                     <div key={item.plan} className="bg-gray-50 p-4 rounded border">
                       <div className="flex items-center justify-between">
                         <span className="font-medium capitalize text-gray-700">{item.plan}</span>
@@ -930,14 +930,14 @@ export default function MonitoringDashboard() {
                 <div className="bg-gray-50 p-4 rounded border">
                   <h3 className="font-medium text-gray-700 mb-2">Recent Entitlements</h3>
                   <p className="text-2xl font-bold text-gray-800">
-                    {companionAppStats.summary.recentEntitlements}
+                    {auraAppStats.summary.recentEntitlements}
                   </p>
                   <p className="text-sm text-gray-600">Last 30 days</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded border">
                   <h3 className="font-medium text-gray-700 mb-2">Expired Trials</h3>
                   <p className="text-2xl font-bold text-gray-800">
-                    {companionAppStats.summary.expiredTrials}
+                    {auraAppStats.summary.expiredTrials}
                   </p>
                   <p className="text-sm text-gray-600">Total expired</p>
                 </div>
@@ -1028,8 +1028,8 @@ export default function MonitoringDashboard() {
                 </div>
                 <div className="mt-3 pt-3 border-t border-indigo-200">
                   <p className="text-sm text-indigo-600">
-                    Report Viewer: <a href="/companion/report/viewer" className="underline">View Demo</a> • 
-                    PDF Generation: <a href="/api/companion/report/pdf" className="underline">API Endpoint</a>
+                    Report Viewer: <a href="/aura/report/viewer" className="underline">View Demo</a> • 
+                    PDF Generation: <a href="/api/aura/report/pdf" className="underline">API Endpoint</a>
                   </p>
                 </div>
               </div>
@@ -1081,9 +1081,9 @@ export default function MonitoringDashboard() {
             </div>
             <div className="bg-gray-50 p-4 rounded border">
               <h3 className="font-medium mb-2">Companion App Stats</h3>
-              <code className="text-sm text-gray-600 block mb-2">/api/admin/companion-stats</code>
+              <code className="text-sm text-gray-600 block mb-2">/api/admin/aura-stats</code>
               <a 
-                href="/api/admin/companion-stats" 
+                href="/api/admin/aura-stats" 
                 target="_blank" 
                 className="text-blue-500 hover:text-blue-700 text-sm underline"
               >

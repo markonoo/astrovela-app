@@ -1,5 +1,5 @@
 /**
- * Entitlement management utilities for AstroVela Companion App
+ * Entitlement management utilities for AstroVela Aura App
  */
 
 import { prisma } from './prisma';
@@ -21,7 +21,7 @@ export interface AppEntitlement {
 }
 
 /**
- * Check if user has active access to the companion app
+ * Check if user has active access to the aura app
  */
 export async function hasActiveAccess(userId: number): Promise<boolean> {
   const entitlement = await prisma.appEntitlement.findUnique({

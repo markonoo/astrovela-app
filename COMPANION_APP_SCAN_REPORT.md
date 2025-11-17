@@ -119,3 +119,4 @@ All the pages listed above are missing the `CompanionShell` wrapper, which provi
 
 **Next Steps**: Refactor remaining 6 pages to match dark design theme.
 
+
