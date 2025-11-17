@@ -406,7 +406,34 @@ function AdminPreviewContent() {
         <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 mb-8">
           <h3 className="text-[20px] leading-[28px] font-semibold text-white mb-2">Quick Actions</h3>
           <p className="text-[13px] leading-[18px] text-white/60 mb-4">Common admin tasks</p>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch("/api/admin/create-test-user", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      email: `test-${Date.now()}@example.com`,
+                      name: "Test User",
+                      sunSign: "capricorn",
+                      moonSign: "scorpio",
+                    }),
+                  })
+                  const data = await response.json()
+                  if (response.ok) {
+                    alert(`Test user created!\nEmail: ${data.user.email}\n\nTo log in:\n1. Go to /login\n2. Sign up with: ${data.user.email}\n3. Use any password`)
+                  } else {
+                    alert(`Error: ${data.error || "Failed to create test user"}`)
+                  }
+                } catch (error) {
+                  alert(`Error: ${error instanceof Error ? error.message : "Failed to create test user"}`)
+                }
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[15px] leading-[20px] font-medium shadow-[0_0_16px_rgba(122,91,255,0.5)] hover:shadow-[0_0_20px_rgba(122,91,255,0.7)] transition-all"
+            >
+              Create Test User
+            </button>
             <Link href="/api/health" target="_blank">
               <button className="w-full py-3 px-4 rounded-xl bg-white/8 hover:bg-white/12 text-white text-[15px] leading-[20px] font-medium transition-all">
                 Health Check
