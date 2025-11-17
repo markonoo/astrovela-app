@@ -158,3 +158,4 @@ Gradient: from-[#7a5bff] to-[#ff4de1]
 - Ensure accessibility
 - Follow Aura app design patterns
 
+

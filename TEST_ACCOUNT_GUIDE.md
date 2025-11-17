@@ -266,3 +266,4 @@ curl http://localhost:3000/api/aura/report \
 - You can create multiple test accounts with different zodiac signs
 - Test accounts can be deleted via admin panel or database cleanup
 
+
