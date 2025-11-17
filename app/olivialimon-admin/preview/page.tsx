@@ -82,7 +82,7 @@ function AdminPreviewContent() {
               <CardDescription>Preview the interactive astrology report</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href="/admin/preview/document-generator">
+              <Link href="/olivialimon-admin/preview/document-generator">
                 <Button className="w-full" variant="default">
                   <Eye className="w-4 h-4 mr-2" />
                   View Document Generator
