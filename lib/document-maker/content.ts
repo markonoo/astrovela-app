@@ -18,9 +18,10 @@ export async function loadPagesData(pageNumbers: number[]): Promise<PageData[]> 
   return results.filter((page): page is PageData => page !== null);
 }
 
-// Get all available page numbers (you can expand this as you add more pages)
+// Get all available page numbers (only pages that have JSON files)
 export function getAvailablePages(): number[] {
-  return [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73];
+  // Only include pages that actually exist in data/document-maker/pages/
+  return [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 70, 73];
 }
 
 // Navigation utilities

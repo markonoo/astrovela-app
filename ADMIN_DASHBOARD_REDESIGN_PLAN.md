@@ -159,3 +159,4 @@ Gradient: from-[#7a5bff] to-[#ff4de1]
 - Follow Aura app design patterns
 
 
+
