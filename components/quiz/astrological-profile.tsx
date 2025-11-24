@@ -5,6 +5,7 @@ import { getZodiacSign } from "@/utils/zodiac"
 import { useRouter } from "next/navigation"
 import { Calendar, Clock, MapPin } from "lucide-react"
 import Image from "next/image"
+import { logger } from "@/utils/logger"
 
 interface TraitMeterProps {
   name: string
@@ -209,11 +210,11 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
   }
 
   const getMoonSign = () => {
-    console.log("🔍 AstrologicalProfile - state.moonSign:", state.moonSign)
+    logger.quiz("AstrologicalProfile - Checking moonSign", { moonSign: state.moonSign })
     
     // First, try to get from stored state (API interpretation data)
     if (state.moonSign) {
-      console.log("✅ AstrologicalProfile - Using stored moonSign:", state.moonSign)
+      logger.quiz("AstrologicalProfile - Using stored moonSign", { moonSign: state.moonSign })
       return state.moonSign.toLowerCase()
     }
 
@@ -221,14 +222,16 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
     if (state.natalChart?.planets) {
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
       if (moonPlanet) {
-        console.log("⚡ AstrologicalProfile - Using natal chart moonSign:", moonPlanet.sign)
+        logger.quiz("AstrologicalProfile - Using natal chart moonSign", { moonSign: moonPlanet.sign })
         return moonPlanet.sign
       }
     }
 
     // Third, try chart interpretation
     if (state.chartInterpretation?.moonSign?.title) {
-      console.log("📊 AstrologicalProfile - Using chart interpretation moonSign:", state.chartInterpretation.moonSign.title)
+      logger.quiz("AstrologicalProfile - Using chart interpretation moonSign", { 
+        moonSign: state.chartInterpretation.moonSign.title 
+      })
       return state.chartInterpretation.moonSign.title.toLowerCase()
     }
 
@@ -239,7 +242,9 @@ export function AstrologicalProfile({ formattedDate }: AstrologicalProfileProps)
     const sunIndex = zodiacSigns.indexOf(sunSign)
     const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 5
 
-    console.log("🔄 AstrologicalProfile - Using calculated fallback moonSign:", zodiacSigns[moonIndex])
+    logger.quiz("AstrologicalProfile - Using calculated fallback moonSign", { 
+      moonSign: zodiacSigns[moonIndex] 
+    })
     return zodiacSigns[moonIndex]
   }
 

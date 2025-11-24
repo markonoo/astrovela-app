@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
       timestamp: Date.now(),
     });
   } catch (error: any) {
-    console.error('❌ Marketing status check error:', error);
+    logger.error('Marketing status check error', error, { endpoint: '/api/marketing/status' });
     
     return NextResponse.json({
       success: false,

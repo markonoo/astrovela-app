@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import { logger } from '@/utils/logger'
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -83,7 +84,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     // Log error to monitoring service in production
     if (process.env.NODE_ENV === 'production') {
       // TODO: Integrate with error monitoring service (Sentry, LogRocket, etc.)
-      console.error('ErrorBoundary caught an error:', error, errorInfo)
+      logger.error('ErrorBoundary caught an error', error, { errorInfo })
     }
   }
 

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
+import { logger } from '@/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Publishing AstroBook products to Online Store...');
+    logger.api("fix-shopify-products", "Publishing AstroBook products to Online Store");
     
     // First, get the Online Store publication ID
     const publicationsQuery = `
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
     
     const publicationId = onlineStorePublication.node.id;
-    console.log('📍 Found Online Store publication:', publicationId);
+    logger.api("fix-shopify-products", "Found Online Store publication", { publicationId });
     
     // Get the AstroBook products
     const productsQuery = `
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     const productsResult = await productsResponse.json();
     const products = productsResult.data?.products?.edges || [];
     
-    console.log(`📦 Found ${products.length} AstroBook products to publish`);
+    logger.api("fix-shopify-products", `Found ${products.length} AstroBook products to publish`, { count: products.length });
     
     // Publish each product to the Online Store
     const publishResults = [];
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
         result: publishResult
       });
       
-      console.log(`📤 Published ${product.title} (${product.handle})`);
+      logger.api("fix-shopify-products", `Published ${product.title}`, { handle: product.handle });
     }
     
     return NextResponse.json({
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('❌ Publish error:', error);
+    logger.error('Publish error', error, { endpoint: '/api/fix-shopify-products' });
     
     return NextResponse.json({
       success: false,

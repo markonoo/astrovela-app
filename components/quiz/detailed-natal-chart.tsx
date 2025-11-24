@@ -5,13 +5,14 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { NatalChart } from "./natal-chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react"
+import { logger } from "@/utils/logger"
 
 export function DetailedNatalChart() {
   const { state, fetchNatalChart } = useQuiz()
   const [activeTab, setActiveTab] = useState("chart")
 
   const handleGenerateChart = async () => {
-    console.log("🔧 DetailedNatalChart: Manual chart generation triggered")
+    logger.quiz("DetailedNatalChart: Manual chart generation triggered")
     await fetchNatalChart()
   }
 
@@ -20,7 +21,7 @@ export function DetailedNatalChart() {
   const hasFullChartData = state.natalChart
 
   // Debug logging for chart data availability
-  console.log("🔍 DetailedNatalChart - Chart Data Status:", {
+  logger.quiz("DetailedNatalChart - Chart Data Status", {
     hasChartData,
     hasFullChartData,
     hasNatalChart: !!state.natalChart,
@@ -43,7 +44,7 @@ export function DetailedNatalChart() {
                      state.customChartUrl?.startsWith('http') ? 'External API Chart' :
                      'No Chart Data'
 
-  console.log("📊 DetailedNatalChart - Chart Source:", chartSource)
+  logger.quiz("DetailedNatalChart - Chart Source", { chartSource })
 
   // Format birth date for display (Day Month Year format)
   const formatBirthDate = () => {

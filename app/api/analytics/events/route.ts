@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 interface CustomEventData {
   event: string;
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Sanitize event name
     const sanitizedEvent = data.event.replace(/[^a-zA-Z0-9_-]/g, '');
     if (sanitizedEvent !== data.event) {
-      console.warn('Event name sanitized:', { original: data.event, sanitized: sanitizedEvent });
+      logger.warn('Event name sanitized', { original: data.event, sanitized: sanitizedEvent });
     }
     
     // Add server-side data
@@ -61,22 +62,22 @@ export async function POST(request: NextRequest) {
     
     // Log conversion events for business intelligence
     if (sanitizedEvent === 'conversion') {
-      console.log('🎯 Conversion Event:', enhancedData);
+      logger.info('Conversion Event', { eventData: enhancedData });
     }
     
     // Log quiz progression for UX insights
     if (sanitizedEvent === 'quiz_step') {
-      console.log('📝 Quiz Step:', enhancedData);
+      logger.debug('Quiz Step', { eventData: enhancedData });
     }
     
     // Log user interactions for behavior analysis
     if (sanitizedEvent === 'user_interaction') {
-      console.log('👆 User Interaction:', enhancedData);
+      logger.debug('User Interaction', { eventData: enhancedData });
     }
     
     // In production, store this in your analytics database
     if (process.env.NODE_ENV === 'production') {
-      console.log('📈 Custom Event:', enhancedData);
+      logger.info('Custom Event', { eventData: enhancedData });
       
       // TODO: Store in database
       // await storeAnalyticsEvent(enhancedData);

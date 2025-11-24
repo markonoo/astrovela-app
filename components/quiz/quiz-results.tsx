@@ -8,6 +8,7 @@ import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import { useZodiacSigns } from "@/hooks/use-zodiac-signs"
 import { supabase } from "@/lib/supabaseClient"
+import { logger } from "@/utils/logger"
 
 export function QuizResults() {
   const { state, resetQuiz } = useQuiz()
@@ -62,7 +63,7 @@ export function QuizResults() {
                            fallbackMoonSign || 
                            null
 
-  console.log("Quiz Results Debug:", {
+  logger.quiz("Quiz Results Debug", {
     chartInterpretation: state.chartInterpretation?.sunSign?.title,
     dbSunSign,
     fallbackSunSign,
@@ -95,7 +96,7 @@ export function QuizResults() {
 
   // Handle chart loaded event
   const handleChartLoaded = () => {
-    console.log("Chart loaded in QuizResults")
+    logger.quiz("Chart loaded in QuizResults")
   }
 
   if (!zodiacSign) {

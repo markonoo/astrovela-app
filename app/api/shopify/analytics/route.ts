@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN } from '@/utils/shopify-config';
 import { ShopifyError, ShopifyErrorCodes, handleShopifyError } from '@/utils/shopify-error-handler';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 // Force dynamic rendering (uses Shopify API)
 export const dynamic = 'force-dynamic'
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    console.log('🛍️ Fetching Shopify analytics...');
+    logger.api("analytics", "Fetching Shopify analytics");
     
     const { todayStart, weekStart, monthStart } = getTimeRanges();
     
@@ -203,7 +204,7 @@ export async function GET(request: NextRequest) {
       responseTime: responseTime,
     };
 
-    console.log('✅ Shopify analytics fetched successfully');
+    logger.api("analytics", "Shopify analytics fetched successfully", { responseTime });
     
     return NextResponse.json({
       success: true,
@@ -212,7 +213,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error: any) {
-    console.error('❌ Shopify analytics error:', error);
+    logger.error('Shopify analytics error', error, { endpoint: '/api/shopify/analytics' });
     
     ErrorMonitor.captureError({
       error: error instanceof Error ? error : new Error(String(error)),

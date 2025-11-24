@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
+import { logger } from '@/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Bundle discount setup error:', error);
+    logger.error('Bundle discount setup error', error, { endpoint: '/api/setup-bundle-discounts' });
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to setup bundle discounts'

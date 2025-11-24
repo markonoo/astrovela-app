@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Products fetch error:', error);
+    logger.error('Products fetch error', error, { endpoint: 'GET /api/shopify/products' });
     
     ErrorMonitor.captureError({
       error: error instanceof Error ? error : new Error('Products fetch failed'),
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Product fetch error:', error);
+    logger.error('Product fetch error', error, { endpoint: 'POST /api/shopify/products' });
     
     ErrorMonitor.captureError({
       error: error instanceof Error ? error : new Error('Product fetch failed'),

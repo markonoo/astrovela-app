@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_STOREFRONT_API_ENDPOINT, SHOPIFY_STOREFRONT_ACCESS_TOKEN, SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 // Force dynamic rendering (uses Shopify API)
 export const dynamic = 'force-dynamic'
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    console.log('🔍 Testing Shopify connection...');
+    logger.api("connection", "Testing Shopify connection");
     
     // Test basic configuration
     if (!SHOPIFY_STOREFRONT_API_ENDPOINT || !SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
     
     const shop = result.data?.shop;
     
-    console.log('✅ Shopify connection successful');
+    logger.api("connection", "Shopify connection successful", { shopName: shop?.name });
     
     return NextResponse.json({
       success: true,
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error: any) {
-    console.error('❌ Shopify connection error:', error);
+    logger.error('Shopify connection error', error, { endpoint: '/api/shopify/connection' });
     
     ErrorMonitor.captureError({
       error: error instanceof Error ? error : new Error(String(error)),

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SHOPIFY_CONFIG } from '@/utils/shopify-config';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 interface CheckoutLineItem {
   variantId: string;
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
       const variant = variants[i];
       
       if (!variant) {
-        console.warn(`No variant found for line item ${i}:`, lineItem);
+        logger.warn(`No variant found for line item ${i}`, { lineItem, index: i });
         continue;
       }
 
@@ -251,7 +252,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Checkout creation error:', error);
+    logger.error('Checkout creation error', error, { endpoint: '/api/shopify/checkout' });
     
     ErrorMonitor.captureError({
       error: error instanceof Error ? error : new Error(String(error)),

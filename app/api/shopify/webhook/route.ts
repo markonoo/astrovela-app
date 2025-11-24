@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createOrUpdateEntitlement, calculateFreeUntil } from "@/lib/entitlements"
 import { prisma } from "@/lib/prisma"
 import crypto from "crypto"
+import { logger } from "@/utils/logger"
 
 /**
  * Shopify webhook handler for order completion
@@ -15,7 +16,7 @@ const SHOPIFY_WEBHOOK_SECRET = process.env.SHOPIFY_WEBHOOK_SECRET || ""
 
 function verifyWebhook(data: string, hmac: string): boolean {
   if (!SHOPIFY_WEBHOOK_SECRET) {
-    console.warn("SHOPIFY_WEBHOOK_SECRET not set, skipping verification")
+    logger.warn("SHOPIFY_WEBHOOK_SECRET not set, skipping verification")
     return true // Allow in development
   }
 
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook authenticity
     if (hmac && !verifyWebhook(rawBody, hmac)) {
-      console.error("Invalid webhook signature")
+      logger.security("Invalid webhook signature", { endpoint: "/api/shopify/webhook" })
       return NextResponse.json(
         { error: "Invalid signature" },
         { status: 401 }
@@ -102,7 +103,10 @@ export async function POST(request: NextRequest) {
       shopifyOrderId: order.id?.toString() || order.order_number?.toString(),
     })
 
-    console.log(`✅ Created entitlement for user ${customerEmail} (order ${order.order_number || order.id})`)
+    logger.api("webhook", `Created entitlement for user ${customerEmail}`, { 
+      orderNumber: order.order_number || order.id,
+      email: customerEmail 
+    })
 
     return NextResponse.json({
       success: true,
@@ -111,7 +115,7 @@ export async function POST(request: NextRequest) {
       email: customerEmail,
     })
   } catch (error) {
-    console.error("Error processing Shopify webhook:", error)
+    logger.error("Error processing Shopify webhook", error, { endpoint: "/api/shopify/webhook" })
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -123,6 +127,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   return NextResponse.json({ message: "Shopify webhook endpoint" })
 }
+
 
 
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabaseClient"
 import { prisma } from "@/lib/prisma"
+import { logger } from "@/utils/logger"
 
 /**
  * Creates a billing portal session for managing subscriptions
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       message: "Redirect to Shopify customer portal",
     })
   } catch (error) {
-    console.error("Error creating billing portal:", error)
+    logger.error("Error creating billing portal", error, { endpoint: "/api/aura/billing/portal" })
     return NextResponse.json(
       { error: "Failed to create billing portal session" },
       { status: 500 }

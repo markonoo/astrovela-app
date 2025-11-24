@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Cookie, Save, Info } from "lucide-react"
+import { logger } from "@/utils/logger"
 
 interface ConsentPreferences {
   essential: boolean
@@ -60,7 +61,7 @@ export function ConsentManager() {
         }),
       })
     } catch (error) {
-      console.error('Failed to save consent preferences:', error)
+      logger.error('Failed to save consent preferences', error, { preferences })
     }
 
     setSaved(true)
@@ -159,6 +160,7 @@ export function ConsentManager() {
     </Card>
   )
 }
+
 
 
 

@@ -6,6 +6,7 @@ import { BookCoverPreview } from "../book-cover-preview"
 import { THEME_COLORS } from "../book-cover-designer"
 import { getZodiacSign } from "@/utils/zodiac"
 import { format } from "date-fns"
+import { logger } from "@/utils/logger"
 
 // Import the quiz steps data needed for navigation
 interface QuizStep {
@@ -70,7 +71,7 @@ export function BookCoverConfirmation() {
           "dd MMMM yyyy"
         )
       } catch (error) {
-        console.warn("Date formatting error:", error)
+        logger.warn("Date formatting error", { error })
         return "Your Birth Date"
       }
     }
@@ -79,11 +80,17 @@ export function BookCoverConfirmation() {
 
   // Extract sun and moon signs from stored state, natal chart data, or calculate fallback
   const { sunSign, moonSign } = useMemo(() => {
-    console.log("🔍 BookCoverConfirmation - state.sunSign:", state.sunSign, "state.moonSign:", state.moonSign)
+    logger.quiz("BookCoverConfirmation - Checking sun/moon signs", { 
+      sunSign: state.sunSign, 
+      moonSign: state.moonSign 
+    })
     
     // First priority: Use stored sun and moon signs from interpretation data
     if (state.sunSign && state.moonSign) {
-      console.log("✅ BookCoverConfirmation - Using stored signs:", state.sunSign, state.moonSign)
+      logger.quiz("BookCoverConfirmation - Using stored signs", { 
+        sunSign: state.sunSign, 
+        moonSign: state.moonSign 
+      })
       return {
         sunSign: state.sunSign,
         moonSign: state.moonSign
@@ -94,10 +101,16 @@ export function BookCoverConfirmation() {
     if (state.natalChart?.planets) {
       const sunPlanet = state.natalChart.planets.find((p) => p.name === "sun")
       const moonPlanet = state.natalChart.planets.find((p) => p.name === "moon")
-      console.log("🔍 BookCoverConfirmation - natalChart lookup - sunPlanet:", sunPlanet, "moonPlanet:", moonPlanet)
+      logger.quiz("BookCoverConfirmation - natalChart lookup", { 
+        sunPlanet: sunPlanet?.sign, 
+        moonPlanet: moonPlanet?.sign 
+      })
       
       if (sunPlanet && moonPlanet) {
-        console.log("✅ BookCoverConfirmation - Using natalChart signs:", sunPlanet.sign, moonPlanet.sign)
+        logger.quiz("BookCoverConfirmation - Using natalChart signs", { 
+          sunSign: sunPlanet.sign, 
+          moonSign: moonPlanet.sign 
+        })
         return {
           sunSign: sunPlanet.sign,
           moonSign: moonPlanet.sign
@@ -118,7 +131,10 @@ export function BookCoverConfirmation() {
       const sunIndex = zodiacSigns.indexOf(calculatedSunSign)
       const moonIndex = sunIndex !== -1 ? (sunIndex + 6) % 12 : 0
       
-      console.log("⚠️ BookCoverConfirmation - Using calculated fallback:", calculatedSunSign, zodiacSigns[moonIndex])
+      logger.quiz("BookCoverConfirmation - Using calculated fallback", { 
+        sunSign: calculatedSunSign, 
+        moonSign: zodiacSigns[moonIndex] 
+      })
       return {
         sunSign: calculatedSunSign,
         moonSign: zodiacSigns[moonIndex]

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Lock, Loader2 } from "lucide-react"
+import { logger } from "@/utils/logger"
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode
@@ -39,7 +40,7 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
         setIsAuthenticated(false)
       }
     } catch (error) {
-      console.error("Admin session check error:", error)
+      logger.error("Admin session check error", error, { pathname })
       setIsAuthenticated(false)
     } finally {
       setLoading(false)

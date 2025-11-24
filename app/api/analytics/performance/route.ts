@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ErrorMonitor } from '@/utils/error-monitoring';
+import { logger } from '@/utils/logger';
 
 interface PerformanceMetric {
   name: string;
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     // In production, you would typically store this in a database
     // For now, we'll log it and could send to external analytics
     if (process.env.NODE_ENV === 'production') {
-      console.log('📊 Performance Metric:', enhancedData);
+      logger.info('Performance Metric', { metric: enhancedData });
       
       // TODO: Store in database
       // await storePerformanceMetric(enhancedData);

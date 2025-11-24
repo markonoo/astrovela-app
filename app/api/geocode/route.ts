@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { geocodeLocation } from "@/services/astrology-api-service"
+import { logger } from "@/utils/logger"
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
       // Return the geocoded data
       return NextResponse.json(geoData)
     } catch (error) {
-      console.error("Geocoding API error:", error)
+      logger.error("Geocoding API error", error, { location: body.location })
 
       // Return fallback coordinates on API error
       return NextResponse.json({
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
       })
     }
   } catch (error) {
-    console.error("Error geocoding location:", error)
+    logger.error("Error geocoding location", error, { endpoint: '/api/geocode' })
 
     // Return fallback coordinates on any error
     return NextResponse.json(

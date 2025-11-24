@@ -2,6 +2,7 @@
 
 import { CookieBanner } from "./CookieBanner"
 import { useState } from "react"
+import { logger } from "@/utils/logger"
 
 export function CookieBannerWrapper() {
   const [showCustomize, setShowCustomize] = useState(false)
@@ -21,7 +22,7 @@ export function CookieBannerWrapper() {
         }),
       })
     } catch (error) {
-      console.error('Failed to save consent:', error)
+      logger.error('Failed to save consent', error, { action: 'accept' })
     }
   }
 
@@ -40,7 +41,7 @@ export function CookieBannerWrapper() {
         }),
       })
     } catch (error) {
-      console.error('Failed to save consent:', error)
+      logger.error('Failed to save consent', error, { action: 'reject' })
     }
   }
 
@@ -52,6 +53,7 @@ export function CookieBannerWrapper() {
 
   return <CookieBanner onAccept={handleAccept} onReject={handleReject} onCustomize={handleCustomize} />
 }
+
 
 
 

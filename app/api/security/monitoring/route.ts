@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SecurityMonitor } from '@/utils/security'
+import { logger } from '@/utils/logger'
 
 /**
  * Security monitoring endpoint - only accessible in development or with proper auth
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Security monitoring error:', error)
+    logger.error('Security monitoring error', error, { endpoint: '/api/security/monitoring' })
     return NextResponse.json(
       { error: 'Failed to retrieve security data' },
       { status: 500 }
