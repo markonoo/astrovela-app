@@ -31,7 +31,7 @@ export default function Home() {
       {/* Main content - Optimized for mobile and desktop */}
       <main className="container mx-auto px-4 pb-4 md:pb-8">
         {/* Flex container with column direction on mobile, row on desktop */}
-        <div className="flex flex-col md:flex-row items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           {/* 
             Image grid - First on mobile (order-1), second on desktop (md:order-2)
             Optimized height for mobile: smaller on mobile, larger on desktop
@@ -43,8 +43,9 @@ export default function Home() {
           {/* 
             Text content - Second on mobile (order-2), first on desktop (md:order-1)
             Full width on mobile, half width on desktop
+            Vertically centered to align with image grid
           */}
-          <div className="w-full md:w-1/2 space-y-4 md:space-y-6 order-2 md:order-1 md:pr-8">
+          <div className="w-full md:w-1/2 md:h-[500px] flex flex-col justify-center space-y-4 md:space-y-6 order-2 md:order-1 md:pr-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#28293d] leading-tight">
               A revolutionary astrology book written just for you
             </h1>
