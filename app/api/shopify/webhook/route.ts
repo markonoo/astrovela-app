@@ -3,6 +3,7 @@ import { createOrUpdateEntitlement, calculateFreeUntil } from "@/lib/entitlement
 import { prisma } from "@/lib/prisma"
 import crypto from "crypto"
 import { logger } from "@/utils/logger"
+import { sendCompanionAppWelcomeEmail } from "@/lib/email-service"
 
 /**
  * Shopify webhook handler for order completion
@@ -107,6 +108,27 @@ export async function POST(request: NextRequest) {
       orderNumber: order.order_number || order.id,
       email: customerEmail 
     })
+
+    // Send welcome email (non-blocking - don't fail webhook if email fails)
+    const productName = hasPaperback 
+      ? 'Paperback Book' 
+      : hasEbook 
+      ? 'Ebook' 
+      : 'App Subscription';
+    
+    await sendCompanionAppWelcomeEmail({
+      email: customerEmail,
+      firstName: order.customer?.first_name,
+      productName,
+      orderNumber: order.order_number?.toString() || order.id?.toString(),
+      freeUntilDate: freeUntil,
+    }).catch(error => {
+      logger.error('Email failed but continuing webhook', error, { 
+        endpoint: "/api/shopify/webhook",
+        email: customerEmail 
+      });
+      // Don't throw - webhook should succeed even if email fails
+    });
 
     return NextResponse.json({
       success: true,

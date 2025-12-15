@@ -97,18 +97,30 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 ---
 
-### Email Service (Recommended)
+### Email Service (IMPLEMENTED - Resend)
 ```env
-# Option 1: Resend (Recommended)
+# Resend API Key (REQUIRED for email functionality)
 RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=noreply@astrovela.com
-
-# Option 2: SendGrid
-SENDGRID_API_KEY=SG....
-SENDGRID_FROM_EMAIL=noreply@astrovela.com
 ```
-**Source:** Resend.com or SendGrid.com dashboard  
-**Required:** No (can use placeholder for MVP)
+**Source:** https://resend.com → API Keys  
+**Required:** Yes (for welcome emails after purchase)  
+**Status:** ✅ Implemented
+
+**Setup Instructions:**
+1. Sign up at https://resend.com
+2. Generate API key in dashboard
+3. Add to `.env.local` and Vercel environment variables
+4. Verify custom domain (astrovela.com) in Resend dashboard
+5. Until domain verified, emails send from `onboarding@resend.dev`
+6. After verification, update `lib/email-service.ts` to use `hello@astrovela.com`
+
+**Testing:**
+```bash
+# Test email sending
+curl -X POST http://localhost:3000/api/test-email \
+  -H "Content-Type: application/json" \
+  -d '{"email":"your-email@gmail.com"}'
+```
 
 ---
 
