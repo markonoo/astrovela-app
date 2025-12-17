@@ -3,6 +3,8 @@
 
 'use client';
 
+import { logger } from './logger';
+
 // TypeScript interfaces for marketing events
 export interface MarketingEventData {
   event_name: string;
@@ -83,7 +85,7 @@ let eventCounts: Record<string, number> = {};
 export function initializeMarketingTracking(): void {
   if (typeof window === 'undefined' || trackingInitialized) return;
 
-  console.log('🚀 Initializing marketing tracking...');
+  logger.info('Initializing marketing tracking');
 
   // Initialize Meta Pixel (Facebook/Instagram)
   if (META_PIXEL_ID) {
@@ -116,7 +118,7 @@ export function initializeMarketingTracking(): void {
   }
 
   trackingInitialized = true;
-  console.log('✅ Marketing tracking initialized');
+  logger.info('Marketing tracking initialized');
 }
 
 /**
@@ -146,9 +148,9 @@ function initializeMetaPixel(): void {
     (window as any).fbq('init', META_PIXEL_ID);
     (window as any).fbq('track', 'PageView');
 
-    console.log('✅ Meta Pixel initialized:', META_PIXEL_ID);
+    logger.info('Meta Pixel initialized', { pixelId: META_PIXEL_ID });
   } catch (error) {
-    console.error('❌ Meta Pixel initialization failed:', error);
+    logger.error('Meta Pixel initialization failed', error);
   }
 }
 
@@ -176,9 +178,9 @@ function initializeGoogleAnalytics(): void {
       page_location: window.location.href,
     });
 
-    console.log('✅ Google Analytics 4 initialized:', GA_MEASUREMENT_ID);
+    logger.info('Google Analytics 4 initialized', { measurementId: GA_MEASUREMENT_ID });
   } catch (error) {
-    console.error('❌ Google Analytics initialization failed:', error);
+    logger.error('Google Analytics initialization failed', error);
   }
 }
 
@@ -204,9 +206,9 @@ function initializeGoogleAds(): void {
 
     (window as any).gtag('config', GOOGLE_ADS_ID);
 
-    console.log('✅ Google Ads initialized:', GOOGLE_ADS_ID);
+    logger.info('Google Ads initialized', { adsId: GOOGLE_ADS_ID });
   } catch (error) {
-    console.error('❌ Google Ads initialization failed:', error);
+    logger.error('Google Ads initialization failed', error);
   }
 }
 
@@ -251,9 +253,9 @@ function initializeTikTokPixel(): void {
       ttq.page();
     })(window, document, 'ttq');
 
-    console.log('✅ TikTok Pixel initialized:', TIKTOK_PIXEL_ID);
+    logger.info('TikTok Pixel initialized', { pixelId: TIKTOK_PIXEL_ID });
   } catch (error) {
-    console.error('❌ TikTok Pixel initialization failed:', error);
+    logger.error('TikTok Pixel initialization failed', error);
   }
 }
 
@@ -281,9 +283,9 @@ function initializePinterestTag(): void {
     (window as any).pintrk('load', PINTEREST_TAG_ID);
     (window as any).pintrk('page');
 
-    console.log('✅ Pinterest Tag initialized:', PINTEREST_TAG_ID);
+    logger.info('Pinterest Tag initialized', { tagId: PINTEREST_TAG_ID });
   } catch (error) {
-    console.error('❌ Pinterest Tag initialization failed:', error);
+    logger.error('Pinterest Tag initialization failed', error);
   }
 }
 
@@ -302,9 +304,9 @@ function initializeTwitterPixel(): void {
     (window as any).twq('init', TWITTER_PIXEL_ID);
     (window as any).twq('track', 'PageView');
 
-    console.log('✅ Twitter Pixel initialized:', TWITTER_PIXEL_ID);
+    logger.info('Twitter Pixel initialized', { pixelId: TWITTER_PIXEL_ID });
   } catch (error) {
-    console.error('❌ Twitter Pixel initialization failed:', error);
+    logger.error('Twitter Pixel initialization failed', error);
   }
 }
 
@@ -332,7 +334,7 @@ export function trackMarketingEvent(eventData: MarketingEventData): void {
 
       (window as any).fbq('track', event_name, metaEventData);
     } catch (error) {
-      console.error('Meta Pixel tracking error:', error);
+      logger.error('Meta Pixel tracking error', error);
     }
   }
 
@@ -346,7 +348,7 @@ export function trackMarketingEvent(eventData: MarketingEventData): void {
 
       (window as any).gtag('event', event_name, gaEventData);
     } catch (error) {
-      console.error('Google Analytics tracking error:', error);
+      logger.error('Google Analytics tracking error', error);
     }
   }
 
@@ -361,7 +363,7 @@ export function trackMarketingEvent(eventData: MarketingEventData): void {
 
       (window as any).ttq.track(event_name, tiktokEventData);
     } catch (error) {
-      console.error('TikTok Pixel tracking error:', error);
+      logger.error('TikTok Pixel tracking error', error);
     }
   }
 
@@ -375,7 +377,7 @@ export function trackMarketingEvent(eventData: MarketingEventData): void {
 
       (window as any).pintrk('track', event_name, pinterestEventData);
     } catch (error) {
-      console.error('Pinterest tracking error:', error);
+      logger.error('Pinterest tracking error', error);
     }
   }
 
@@ -389,13 +391,13 @@ export function trackMarketingEvent(eventData: MarketingEventData): void {
 
       (window as any).twq('track', event_name, twitterEventData);
     } catch (error) {
-      console.error('Twitter tracking error:', error);
+      logger.error('Twitter tracking error', error);
     }
   }
 
   // Log in development
   if (process.env.NODE_ENV === 'development') {
-    console.log(`📊 Marketing Event: ${event_name}`, eventData);
+    logger.debug(`Marketing Event: ${event_name}`, { eventData });
   }
 }
 
@@ -413,9 +415,9 @@ export function trackGoogleAdsConversion(conversionData: ConversionEventData): v
       transaction_id: conversionData.transaction_id,
     });
 
-    console.log('📊 Google Ads Conversion tracked:', conversionData);
+    logger.debug('Google Ads Conversion tracked', { conversionData });
   } catch (error) {
-    console.error('Google Ads conversion tracking error:', error);
+    logger.error('Google Ads conversion tracking error', error);
   }
 }
 
@@ -466,7 +468,7 @@ export function trackPurchase(purchaseData: {
         })),
       });
     } catch (error) {
-      console.error('Enhanced ecommerce tracking error:', error);
+      logger.error('Enhanced ecommerce tracking error', error);
     }
   }
 }

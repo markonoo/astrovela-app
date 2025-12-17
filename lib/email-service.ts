@@ -20,10 +20,8 @@ export async function sendCompanionAppWelcomeEmail(data: WelcomeEmailData) {
     const formattedDate = format(data.freeUntilDate, 'MMMM dd, yyyy');
     const firstName = data.firstName || 'there';
     
-    // NOTE: Change 'from' to 'hello@astrovela.com' after domain verification
-    // Until then, use 'onboarding@resend.dev'
     const { data: emailData, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev', // TODO: Change to 'AstroVela <hello@astrovela.com>' after domain verification
+      from: 'AstroVela <hello@tryastrovela.com>',
       to: data.email,
       subject: 'Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now! 🌟',
       html: generateWelcomeEmailHTML({

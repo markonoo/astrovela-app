@@ -18,6 +18,7 @@ import { format } from "date-fns"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { Button } from "@/components/ui/button"
 import { trackMarketingEvent } from "@/utils/marketing-tracking"
+import { logger } from "@/utils/logger"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 
 // Force client-side rendering to prevent hydration mismatches
