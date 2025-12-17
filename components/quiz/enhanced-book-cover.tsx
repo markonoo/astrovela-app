@@ -6,6 +6,7 @@ import { NatalChart } from "./natal-chart"
 import { Loader2 } from "lucide-react"
 import { THEME_COLORS } from "../book-cover-designer"
 import CurvedText from "../CurvedText"
+import { logger } from "@/utils/logger"
 
 interface EnhancedBookCoverProps {
   className?: string
@@ -95,7 +96,7 @@ export function EnhancedBookCover({ className = "", onChartLoaded }: EnhancedBoo
           setChartGenerated(true)
           onChartLoaded?.()
         } catch (err) {
-          console.error("Error generating natal chart:", err)
+          logger.error("Error generating natal chart", err);
           setError(err instanceof Error ? err.message : "Failed to generate natal chart")
         } finally {
           setIsLoading(false)

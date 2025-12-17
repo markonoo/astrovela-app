@@ -4,6 +4,7 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { useState, useEffect, useRef } from "react"
 import { ChevronDown, Clock, MapPin, Check, X, Loader2 } from "lucide-react"
 import { matchCityWithCountry, suggestCities } from "@/utils/city-country-matcher"
+import { logger } from "@/utils/logger"
 
 export function CombinedBirthDetails() {
   const { state, setBirthDate, setBirthTime, setBirthPlace, setBirthLocation, nextStep, prevStep } = useQuiz()
@@ -111,7 +112,7 @@ export function CombinedBirthDetails() {
 
       nextStep()
     } catch (error) {
-      console.error("Error geocoding location:", error)
+      logger.error("Error geocoding location", error);
       setGeocodeError("Unable to find this location. Please check your spelling or try a nearby major city.")
       setIsGeocoding(false)
     }

@@ -4,6 +4,7 @@ import * as React from "react"
 import { useQuiz } from "@/contexts/quiz-context"
 import { useState } from "react"
 import { Mail } from "lucide-react"
+import { logger } from "@/utils/logger"
 
 export function EmailCollection() {
   const { state, setEmail, nextStep, prevStep, completeQuiz } = useQuiz()
@@ -36,7 +37,7 @@ export function EmailCollection() {
       // Move to the next step (personalized landing)
       nextStep()
     } catch (error) {
-      console.error('Error completing quiz:', error)
+      logger.error('Error completing quiz', error);
       setError('Failed to complete quiz. Please try again.')
     }
   }

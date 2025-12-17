@@ -5,6 +5,7 @@ import { useQuiz } from "@/contexts/quiz-context"
 import { getZodiacSign } from "@/utils/zodiac"
 import { Loader2, AlertCircle, RefreshCw } from "lucide-react"
 import type { ZodiacSign } from "@/types/astrology"
+import { logger } from "@/utils/logger"
 
 export function DailyHoroscope() {
   const { state } = useQuiz()
@@ -40,7 +41,7 @@ export function DailyHoroscope() {
       const data = await getDailyHoroscope(sign)
       setHoroscope(data)
     } catch (error) {
-      console.error("Error fetching horoscope:", error)
+      logger.error("Error fetching horoscope", error);
       setError(error instanceof Error ? error.message : "Failed to fetch your daily horoscope")
     } finally {
       setIsLoading(false)
