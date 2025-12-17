@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendCompanionAppWelcomeEmail } from '@/lib/email-service';
+import { logger } from '@/utils/logger';
 
 /**
  * Test endpoint for sending welcome emails
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       recipient: email,
     });
   } catch (error) {
-    console.error('Test email failed:', error);
+    logger.error('Test email failed', error, { endpoint: '/api/test-email' });
     return NextResponse.json(
       { 
         error: 'Failed to send test email', 

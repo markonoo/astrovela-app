@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { mergeSessionWithUser, getSessionData } from '@/utils/session-merge'
+import { logger } from '@/utils/logger'
 
 export async function POST(request: Request) {
   try {
@@ -23,13 +24,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing userId or email for merge action' }, { status: 400 })
     }
     
-    console.log('🔄 API: Starting session merge...', { sessionId, userId, email })
+    logger.api('session-merge', 'Starting session merge', { sessionId, userId, email })
     
     // Perform the actual merge
     const result = await mergeSessionWithUser(sessionId, userId, email)
     
     if (result.success) {
-      console.log('✅ API: Session merge completed successfully')
+      logger.api('session-merge', 'Session merge completed successfully')
       return NextResponse.json({ 
         success: true, 
         message: 'Session data merged successfully',
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
         errors: result.errors
       })
     } else {
-      console.error('❌ API: Session merge failed:', result.errors)
+      logger.error('API: Session merge failed', new Error('Session merge failed'), { errors: result.errors })
       return NextResponse.json({ 
         success: false, 
         message: 'Session merge completed with errors',
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     }
     
   } catch (error) {
-    console.error("❌ API: Error in session merge:", error)
+    logger.error("API: Error in session merge", error)
     return NextResponse.json(
       { 
         success: false,
@@ -72,7 +73,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Missing sessionId parameter' }, { status: 400 })
     }
     
-    console.log('🔍 API: Getting session data for:', sessionId)
+    logger.api('session-merge', 'Getting session data', { sessionId })
     
     const sessionData = await getSessionData(sessionId)
     
@@ -82,7 +83,7 @@ export async function GET(request: Request) {
     })
     
   } catch (error) {
-    console.error("❌ API: Error getting session data:", error)
+    logger.error("API: Error getting session data", error)
     return NextResponse.json(
       { 
         success: false,

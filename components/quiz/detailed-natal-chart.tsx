@@ -189,9 +189,9 @@ export function DetailedNatalChart() {
                                 src={state.customChartUrl} 
                                 alt="Your Natal Chart" 
                                 className="max-w-full max-h-full object-contain"
-                                onLoad={() => console.log("✅ Chart image loaded successfully:", state.customChartUrl?.substring(0, 50) + "...")}
+                                onLoad={() => logger.debug("Chart image loaded successfully", { url: state.customChartUrl?.substring(0, 50) })}
                                 onError={(e) => {
-                                  console.error("❌ Failed to load chart image:", state.customChartUrl?.substring(0, 50) + "...");
+                                  logger.warn("Failed to load chart image", { url: state.customChartUrl?.substring(0, 50) });
                                   e.currentTarget.style.display = 'none';
                                 }}
                               />
@@ -287,9 +287,9 @@ export function DetailedNatalChart() {
                           src={state.customChartUrl!} 
                           alt="Your Natal Chart" 
                           className="max-w-full max-h-full object-contain"
-                          onLoad={() => console.log("✅ Fallback chart image loaded successfully")}
+                          onLoad={() => logger.debug("Fallback chart image loaded successfully")}
                           onError={(e) => {
-                            console.error("❌ Failed to load fallback chart image");
+                            logger.warn("Failed to load fallback chart image");
                             e.currentTarget.style.display = 'none';
                           }}
                         />

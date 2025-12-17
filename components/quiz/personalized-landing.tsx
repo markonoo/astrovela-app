@@ -8,6 +8,7 @@ import { THEME_COLORS } from "../book-cover-designer"
 import { AstrologicalProfile } from "./astrological-profile"
 import { Footer } from "../shared/footer"
 import AstrovelaIcon from "../icons/AstrovelaIcon"
+import { logger } from "@/utils/logger"
 import { DrawerMenu } from "../drawer-menu"
 import { HamburgerButton } from "../hamburger-button"
 import { ResetButton } from "./reset-button"
@@ -101,7 +102,7 @@ export function PersonalizedLanding() {
           "dd MMMM yyyy"
         )
       } catch (error) {
-        console.warn("Date formatting error:", error)
+        logger.warn("Date formatting error", { error });
         return ""
       }
     }
