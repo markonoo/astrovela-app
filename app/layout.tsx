@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon.svg",
     apple: "/favicon.svg",
   },
-  metadataBase: new URL('https://astrovela.com'), // Update with your actual domain
+  metadataBase: new URL('https://tryastrovela.com'),
   alternates: {
     canonical: '/',
   },
@@ -42,18 +42,18 @@ export const metadata: Metadata = {
     siteName: 'astrovela',
     images: [
       {
-        url: '/images/og-image.svg',
+        url: '/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'astrovela - Personalized Astrology',
+        alt: 'AstroVela - Your Personalized Astrology Book',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'astrovela - Personalized Astrology for Self-Discovery',
+    title: 'AstroVela - Personalized Astrology for Self-Discovery',
     description: 'Create your personalized astrology book with custom natal charts and deep insights.',
-    images: ['/images/og-image.svg'],
+    images: ['/images/og-image.png'],
   },
   robots: {
     index: true,
