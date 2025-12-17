@@ -1,6 +1,7 @@
 import type { NatalChart, ChartInterpretation, ZodiacSign, PlanetPosition, CelestialBody } from "@/types/astrology"
 import { fetchNatalChart as fetchNatalChartFromAPI } from "./astrology-api-service"
 import { getNatalChartInterpretation as getInterpretationFromAPI, getDailyHoroscope as getDailyHoroscopeFromAPI } from "./astrology-api-service"
+import { logger } from "@/utils/logger"
 
 /**
  * Fetches natal chart data from the AstrologyAPI service
@@ -14,7 +15,7 @@ export async function fetchNatalChart(
   try {
     return await fetchNatalChartFromAPI(birthDate, birthTime, latitude, longitude)
   } catch (error) {
-    console.error("Error fetching natal chart:", error)
+    logger.error("Error fetching natal chart", error);
     // Return a placeholder chart instead of throwing
     return createPlaceholderChart(birthDate, birthTime, latitude, longitude)
   }
@@ -33,7 +34,7 @@ export async function fetchNatalWheelChartSVG(
     // This would be implemented when the wheel chart API is available
     throw new Error("Wheel chart SVG not yet implemented")
   } catch (error) {
-    console.error("Error fetching wheel chart SVG:", error)
+    logger.error("Error fetching wheel chart SVG", error);
     // Return a placeholder SVG
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
       <circle cx="200" cy="200" r="180" fill="none" stroke="#333" stroke-width="2"/>
@@ -74,7 +75,7 @@ export async function geocodeLocation(
         }
       }
     } catch (error) {
-      console.error("Error using /api/geocode fallback:", error)
+      logger.error("Error using /api/geocode fallback", error);
     }
 
     // Final fallback
@@ -84,7 +85,7 @@ export async function geocodeLocation(
       name: locationString,
     }
   } catch (error) {
-    console.error("Error in geocoding service:", error)
+    logger.error("Error in geocoding service", error);
     return {
       latitude: 0,
       longitude: 0,
@@ -176,7 +177,7 @@ export async function getNatalChartInterpretation(natalChart: NatalChart): Promi
     // Use the AstrologyAPI interpretation service
     return await getInterpretationFromAPI(natalChart)
   } catch (error) {
-    console.error("Error getting chart interpretation:", error)
+    logger.error("Error getting chart interpretation", error);
     throw error
   }
 }
@@ -189,7 +190,7 @@ export async function getDailyHoroscope(sign: ZodiacSign): Promise<any> {
     // Use the AstrologyAPI horoscope service
     return await getDailyHoroscopeFromAPI(sign)
   } catch (error) {
-    console.error("Error getting daily horoscope:", error)
+    logger.error("Error getting daily horoscope", error);
     throw error
   }
 }

@@ -7,6 +7,7 @@ import { CheckCircle } from "lucide-react"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import { useRouter } from "next/navigation"
+import { logger } from "@/utils/logger"
 
 export default function ThankYouPage() {
   const { state } = useQuiz()
@@ -31,7 +32,7 @@ export default function ThankYouPage() {
         })
         setFormattedBirthDate(formattedDate)
       } catch (e) {
-        console.error("Error formatting date:", e)
+        logger.error("Error formatting date", e);
         setFormattedBirthDate("Your Birth Date")
       }
     }
@@ -48,7 +49,7 @@ export default function ThankYouPage() {
           if (parsed.lastName) setLastName(parsed.lastName)
         }
       } catch (e) {
-        console.error("Error loading data from localStorage:", e)
+        logger.error("Error loading data from localStorage", e);
       }
     } else {
       setFirstName(state.firstName)

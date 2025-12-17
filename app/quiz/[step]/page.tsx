@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation"
 import { BookCoverPreview } from "@/components/book-cover-preview"
 import { THEME_COLORS } from "@/components/book-cover-designer"
 import { COLOR_SCHEMES, type ColorSchemeKey } from "@/utils/constants"
+import { logger } from "@/utils/logger"
 
 const QuizStepPage = () => {
   const params = useParams()
@@ -33,7 +34,7 @@ const QuizStepPage = () => {
           }
         }
       } catch (e) {
-        console.error("Error loading form data:", e)
+        logger.error("Error loading form data", e);
       }
     }
   }, [])
@@ -50,7 +51,7 @@ const QuizStepPage = () => {
         })
         setFormattedBirthDate(formattedDate)
       } catch (e) {
-        console.error("Error formatting date:", e)
+        logger.error("Error formatting date", e);
         setFormattedBirthDate("Your Birth Date")
       }
     }
@@ -61,7 +62,7 @@ const QuizStepPage = () => {
   }
 
   const handleColorSelect = (color: string) => {
-    console.log("Selected color:", color, COLOR_SCHEMES[color as ColorSchemeKey])
+    logger.quiz("Selected color", { color, scheme: COLOR_SCHEMES[color as ColorSchemeKey] });
     setSelectedColor(color)
     // Save the selected color to formData
     setFormData((prev) => ({ ...prev, colorScheme: color as ColorSchemeKey }))

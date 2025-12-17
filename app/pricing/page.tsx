@@ -90,7 +90,7 @@ export default function PricingPage() {
 
   // Initialize page logging - runs only once
   useEffect(() => {
-    console.log("🛒 Pricing Page Initialized:", {
+    logger.pricing("Pricing Page Initialized", {
       version: PRICING_PAGE_VERSION,
       lastUpdated: LAST_UPDATED,
       timestamp: new Date().toISOString(),
@@ -102,7 +102,7 @@ export default function PricingPage() {
     setIsMounted(true)
     
     // Debug quiz state - only once on mount
-  console.log("🛒 Pricing Page - Quiz State:", {
+  logger.pricing("Pricing Page - Quiz State", {
     isQuizCompleted: isQuizCompleted(),
     firstName: state.firstName,
     lastName: state.lastName,
@@ -115,7 +115,7 @@ export default function PricingPage() {
     })
 
     // DEBUG: Check if ProductOption features are properly defined
-    console.log("🛒 Pricing Page - Features Debug:", {
+    logger.pricing("Pricing Page - Features Debug", {
       appFeatures: [
         "Unlimited compatibility reports",
         "New daily horoscopes & astrology content", 
@@ -137,7 +137,7 @@ export default function PricingPage() {
 
   // Debug selected options only when they change
   useEffect(() => {
-  console.log("🛒 Pricing Page - Product Selection:", {
+  logger.pricing("Pricing Page - Product Selection", {
     selectedOptions,
     totalProducts: Object.values(selectedOptions).filter(Boolean).length,
     selectedProductNames: Object.entries(selectedOptions)
@@ -148,7 +148,7 @@ export default function PricingPage() {
 
   // Check if quiz is completed - only run once
   useEffect(() => {
-    console.log("🛒 Pricing Page - Access Check:", {
+    logger.pricing("Pricing Page - Access Check", {
       isQuizCompleted: isQuizCompleted(),
       redirecting: !isQuizCompleted() ? "YES - to /quiz" : "NO - access granted"
     })
@@ -170,7 +170,7 @@ export default function PricingPage() {
 
   // Initialize countdown timer - only once
   useEffect(() => {
-    console.log("🛒 Pricing Page - Timer Started:", {
+    logger.pricing("Pricing Page - Timer Started", {
       initialTime: `${timeLeft.minutes}:${timeLeft.seconds.toString().padStart(2, '0')}`,
       startTimestamp: new Date().toISOString()
     })
@@ -190,7 +190,7 @@ export default function PricingPage() {
 
     return () => {
       if (timerRef.current) {
-        console.log("🛒 Pricing Page - Timer Cleanup:", {
+        logger.pricing("Pricing Page - Timer Cleanup", {
           cleanupAt: new Date().toISOString()
         })
         clearInterval(timerRef.current)
@@ -267,7 +267,7 @@ export default function PricingPage() {
 
   // Handle option selection with debugging
   const handleOptionSelect = (option: string) => {
-    console.log("🛒 Pricing Page - Product Selection Changed:", {
+    logger.pricing("Pricing Page - Product Selection Changed", {
       option,
       previousState: selectedOptions,
       action: selectedOptions[option as keyof typeof selectedOptions] ? "DESELECT" : "SELECT"
@@ -279,7 +279,7 @@ export default function PricingPage() {
         [option]: !prev[option as keyof typeof prev]
       }
       
-      console.log("🛒 Pricing Page - New Selection State:", {
+      logger.pricing("Pricing Page - New Selection State", {
         newState,
         totalSelected: Object.values(newState).filter(Boolean).length
       })
@@ -305,7 +305,7 @@ export default function PricingPage() {
       .filter(([, selected]) => selected)
       .map(([name]) => name)
 
-    console.log("🛒 Pricing Page - Checkout Initiated:", {
+    logger.pricing("Pricing Page - Checkout Initiated", {
       version: PRICING_PAGE_VERSION,
       selectedProducts,
       productCount: selectedProducts.length,
@@ -319,7 +319,7 @@ export default function PricingPage() {
     })
 
     if (selectedProducts.length === 0) {
-      console.log("⚠️ Pricing Page - Checkout Error:", {
+      logger.warn("Pricing Page - Checkout Error", {
         error: "No products selected",
         selectedOptions
       })
@@ -328,7 +328,7 @@ export default function PricingPage() {
     }
 
     if (!termsAccepted) {
-      console.log("⚠️ Pricing Page - Terms Error:", {
+      logger.warn("Pricing Page - Terms Error", {
         error: "Terms not accepted",
         selectedProducts
       })
@@ -355,7 +355,7 @@ export default function PricingPage() {
         }
       })
 
-      console.log("🛒 Pricing Page - Creating Shopify Checkout:", {
+      logger.pricing("Pricing Page - Creating Shopify Checkout", {
         selectedOptions,
         analyticsTracked: true,
         quizStateEmail: state.email,
@@ -369,7 +369,7 @@ export default function PricingPage() {
         quizState: state
       })
 
-      console.log("🛒 Pricing Page - Shopify Checkout Success:", {
+      logger.pricing("Pricing Page - Shopify Checkout Success", {
         checkoutUrl,
         checkoutUrlLength: checkoutUrl.length,
         selectedProducts,
@@ -378,7 +378,7 @@ export default function PricingPage() {
       })
 
       // Redirect to Shopify checkout
-      console.log("🛒 Pricing Page - Redirecting to Shopify:", {
+      logger.pricing("Pricing Page - Redirecting to Shopify", {
         action: "window.location.href redirect",
         url: checkoutUrl
       })
@@ -386,7 +386,7 @@ export default function PricingPage() {
       window.location.href = checkoutUrl
 
     } catch (error) {
-      console.error("❌ Pricing Page - Shopify Checkout Error:", {
+      logger.error("Pricing Page - Shopify Checkout Error", new Error("Shopify checkout failed"), {
         error: error instanceof Error ? error.message : error,
         errorType: error?.constructor?.name,
         errorStack: error instanceof Error ? error.stack : 'No stack',
@@ -405,7 +405,7 @@ export default function PricingPage() {
       
       if (error instanceof ShopifyError) {
         errorMessage = error.message
-        console.error("❌ Shopify Error Details:", {
+        logger.error("Shopify Error Details", error, {
           code: error.code,
           status: error.status,
           details: error.details
@@ -423,7 +423,7 @@ export default function PricingPage() {
       setIsProcessingOrder(false)
       
       // Log that we're NOT redirecting to payment page
-      console.log("🛒 Pricing Page - Error Handling:", {
+      logger.pricing("Pricing Page - Error Handling", {
         action: "Staying on pricing page",
         errorShown: errorMessage,
         willNotRedirectToPayment: true
