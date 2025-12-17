@@ -119,7 +119,7 @@ npm run cleanup-logs  # (if script exists)
 
 **Remaining (Tomorrow):**
 - ⏳ Domain verification for `astrovela.com` (15 min)
-- ⏳ Update sender from `onboarding@resend.dev` to `hello@astrovela.com`
+- ✅ Update sender from `onboarding@resend.dev` to `hello@tryastrovela.com`
 
 **Email Templates:**
 - ✅ Welcome email with 30-day trial info

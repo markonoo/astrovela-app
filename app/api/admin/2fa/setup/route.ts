@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const secret = generate2FASecret()
     
     // Generate QR code
-    const qrCode = await generateQRCode(secret, 'admin@astrovela.com')
+    const qrCode = await generateQRCode(secret, 'hello@tryastrovela.com')
 
     logger.info("2FA setup secret generated")
 

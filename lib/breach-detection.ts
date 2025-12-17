@@ -73,7 +73,7 @@ What You Can Do:
 - Change your password if you haven't recently
 - Be cautious of phishing attempts
 
-For questions, contact: privacy@astrovela.com
+For questions, contact: hello@tryastrovela.com
 
 We sincerely apologize for this incident and are committed to protecting your data.
 
@@ -84,7 +84,7 @@ AstroVela Security Team
   return {
     subject,
     body,
-    recipients: ['privacy@astrovela.com'], // In production, would include affected users
+    recipients: ['hello@tryastrovela.com'], // In production, would include affected users
   }
 }
 

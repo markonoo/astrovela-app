@@ -176,7 +176,7 @@ You should see:
 2. ✅ Click the CTA button to test link
 3. ✅ Make a test Shopify purchase to verify full flow
 4. ✅ Tomorrow: Verify custom domain in Resend
-5. ✅ Update `from` address to `hello@astrovela.com`
+5. ✅ Update `from` address to `hello@tryastrovela.com`
 
 ---
 

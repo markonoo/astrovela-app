@@ -415,8 +415,8 @@ export default function PrivacySettingsPage() {
               </p>
               <p className="pt-2 border-t">
                 For questions about your privacy rights, please contact us at{" "}
-                <a href="mailto:privacy@astrovela.com" className="text-blue-600 hover:underline">
-                  privacy@astrovela.com
+                <a href="mailto:hello@tryastrovela.com" className="text-blue-600 hover:underline">
+                  hello@tryastrovela.com
                 </a>
               </p>
             </div>

@@ -125,7 +125,7 @@ function generateWelcomeEmailHTML(data: {
               </div>
               
               <p style="margin: 30px 0 0; font-size: 14px; color: #4d4d4d; line-height: 1.6;">
-                Questions? Reply to this email or contact us at <a href="mailto:hello@astrovela.com" style="color: #28293d;">hello@astrovela.com</a>
+                Questions? Reply to this email or contact us at <a href="mailto:hello@tryastrovela.com" style="color: #28293d;">hello@tryastrovela.com</a>
               </p>
             </td>
           </tr>

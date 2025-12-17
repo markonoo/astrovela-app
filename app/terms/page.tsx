@@ -112,7 +112,7 @@ export default function TermsPage() {
         <h2>15. Contact Us</h2>
         <p>
           If you have any questions about these Terms, please contact us at{" "}
-          <a href="mailto:legal@astrovela.com">legal@astrovela.com</a>.
+          <a href="mailto:hello@tryastrovela.com">hello@tryastrovela.com</a>.
         </p>
 
         <p className="text-sm text-gray-500 mt-8">Last updated: December 1, 2023</p>

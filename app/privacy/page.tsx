@@ -90,7 +90,7 @@ export default function PrivacyPolicyPage() {
         </ul>
         <p>
           <strong>To exercise these rights:</strong> Visit your <a href="/settings/privacy" className="text-blue-600 hover:underline font-semibold">Privacy Settings</a> page or contact us at{" "}
-          <a href="mailto:privacy@astrovela.com" className="text-blue-600 hover:underline">privacy@astrovela.com</a>
+          <a href="mailto:hello@tryastrovela.com" className="text-blue-600 hover:underline">hello@tryastrovela.com</a>
         </p>
 
         <h2>6. Cookies and Tracking Technologies</h2>
@@ -167,7 +167,7 @@ export default function PrivacyPolicyPage() {
         <p>If you have any questions about this Privacy Policy, please contact us:</p>
         <ul>
           <li>
-            By email: <a href="mailto:privacy@astrovela.com">privacy@astrovela.com</a>
+            By email: <a href="mailto:hello@tryastrovela.com">hello@tryastrovela.com</a>
           </li>
           <li>By mail: astrovela Privacy Office, 123 Astrology Lane, Starfield, CA 12345, USA</li>
         </ul>

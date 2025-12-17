@@ -182,7 +182,7 @@ In `lib/email-service.ts`, line 24:
 from: 'onboarding@resend.dev',
 
 // TO THIS:
-from: 'AstroVela <hello@astrovela.com>',
+from: 'AstroVela <hello@tryastrovela.com>',
 ```
 
 ---

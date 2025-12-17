@@ -649,7 +649,7 @@ export default function PricingPage() {
                   </div>
                   {selectedOptions.app && (
                     <p className="text-[10px] md:text-xs text-gray-500 text-center mt-2">
-                      By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at help@astrovela.com
+                      By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at hello@tryastrovela.com
                     </p>
                   )}
                 </div>
@@ -817,7 +817,7 @@ export default function PricingPage() {
                       Can I cancel my app subscription?
                     </AccordionTrigger>
                     <AccordionContent className="px-6 pb-4 text-gray-600">
-                      Yes, you can cancel your app subscription at any time by contacting us at help@astrovela.com before your next billing cycle. The free trial is only available with purchase of an ebook or paperback.
+                      Yes, you can cancel your app subscription at any time by contacting us at hello@tryastrovela.com before your next billing cycle. The free trial is only available with purchase of an ebook or paperback.
                     </AccordionContent>
                   </AccordionItem>
                   

@@ -27,7 +27,7 @@
 2. Add `astrovela.com`
 3. Add DNS records (TXT + MX)
 4. Wait 5-10 minutes
-5. Update `lib/email-service.ts` line 24 to use `hello@astrovela.com`
+5. Update `lib/email-service.ts` line 24 to use `hello@tryastrovela.com`
 6. Commit & push
 
 **Impact:** ✅ Customers receive welcome emails after purchase

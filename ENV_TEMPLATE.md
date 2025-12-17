@@ -112,7 +112,7 @@ RESEND_API_KEY=re_...
 3. Add to `.env.local` and Vercel environment variables
 4. Verify custom domain (astrovela.com) in Resend dashboard
 5. Until domain verified, emails send from `onboarding@resend.dev`
-6. After verification, update `lib/email-service.ts` to use `hello@astrovela.com`
+6. After verification, update `lib/email-service.ts` to use `hello@tryastrovela.com`
 
 **Testing:**
 ```bash

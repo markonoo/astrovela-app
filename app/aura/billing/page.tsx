@@ -46,11 +46,11 @@ export default function BillingPage() {
           window.location.href = data.url
         }
       } else {
-        alert("Unable to open billing portal. Please contact support at help@astrovela.com")
+        alert("Unable to open billing portal. Please contact support at hello@tryastrovela.com")
       }
     } catch (error) {
       logger.error("Failed to open billing portal", error)
-      alert("Unable to open billing portal. Please contact support at help@astrovela.com")
+      alert("Unable to open billing portal. Please contact support at hello@tryastrovela.com")
     }
   }
 
@@ -193,8 +193,8 @@ export default function BillingPage() {
           <div className="mt-6 pt-6 border-t border-apple-gray-4">
             <p className="text-[13px] leading-[18px] text-apple-gray-3">
               Need help? Contact us at{" "}
-              <a href="mailto:help@astrovela.com" className="text-apple-gray-1 underline hover:text-apple-gray-2 transition-colors duration-150">
-                help@astrovela.com
+              <a href="mailto:hello@tryastrovela.com" className="text-apple-gray-1 underline hover:text-apple-gray-2 transition-colors duration-150">
+                hello@tryastrovela.com
               </a>
             </p>
           </div>

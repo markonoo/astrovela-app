@@ -47,7 +47,7 @@ This document specifies the email notification flow for the AstroVela Companion 
 
 **Subject:** `Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now!`
 
-**From:** `noreply@astrovela.com` or `hello@astrovela.com`
+**From:** `noreply@tryastrovela.com` or `hello@tryastrovela.com`
 
 **Content Structure:**
 
@@ -83,7 +83,7 @@ Body:
    - "After 30 days, continue for €30.99/month"
 
 Footer:
-- Support: help@astrovela.com
+- Support: hello@tryastrovela.com
 - Unsubscribe link
 - Company info
 ```
@@ -154,7 +154,7 @@ export async function sendCompanionAppWelcomeEmail(data: {
   freeUntilDate: Date
 }) {
   await resend.emails.send({
-    from: 'AstroVela <noreply@astrovela.com>',
+    from: 'AstroVela <noreply@tryastrovela.com>',
     to: data.email,
     subject: 'Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now!',
     html: generateWelcomeEmailHTML(data),

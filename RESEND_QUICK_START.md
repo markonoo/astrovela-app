@@ -88,7 +88,7 @@ In `lib/email-service.ts`, line 24:
 from: 'onboarding@resend.dev',
 
 // To:
-from: 'AstroVela <hello@astrovela.com>',
+from: 'AstroVela <hello@tryastrovela.com>',
 ```
 
 Then commit and push:

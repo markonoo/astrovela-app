@@ -180,7 +180,7 @@ export default function PaymentPage() {
               </div>
               <div className="flex items-start gap-2">
                 <Mail className="w-5 h-5 text-yellow-500 mt-0.5" />
-                <span>You may cancel your subscription at any time by dropping us an email at <a href="mailto:help@astrovela.com" className="underline">help@astrovela.com</a></span>
+                <span>You may cancel your subscription at any time by dropping us an email at <a href="mailto:hello@tryastrovela.com" className="underline">hello@tryastrovela.com</a></span>
               </div>
             </div>
 
