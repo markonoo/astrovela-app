@@ -6,16 +6,22 @@
 
 ---
 
-## ✅ Completed (Batch 1)
+## ✅ Completed (Batches 1-2)
 
-### Files Cleaned: 4
+### Batch 1: Production APIs (4 files, 12 statements)
 1. ✅ `app/api/test-email/route.ts` - 1 statement
 2. ✅ `app/api/session-merge/route.ts` - 6 statements  
 3. ✅ `components/quiz/detailed-natal-chart.tsx` - 4 statements
 4. ✅ `components/quiz/personalized-landing.tsx` - 1 statement
 
-**Total Cleaned:** 12 statements  
-**Remaining:** ~322 statements
+### Batch 2: Quiz Components (4 files, 5 statements)
+5. ✅ `components/quiz/email-collection.tsx` - 1 statement
+6. ✅ `components/quiz/enhanced-book-cover.tsx` - 1 statement
+7. ✅ `components/quiz/combined-birth-details.tsx` - 1 statement
+8. ✅ `components/quiz/daily-horoscope.tsx` - 1 statement
+
+**Total Cleaned:** 17 statements  
+**Remaining:** ~317 statements (but ~150 are test/debug files)
 
 ---
 
