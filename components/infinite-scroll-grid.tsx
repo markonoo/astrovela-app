@@ -33,9 +33,11 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
   }, [isMounted])
 
   // Mobile-responsive image dimensions
-  const imageWidth = isMobile ? 120 : 150
-  const imageHeight = isMobile ? 160 : 200
-  const gapClass = isMobile ? "gap-1.5" : "gap-2"
+  // Mobile/Tablet (< 1024px): 120x160
+  // Desktop (≥ 1024px): 180x240 (larger for better visual impact)
+  const imageWidth = isMobile ? 120 : 180
+  const imageHeight = isMobile ? 160 : 240
+  const gapClass = isMobile ? "gap-1.5" : "gap-3"
 
   // Show static content during SSR
   if (!isMounted) {

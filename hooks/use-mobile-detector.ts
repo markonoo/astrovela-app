@@ -10,10 +10,11 @@ export function useMobileDetector() {
     // Mark that we're now on the client
     setIsClient(true)
     
-    // Function to check if the screen is mobile
+    // Function to check if the screen is mobile or tablet (not desktop)
+    // Changed threshold to 1024px to treat tablets as mobile
     const checkMobile = () => {
       if (typeof window !== 'undefined') {
-        setIsMobile(window.innerWidth < 768)
+        setIsMobile(window.innerWidth < 1024)
       }
     }
 

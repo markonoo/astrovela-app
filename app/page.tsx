@@ -36,7 +36,7 @@ export default function Home() {
             Image grid - First on mobile (order-1), second on desktop (md:order-2)
             Optimized height for mobile: smaller on mobile, larger on desktop
           */}
-          <div className="w-full md:w-1/2 h-[260px] sm:h-[300px] md:h-[500px] overflow-hidden order-1 md:order-2 mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 h-[260px] sm:h-[300px] md:h-[500px] lg:h-[600px] xl:h-[700px] overflow-hidden order-1 md:order-2 mb-4 md:mb-0">
             <InfiniteScrollGrid />
           </div>
 
@@ -45,7 +45,7 @@ export default function Home() {
             Full width on mobile, half width on desktop
             Vertically centered to align with image grid
           */}
-          <div className="w-full md:w-1/2 md:h-[500px] flex flex-col justify-center space-y-4 md:space-y-6 order-2 md:order-1 md:pr-8">
+          <div className="w-full md:w-1/2 md:h-[500px] lg:h-[600px] xl:h-[700px] flex flex-col justify-center space-y-4 md:space-y-6 order-2 md:order-1 md:pr-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#28293d] leading-tight">
               A revolutionary astrology book written just for you
             </h1>
