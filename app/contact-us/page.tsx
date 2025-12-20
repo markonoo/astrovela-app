@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { PageLayout } from "@/components/shared/page-layout"
-import { Mail, Phone, MessageSquare, Clock, Send } from "lucide-react"
+import { Mail, MessageSquare, Clock, Send } from "lucide-react"
 import { useState } from "react"
 
 export default function ContactUsPage() {
@@ -217,30 +217,12 @@ export default function ContactUsPage() {
 
               <div className="flex items-start">
                 <div className="bg-yellow-100 rounded-full p-2 mr-4">
-                  <Phone className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Call Us</h3>
-                  <p className="text-gray-600 mb-1">Customer Support:</p>
-                  <a href="tel:+18005551234" className="text-yellow-600 hover:underline">
-                    +1 (800) 555-1234
-                  </a>
-                  <p className="text-gray-600 mt-2 mb-1">International:</p>
-                  <a href="tel:+44205551234" className="text-yellow-600 hover:underline">
-                    +44 20 5551 234
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-yellow-100 rounded-full p-2 mr-4">
                   <MessageSquare className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div>
                   <h3 className="font-medium">Live Chat</h3>
                   <p className="text-gray-600">
-                    Chat with our support team in real-time. Available on the bottom right corner of this page during
-                    business hours.
+                    Chat with our support team in real-time. Click the chat icon in the bottom right corner of this page.
                   </p>
                 </div>
               </div>
@@ -250,10 +232,9 @@ export default function ContactUsPage() {
                   <Clock className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium">Business Hours</h3>
-                  <p className="text-gray-600">Monday - Friday: 9am - 6pm EST</p>
-                  <p className="text-gray-600">Saturday: 10am - 4pm EST</p>
-                  <p className="text-gray-600">Sunday: Closed</p>
+                  <h3 className="font-medium">Response Time</h3>
+                  <p className="text-gray-600">We typically respond to all inquiries within 24 hours.</p>
+                  <p className="text-gray-600 mt-2">For urgent matters, please use the live chat feature.</p>
                 </div>
               </div>
             </div>

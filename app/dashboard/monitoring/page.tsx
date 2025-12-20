@@ -115,6 +115,14 @@ export default function MonitoringDashboard() {
   const [marketingAnalytics, setMarketingAnalytics] = useState<MarketingAnalytics | null>(null);
   const [auraAppStats, setAuraAppStats] = useState<AuraAppStats | null>(null);
   const [pdfStats, setPdfStats] = useState<PDFStats | null>(null);
+  const [crispStatus, setCrispStatus] = useState<{
+    loaded: boolean;
+    active: boolean;
+    websiteId: string;
+    chatboxOpen: boolean;
+    unreadMessages: number;
+    error?: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -246,6 +254,62 @@ export default function MonitoringDashboard() {
     }
   };
 
+  const checkCrispStatus = () => {
+    try {
+      console.log('💬 Checking Crisp status...');
+      
+      // Check if Crisp is loaded
+      const isLoaded = typeof window !== 'undefined' && 
+                       window.$crisp !== undefined && 
+                       window.CRISP_WEBSITE_ID !== undefined;
+      
+      if (isLoaded) {
+        // Get Crisp status
+        const status = {
+          loaded: true,
+          active: true,
+          websiteId: window.CRISP_WEBSITE_ID,
+          chatboxOpen: false,
+          unreadMessages: 0,
+        };
+
+        // Try to get chatbox state if Crisp API is fully loaded
+        try {
+          if (window.$crisp && window.$crisp.push) {
+            window.$crisp.push(['is', 'chat:opened', (isOpen: boolean) => {
+              status.chatboxOpen = isOpen;
+            }]);
+          }
+        } catch (e) {
+          console.log('Crisp API not fully initialized yet');
+        }
+
+        setCrispStatus(status);
+        console.log('✅ Crisp status:', status);
+      } else {
+        setCrispStatus({
+          loaded: false,
+          active: false,
+          websiteId: '958abb51-98fe-4d1b-980d-401cf8716015',
+          chatboxOpen: false,
+          unreadMessages: 0,
+          error: 'Crisp script not loaded',
+        });
+        console.log('❌ Crisp not loaded');
+      }
+    } catch (err) {
+      console.error('Error checking Crisp status:', err);
+      setCrispStatus({
+        loaded: false,
+        active: false,
+        websiteId: '958abb51-98fe-4d1b-980d-401cf8716015',
+        chatboxOpen: false,
+        unreadMessages: 0,
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+    }
+  };
+
   const fetchAllData = async () => {
     setLoading(true);
     await Promise.all([
@@ -257,6 +321,7 @@ export default function MonitoringDashboard() {
       fetchAuraAppStats(),
       fetchPDFStats()
     ]);
+    checkCrispStatus();
     setLastRefresh(new Date());
     setLoading(false);
   };
@@ -677,6 +742,159 @@ export default function MonitoringDashboard() {
           )}
         </div>
 
+        {/* Crisp Chatbot Status */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            💬 Crisp Live Chat Status
+            {crispStatus && (
+              <span className={`ml-3 px-2 py-1 rounded text-sm font-medium ${
+                crispStatus.loaded && crispStatus.active 
+                  ? 'bg-green-200 text-green-800' 
+                  : 'bg-red-200 text-red-800'
+              }`}>
+                {crispStatus.loaded && crispStatus.active ? 'ACTIVE' : 'INACTIVE'}
+              </span>
+            )}
+          </h2>
+          
+          {crispStatus ? (
+            <div className="space-y-6">
+              {/* Status Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`p-4 rounded border ${
+                  crispStatus.loaded ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                }`}>
+                  <h3 className={`font-medium ${crispStatus.loaded ? 'text-green-700' : 'text-red-700'}`}>
+                    Script Status
+                  </h3>
+                  <p className={`text-2xl font-bold ${crispStatus.loaded ? 'text-green-600' : 'text-red-600'}`}>
+                    {crispStatus.loaded ? '✅ Loaded' : '❌ Not Loaded'}
+                  </p>
+                  <p className={`text-sm ${crispStatus.loaded ? 'text-green-600' : 'text-red-600'}`}>
+                    Crisp SDK
+                  </p>
+                </div>
+                
+                <div className={`p-4 rounded border ${
+                  crispStatus.active ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <h3 className={`font-medium ${crispStatus.active ? 'text-green-700' : 'text-gray-700'}`}>
+                    Chat Widget
+                  </h3>
+                  <p className={`text-2xl font-bold ${crispStatus.active ? 'text-green-600' : 'text-gray-600'}`}>
+                    {crispStatus.active ? '🟢 Active' : '⚫ Inactive'}
+                  </p>
+                  <p className={`text-sm ${crispStatus.active ? 'text-green-600' : 'text-gray-600'}`}>
+                    Widget visibility
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <h3 className="font-medium text-blue-700">Website ID</h3>
+                  <p className="text-sm font-mono text-blue-600 truncate">
+                    {crispStatus.websiteId}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">Configured</p>
+                </div>
+              </div>
+
+              {/* Configuration Details */}
+              <div className="bg-gray-50 p-4 rounded border">
+                <h3 className="font-medium text-gray-700 mb-3">🔧 Configuration Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium text-gray-700 text-sm mb-2">Integration Info</h4>
+                    <div className="text-sm space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Component:</span>
+                        <span className="font-mono text-gray-800">CrispChat.tsx</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Location:</span>
+                        <span className="font-mono text-gray-800">/components/</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Scope:</span>
+                        <span className="font-mono text-gray-800">Site-wide</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-700 text-sm mb-2">Features</h4>
+                    <div className="text-sm space-y-1">
+                      <div className="flex items-center">
+                        <span className="text-green-600">✅</span>
+                        <span className="ml-2 text-gray-700">Real-time messaging</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-green-600">✅</span>
+                        <span className="ml-2 text-gray-700">Mobile responsive</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-green-600">✅</span>
+                        <span className="ml-2 text-gray-700">Visitor tracking</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-green-600">✅</span>
+                        <span className="ml-2 text-gray-700">Email notifications</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Error Display */}
+              {crispStatus.error && (
+                <div className="bg-red-50 border border-red-200 rounded p-4">
+                  <h3 className="font-medium text-red-800 mb-2">⚠️ Error Detected</h3>
+                  <p className="text-sm text-red-700">
+                    {crispStatus.error}
+                  </p>
+                  <p className="text-xs text-red-600 mt-2">
+                    Check that the Crisp script is properly loaded in the CrispChat component.
+                  </p>
+                </div>
+              )}
+
+              {/* Management Links */}
+              {crispStatus.loaded && crispStatus.active && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                  <h3 className="font-medium text-blue-800 mb-2">🎛️ Crisp Dashboard</h3>
+                  <p className="text-sm text-blue-700 mb-3">
+                    Manage your live chat, view conversations, and configure settings in the Crisp dashboard.
+                  </p>
+                  <a 
+                    href="https://app.crisp.chat" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium underline"
+                  >
+                    Open Crisp Dashboard →
+                  </a>
+                </div>
+              )}
+
+              {/* Quick Actions */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+                <h3 className="font-medium text-yellow-800 mb-2">💡 Quick Tips</h3>
+                <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
+                  <li>Chat widget appears in the bottom right corner of all pages</li>
+                  <li>Log into Crisp dashboard to receive real-time notifications</li>
+                  <li>Customize widget appearance in Crisp Settings → Chatbox Appearance</li>
+                  <li>Set up away messages for when you're offline</li>
+                  <li>Configure email notifications to never miss a message</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Checking Crisp status...</p>
+            </div>
+          )}
+        </div>
+
         {/* System Health Overview */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -870,10 +1088,10 @@ export default function MonitoringDashboard() {
           )}
         </div>
 
-        {/* Companion App Analytics */}
+        {/* Aura App Analytics */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
-            📱 Companion App Analytics
+            📱 Aura App Analytics
           </h2>
           
           {auraAppStats ? (
@@ -946,7 +1164,7 @@ export default function MonitoringDashboard() {
           ) : (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading Companion App stats...</p>
+              <p className="text-gray-600">Loading Aura App stats...</p>
             </div>
           )}
         </div>
@@ -1080,7 +1298,7 @@ export default function MonitoringDashboard() {
               </a>
             </div>
             <div className="bg-gray-50 p-4 rounded border">
-              <h3 className="font-medium mb-2">Companion App Stats</h3>
+              <h3 className="font-medium mb-2">Aura App Stats</h3>
               <code className="text-sm text-gray-600 block mb-2">/api/admin/aura-stats</code>
               <a 
                 href="/api/admin/aura-stats" 
