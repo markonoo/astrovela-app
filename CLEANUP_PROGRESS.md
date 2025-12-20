@@ -11,7 +11,7 @@
 
 #### API Routes (21 files)
 - `app/api/shopify/webhook/route.ts` - 4 instances
-- `app/api/companion/billing/portal/route.ts` - 1 instance
+- `app/api/aura/billing/portal/route.ts` - 1 instance
 - `app/api/setup-bundle-discounts/route.ts` - 1 instance
 - `app/api/shopify/checkout/route.ts` - 2 instances
 - `app/api/test-bundle-checkout/route.ts` - 4 instances

@@ -1,4 +1,4 @@
-# Companion App Deep Scan Report
+# Aura App Deep Scan Report
 
 ## Date: 2025-01-27
 
@@ -43,7 +43,7 @@ The following pages are still using the old Apple gray design instead of the new
 - ❌ `/companion/report/page.tsx` - Still uses `apple-gray-*` colors
 
 **Impact**: 
-- Visual inconsistency across the companion app
+- Visual inconsistency across the aura app
 - These pages won't match the dark theme when accessed
 - User experience will feel disjointed
 
@@ -76,7 +76,7 @@ All the pages listed above are missing the `CompanionShell` wrapper, which provi
 ### Priority 1: Fix Design Consistency
 1. Refactor all remaining pages to use dark design
 2. Wrap all pages in `CompanionShell` component
-3. Ensure consistent styling across entire companion app
+3. Ensure consistent styling across entire aura app
 
 ### Priority 2: Enhance Functionality
 1. Fetch real zodiac sign data in horoscope page

@@ -244,7 +244,7 @@ await fetch('YOUR_EMAIL_SERVICE_API', {
     variables: {
       firstName: user.firstName,
       sunSign: user.sunSign,
-      checkoutUrl: `https://astrovela.com/pricing?session=${sessionId}`
+      checkoutUrl: `https://tryastrovela.com/pricing?session=${sessionId}`
     }
   })
 });

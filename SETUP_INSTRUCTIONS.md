@@ -36,7 +36,7 @@ Once authenticated, run:
 cd "/Users/mnovakovski/Documents/Visual Code/App AstroBook/AstroBook"
 
 # Create the repository
-gh repo create astrovela-app --private --source=. --remote=origin --description "AstroVela Companion App - Personal astrology control center"
+gh repo create astrovela-app --private --source=. --remote=origin --description "AstroVela Aura - Personal astrology control center"
 
 # Push the code
 git branch -M main
@@ -50,7 +50,7 @@ If you prefer not to install GitHub CLI:
 1. **Go to**: https://github.com/new
 2. **Repository Settings**:
    - Name: `astrovela-app`
-   - Description: `AstroVela Companion App - Personal astrology control center`
+   - Description: `AstroVela Aura - Personal astrology control center`
    - Visibility: **Private** ✅
    - **DO NOT** check README, .gitignore, or license
 3. **Click "Create repository"**

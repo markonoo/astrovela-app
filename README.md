@@ -118,7 +118,7 @@ See `DESIGN_SYSTEM.md` for complete design tokens.
 ## 📚 Documentation
 
 - `CODEBASE_INVENTORY.md` - Complete codebase overview
-- `COMPANION_APP_IMPLEMENTATION.md` - Aura app features
+- `AURA_APP_IMPLEMENTATION.md` - Aura app features
 - `DESIGN_SYSTEM.md` - Design tokens and guidelines
 - `ENV_TEMPLATE.md` - Environment variables reference
 - `REMAINING_TODOS.md` - Known issues and improvements

@@ -70,7 +70,7 @@
 
 **Routes to Update:**
 - `/api/admin/auth` - Log login attempts
-- `/api/admin/companion-stats` - Log data access
+- `/api/admin/aura-stats` - Log data access
 - `/api/admin/pdf-stats` - Log data access
 - All other admin routes
 

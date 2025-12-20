@@ -1,7 +1,7 @@
 # AstroBook Codebase Inventory
 
 ## Overview
-This document provides a comprehensive inventory of the existing AstroBook codebase before implementing the AstroVela Companion App.
+This document provides a comprehensive inventory of the existing AstroBook codebase before implementing the AstroVela Aura.
 
 ## Tech Stack
 
@@ -178,7 +178,7 @@ This document provides a comprehensive inventory of the existing AstroBook codeb
 - `/api/analytics/events` - Track analytics events
 - `/api/session-merge` - Merge anonymous sessions with user accounts
 
-## Missing Components (For Companion App)
+## Missing Components (For Aura App)
 
 ### 1. Subscription/Entitlement Management
 - ❌ No `app_entitlements` table
@@ -186,7 +186,7 @@ This document provides a comprehensive inventory of the existing AstroBook codeb
 - ❌ No subscription status management
 - ❌ No webhook handlers for Shopify purchase completion
 
-### 2. Companion App Features
+### 2. Aura App Features
 - ❌ Daily astrology feed
 - ❌ Weekly/monthly outlooks
 - ❌ Zodiac encyclopedia
@@ -199,7 +199,7 @@ This document provides a comprehensive inventory of the existing AstroBook codeb
 - ❌ No paywall component
 - ❌ No trial countdown
 
-## Data Available for Companion App
+## Data Available for Aura App
 
 ### From QuizResponse
 - Email
@@ -232,7 +232,7 @@ This document provides a comprehensive inventory of the existing AstroBook codeb
 - `API_KEY` - AstrologyAPI key
 - Shopify config (SHOPIFY_STOREFRONT_API_ENDPOINT, etc.)
 
-### Needed for Companion App
+### Needed for Aura App
 - `SHOPIFY_WEBHOOK_SECRET` - For webhook verification
 - `STRIPE_SECRET_KEY` (if using Stripe for subscriptions)
 - `STRIPE_WEBHOOK_SECRET` (if using Stripe)
@@ -267,11 +267,11 @@ AstroBook/
     └── schema.prisma      # Database schema
 ```
 
-## Next Steps for Companion App
+## Next Steps for Aura App
 
 1. Create `app_entitlements` table in Supabase
 2. Create Shopify webhook handler for purchase → entitlement
-3. Build companion app pages (Today, Weekly, Monthly, Love, Career, Report)
+3. Build aura app pages (Today, Weekly, Monthly, Love, Career, Report)
 4. Create entitlement middleware
 5. Build API endpoints for astrology content
 6. Add PWA support

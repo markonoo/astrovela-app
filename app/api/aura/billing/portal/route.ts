@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // In production, create Stripe billing portal session or Shopify customer portal link
     // For now, return a placeholder URL
-    const shopifyStoreUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL || "https://astrovela.myshopify.com"
+    const shopifyStoreUrl = process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL || "https://tryastrovela.myshopify.com"
     const portalUrl = `${shopifyStoreUrl}/account`
 
     // Alternative: If using Stripe

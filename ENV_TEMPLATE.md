@@ -1,6 +1,6 @@
 # Environment Variables Template
 
-This file documents all required environment variables for the AstroVela Companion App.
+This file documents all required environment variables for the AstroVela Aura.
 
 **Note:** Create a `.env.local` file in the root directory with these variables (do not commit `.env.local` to git).
 
@@ -110,7 +110,7 @@ RESEND_API_KEY=re_...
 1. Sign up at https://resend.com
 2. Generate API key in dashboard
 3. Add to `.env.local` and Vercel environment variables
-4. Verify custom domain (astrovela.com) in Resend dashboard
+4. Verify custom domain (tryastrovela.com) in Resend dashboard
 5. Until domain verified, emails send from `onboarding@resend.dev`
 6. After verification, update `lib/email-service.ts` to use `hello@tryastrovela.com`
 
@@ -140,7 +140,7 @@ SENTRY_AUTH_TOKEN=...
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # Production (set in Vercel/deployment platform)
-NEXT_PUBLIC_APP_URL=https://astrovela.com
+NEXT_PUBLIC_APP_URL=https://tryastrovela.com
 ```
 **Required:** Yes (for email links, redirects)
 

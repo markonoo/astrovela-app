@@ -42,7 +42,7 @@ Get your first email campaign live in 30 minutes or less.
 1. Open `01-welcome-quiz-completion.html`
 2. **Find & Replace** (Ctrl+F):
    - Find: `https://yourdomain.com/images/astrovela-logo.png`
-   - Replace: `https://astrovela.com/images/astrovela-logo.png`
+   - Replace: `https://tryastrovela.com/images/astrovela-logo.png`
 3. Copy all HTML
 4. In Shopify/Klaviyo:
    - Create New Email Template

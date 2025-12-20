@@ -39,7 +39,7 @@ fi
 
 # Create repository
 echo "📦 Creating private repository: $REPO_NAME"
-gh repo create "$REPO_NAME" --private --source=. --remote=origin --description "AstroVela Companion App - Personal astrology control center"
+gh repo create "$REPO_NAME" --private --source=. --remote=origin --description "AstroVela Aura - Personal astrology control center"
 
 # Push to GitHub
 echo "📤 Pushing code to GitHub..."

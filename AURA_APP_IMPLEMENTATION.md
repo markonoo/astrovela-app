@@ -1,7 +1,7 @@
-# AstroVela Companion App - Implementation Summary
+# AstroVela Aura - Implementation Summary
 
 ## Overview
-The AstroVela Companion App is a subscription-based web application that extends the static PDF/book product with ongoing, personalized astrology content. Users who purchase a PDF/book automatically receive 30 days of free access, after which they can subscribe monthly.
+The AstroVela Aura is a subscription-based web application that extends the static PDF/book product with ongoing, personalized astrology content. Users who purchase a PDF/book automatically receive 30 days of free access, after which they can subscribe monthly.
 
 ## ✅ Completed Features
 
@@ -17,7 +17,7 @@ The AstroVela Companion App is a subscription-based web application that extends
   - `createOrUpdateEntitlement()` - Create/update entitlements
   - `calculateFreeUntil()` - Calculate 30-day trial period
 
-### 3. Companion App Pages
+### 3. Aura App Pages
 
 #### Today Page (`/companion`)
 - ✅ Daily energy card
@@ -73,7 +73,7 @@ The AstroVela Companion App is a subscription-based web application that extends
 - ✅ `components/companion/companion-nav.tsx` - Mobile-first navigation
   - Desktop: Top nav bar
   - Mobile: Top hamburger menu + bottom nav bar
-- ✅ `app/companion/layout.tsx` - Companion app layout wrapper
+- ✅ `app/aura/layout.tsx` - Aura app layout wrapper
 
 ### 5. Access Control
 - ✅ `components/companion/paywall.tsx` - Paywall component
@@ -149,7 +149,7 @@ NEXT_PUBLIC_SHOPIFY_STORE_URL=https://your-store.myshopify.com
 ### New User Journey
 1. User purchases PDF/book → Shopify checkout
 2. Shopify webhook → Creates entitlement (30-day trial)
-3. User receives email with link to companion app
+3. User receives email with link to aura app
 4. User signs in → Access granted
 5. After 30 days → Paywall shown → Subscribe to continue
 
@@ -196,7 +196,7 @@ NEXT_PUBLIC_SHOPIFY_STORE_URL=https://your-store.myshopify.com
 - Rate limiting on API endpoints
 
 ## 📝 Notes
-- All companion app routes are under `/companion/*`
+- All aura app routes are under `/aura/*`
 - Access control is handled at the page level (client-side check)
 - For production, consider server-side middleware for stricter access control
 - Billing portal currently links to Shopify customer portal (can be enhanced with Stripe integration)

@@ -96,7 +96,7 @@ curl -X POST https://astrovela-app.vercel.app/api/test-email \
 **Go to:** https://vercel.com → Your Project → Deployments → Latest → Logs
 
 **Look for:**
-- `Error in sendCompanionAppWelcomeEmail`
+- `Error in sendAuraAppWelcomeEmail`
 - `Failed to send welcome email`
 - `Resend` or `API key` errors
 

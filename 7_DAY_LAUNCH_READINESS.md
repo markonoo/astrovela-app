@@ -31,7 +31,7 @@ The AstroVela app is **functionally complete** and **production-ready** from a c
 - ✅ **Shopify checkout** flow (all 3 bundles working)
 - ✅ **Payment processing** via Shopify
 
-### 2. Aura Companion App - 100% ✅
+### 2. Aura App - 100% ✅
 - ✅ **Today Screen** - Daily horoscope & transits
 - ✅ **Weekly/Monthly Outlook** - Extended predictions
 - ✅ **Zodiac Encyclopedia** - Complete guide (12 signs)
@@ -118,14 +118,14 @@ npm run cleanup-logs  # (if script exists)
 - ✅ Documentation complete (3 guides created)
 
 **Remaining (Tomorrow):**
-- ⏳ Domain verification for `astrovela.com` (15 min)
+- ⏳ Domain verification for `tryastrovela.com` (15 min)
 - ✅ Update sender from `onboarding@resend.dev` to `hello@tryastrovela.com`
 
 **Email Templates:**
 - ✅ Welcome email with 30-day trial info
 - ✅ Mobile-responsive design
 - ✅ Professional branding
-- ✅ CTA button to companion app
+- ✅ CTA button to aura app
 
 ---
 
@@ -233,9 +233,9 @@ RESEND_API_KEY=  # or SENDGRID_API_KEY
 **Action Required:**
 1. Sign up for UptimeRobot or Pingdom
 2. Add monitors for:
-   - Homepage: `https://astrovela.com`
-   - API health: `https://astrovela.com/api/health`
-   - Webhook: `https://astrovela.com/api/shopify/webhook`
+   - Homepage: `https://tryastrovela.com`
+   - API health: `https://tryastrovela.com/api/health`
+   - Webhook: `https://tryastrovela.com/api/shopify/webhook`
 3. Set up email/SMS alerts
 
 ---
@@ -522,11 +522,11 @@ RESEND_API_KEY=  # or SENDGRID_API_KEY
 - `COMPLIANCE_SUMMARY.md` - GDPR/security overview
 
 **Admin Access:**
-- Login: `https://astrovela.com/admin/login`
-- 2FA Setup: `https://astrovela.com/admin/2fa-setup`
-- Recovery Codes: `https://astrovela.com/admin/recovery-codes`
-- Audit Logs: `https://astrovela.com/admin/audit`
-- Monitoring: `https://astrovela.com/dashboard/monitoring`
+- Login: `https://tryastrovela.com/admin/login`
+- 2FA Setup: `https://tryastrovela.com/admin/2fa-setup`
+- Recovery Codes: `https://tryastrovela.com/admin/recovery-codes`
+- Audit Logs: `https://tryastrovela.com/admin/audit`
+- Monitoring: `https://tryastrovela.com/dashboard/monitoring`
 
 ---
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendCompanionAppWelcomeEmail } from '@/lib/email-service';
+import { sendAuraAppWelcomeEmail } from '@/lib/email-service';
 import { logger } from '@/utils/logger';
 
 /**
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     // Send test email with sample data
-    const result = await sendCompanionAppWelcomeEmail({
+    const result = await sendAuraAppWelcomeEmail({
       email,
       firstName: 'Test User',
       productName: 'Test Product',

@@ -24,7 +24,7 @@
 
 **Steps:**
 1. Go to https://resend.com/domains
-2. Add `astrovela.com`
+2. Add `tryastrovela.com`
 3. Add DNS records (TXT + MX)
 4. Wait 5-10 minutes
 5. Update `lib/email-service.ts` line 24 to use `hello@tryastrovela.com`
@@ -68,7 +68,7 @@ grep -r "console.log" --include="*.tsx" --include="*.ts" app/ components/ lib/ |
   - Verify email received
   - Check entitlement created
   
-- [ ] **Companion App Access:**
+- [ ] **Aura App Access:**
   - Login with purchase email
   - Verify 30-day trial active
   - Test all Aura app features
@@ -117,8 +117,8 @@ grep -r "console.log" --include="*.tsx" --include="*.ts" app/ components/ lib/ |
 **Action:**
 1. Sign up: https://uptimerobot.com (free)
 2. Add monitors:
-   - Homepage: `https://astrovela.com`
-   - API health: `https://astrovela.com/api/health`
+   - Homepage: `https://tryastrovela.com`
+   - API health: `https://tryastrovela.com/api/health`
 3. Set up email alerts
 
 **Impact:** Peace of mind, quick response to issues
@@ -158,7 +158,7 @@ grep -r "console.log" --include="*.tsx" --include="*.ts" app/ components/ lib/ |
 
 ### **Day 2:**
 - 🔴 End-to-end testing - Purchase flow (2 hours)
-- 🔴 End-to-end testing - Companion app (2 hours)
+- 🔴 End-to-end testing - Aura app (2 hours)
 - 🟡 External monitoring setup (30 min)
 
 **Total:** ~4.5 hours
@@ -195,7 +195,7 @@ grep -r "console.log" --include="*.tsx" --include="*.ts" app/ components/ lib/ |
 
 ## ✅ What's Already Complete (Don't Worry About These)
 
-- ✅ All core features (quiz, book, checkout, companion app)
+- ✅ All core features (quiz, book, checkout, aura app)
 - ✅ Security & compliance (GDPR, 2FA, encryption)
 - ✅ Mobile responsiveness
 - ✅ Database & API infrastructure

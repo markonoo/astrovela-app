@@ -235,7 +235,7 @@ After setup, your login page will look like this:
 4. Signs in with Google
 5. Redirected back to `/companion`
 6. User is logged in with Supabase session
-7. Can access all companion app features
+7. Can access all aura app features
 
 ### Database:
 - New user automatically created in Supabase Auth
@@ -317,7 +317,7 @@ Use this checklist to ensure everything is set up correctly:
 - [ ] Production testing works
 - [ ] User session created
 - [ ] Redirect to `/companion` works
-- [ ] User can access companion app
+- [ ] User can access aura app
 
 ### Documentation:
 - [ ] Save Client ID and Secret securely

@@ -27,17 +27,17 @@ The document maker from `services/document-maker/` has been successfully integra
 - ✅ `data/document-maker/pages/*.json` - All page JSON files (pages 41-73)
 
 #### Pages & API Routes
-- ✅ `app/companion/report/viewer/page.tsx` - Interactive report viewer page
-- ✅ `app/api/companion/report/pdf/route.ts` - PDF generation API endpoint
+- ✅ `app/aura/report/viewer/page.tsx` - Interactive report viewer page
+- ✅ `app/api/aura/report/pdf/route.ts` - PDF generation API endpoint
 
 #### Updated Files
-- ✅ `app/companion/report/page.tsx` - Added "View Interactive Report" button and PDF download
+- ✅ `app/aura/report/page.tsx` - Added "View Interactive Report" button and PDF download
 - ✅ `app/globals.css` - Added document maker styles
 
 ## Features
 
 ### 1. Interactive Report Viewer
-- **Route:** `/companion/report/viewer`
+- **Route:** `/aura/report/viewer`
 - **Features:**
   - Scrollable report with page-by-page navigation
   - Keyboard navigation (Arrow keys, Page Up/Down)
@@ -46,7 +46,7 @@ The document maker from `services/document-maker/` has been successfully integra
   - Personalized content based on user's birth data
 
 ### 2. PDF Generation
-- **Route:** `/api/companion/report/pdf`
+- **Route:** `/api/aura/report/pdf`
 - **Features:**
   - Generates PDF from personalized report pages
   - Uses Puppeteer-core for HTML-to-PDF conversion
@@ -61,7 +61,7 @@ The document maker from `services/document-maker/` has been successfully integra
 ## Usage
 
 ### For Users
-1. Navigate to `/companion/report`
+1. Navigate to `/aura/report`
 2. Click "View Interactive Report" to see the scrollable report
 3. Click "Download PDF Report" to generate and download PDF
 

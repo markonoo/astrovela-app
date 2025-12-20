@@ -22,7 +22,7 @@ gh auth login
 1. **Go to**: https://github.com/new
 2. **Fill in**:
    - Repository name: `astrovela-app`
-   - Description: `AstroVela Companion App - Personal astrology control center`
+   - Description: `AstroVela Aura - Personal astrology control center`
    - Visibility: **Private** ✅
    - **DO NOT** check any initialization options
 3. **Click "Create repository"**
@@ -52,7 +52,7 @@ curl -X POST \
   -H "Authorization: token YOUR_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/user/repos \
-  -d '{"name":"astrovela-app","private":true,"description":"AstroVela Companion App - Personal astrology control center"}'
+  -d '{"name":"astrovela-app","private":true,"description":"AstroVela Aura - Personal astrology control center"}'
 
 # Add remote and push
 git remote add origin https://github.com/YOUR_USERNAME/astrovela-app.git

@@ -444,7 +444,7 @@ model Consent {
 **Files to Create/Modify:**
 - `lib/storage.ts` - Update storage utilities
 - `app/api/chart-image/route.ts` - Use signed URLs
-- `app/api/companion/report/pdf/route.ts` - Secure PDF access
+- `app/api/aura/report/pdf/route.ts` - Secure PDF access
 - Supabase dashboard - Change bucket policies
 
 **Acceptance Criteria:**

@@ -1,8 +1,8 @@
-# Structured Testing Approach for AstroVela Companion App
+# Structured Testing Approach for AstroVela Aura
 
 ## Testing Methodology
 
-This document outlines a systematic approach to testing the Companion App implementation.
+This document outlines a systematic approach to testing the Aura implementation.
 
 ---
 

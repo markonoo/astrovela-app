@@ -19,7 +19,7 @@
 - Welcome email template with beautiful HTML design
 - Personalized with customer name, product, order number
 - 30-day trial information clearly displayed
-- CTA button linking to companion app
+- CTA button linking to aura app
 - Mobile-responsive email design
 - Error handling (non-blocking - won't break webhook)
 - Logging for debugging
@@ -40,7 +40,7 @@
 
 **Changes:**
 - Import email service
-- Call `sendCompanionAppWelcomeEmail()` after entitlement creation
+- Call `sendAuraAppWelcomeEmail()` after entitlement creation
 - Determine product name (Paperback/Ebook/App)
 - Pass customer data (email, first name, order number, trial date)
 - Non-blocking error handling (webhook succeeds even if email fails)
@@ -80,7 +80,7 @@
 - [x] Build verified (no errors)
 
 ### ⏳ Pending (Tomorrow)
-- [ ] Domain verification for `astrovela.com`
+- [ ] Domain verification for `tryastrovela.com`
 - [ ] Update `from` address in `lib/email-service.ts` after domain verified
 
 ---
@@ -113,7 +113,7 @@ curl -X POST http://localhost:3000/api/test-email \
 **Check:**
 1. Email arrives in inbox (check spam folder)
 2. Email renders correctly on mobile/desktop
-3. CTA button links to `https://astrovela.com/aura`
+3. CTA button links to `https://tryastrovela.com/aura`
 4. All personalization works (name, product, date)
 
 ---
@@ -167,7 +167,7 @@ vercel logs --follow
 
 **After Domain Verification:**
 1. Go to Resend → Domains → Add Domain
-2. Add `astrovela.com`
+2. Add `tryastrovela.com`
 3. Add DNS records to your domain registrar:
    - TXT record: `_resend` with Resend value
    - MX record: `@` pointing to `feedback-smtp.resend.com`

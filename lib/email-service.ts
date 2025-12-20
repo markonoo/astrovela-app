@@ -13,9 +13,9 @@ interface WelcomeEmailData {
 
 /**
  * Send welcome email to new users who purchased a product
- * Includes 30-day free trial information for AstroVela Companion
+ * Includes 30-day free trial information for AstroVela Aura
  */
-export async function sendCompanionAppWelcomeEmail(data: WelcomeEmailData) {
+export async function sendAuraAppWelcomeEmail(data: WelcomeEmailData) {
   try {
     const formattedDate = format(data.freeUntilDate, 'MMMM dd, yyyy');
     const firstName = data.firstName || 'there';
@@ -23,7 +23,7 @@ export async function sendCompanionAppWelcomeEmail(data: WelcomeEmailData) {
     const { data: emailData, error } = await resend.emails.send({
       from: 'AstroVela <hello@tryastrovela.com>',
       to: data.email,
-      subject: 'Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now! 🌟',
+      subject: 'Welcome to AstroVela Aura - Your 30-Day Free Trial Starts Now! 🌟',
       html: generateWelcomeEmailHTML({
         firstName,
         productName: data.productName,
@@ -40,7 +40,7 @@ export async function sendCompanionAppWelcomeEmail(data: WelcomeEmailData) {
     console.log('Welcome email sent successfully:', emailData?.id);
     return emailData;
   } catch (error) {
-    console.error('Error in sendCompanionAppWelcomeEmail:', error);
+    console.error('Error in sendAuraAppWelcomeEmail:', error);
     // Don't throw - we don't want email failure to break the webhook
     return null;
   }
@@ -58,7 +58,7 @@ function generateWelcomeEmailHTML(data: {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to AstroVela Companion</title>
+  <title>Welcome to AstroVela Aura</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f7f7f7;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f7f7f7; padding: 40px 0;">
@@ -70,7 +70,7 @@ function generateWelcomeEmailHTML(data: {
           <tr>
             <td style="padding: 40px 40px 20px; text-align: center; background-color: #28293d;">
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">
-                Welcome to AstroVela Companion
+                Welcome to AstroVela Aura
               </h1>
             </td>
           </tr>
@@ -88,10 +88,10 @@ function generateWelcomeEmailHTML(data: {
               
               <div style="background-color: #f7f7f7; border-radius: 8px; padding: 24px; margin: 30px 0;">
                 <h2 style="margin: 0 0 16px; font-size: 20px; color: #28293d;">
-                  🎁 Your Free Gift: 30 Days of AstroVela Companion
+                  🎁 Your Free Gift: 30 Days of AstroVela Aura
                 </h2>
                 <p style="margin: 0; font-size: 15px; color: #4d4d4d; line-height: 1.6;">
-                  As a thank you, you now have <strong>30 days of free access</strong> to AstroVela Companion — your personal astrology control center with daily insights, weekly forecasts, and more.
+                  As a thank you, you now have <strong>30 days of free access</strong> to AstroVela Aura — your personal astrology control center with daily insights, weekly forecasts, and more.
                 </p>
               </div>
               
@@ -110,8 +110,8 @@ function generateWelcomeEmailHTML(data: {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://astrovela.com/aura" style="display: inline-block; padding: 16px 40px; background-color: #f7c800; color: #28293d; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 16px;">
-                      Access Your Companion App
+                    <a href="https://tryastrovela.com/aura" style="display: inline-block; padding: 16px 40px; background-color: #f7c800; color: #28293d; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 16px;">
+                      Access Your Aura App
                     </a>
                   </td>
                 </tr>
@@ -137,8 +137,8 @@ function generateWelcomeEmailHTML(data: {
                 © 2025 AstroVela. All rights reserved.
               </p>
               <p style="margin: 0; font-size: 12px; color: #8f90a6;">
-                <a href="https://astrovela.com/privacy" style="color: #8f90a6; text-decoration: none;">Privacy Policy</a> | 
-                <a href="https://astrovela.com/terms" style="color: #8f90a6; text-decoration: none;">Terms</a>
+                <a href="https://tryastrovela.com/privacy" style="color: #8f90a6; text-decoration: none;">Privacy Policy</a> | 
+                <a href="https://tryastrovela.com/terms" style="color: #8f90a6; text-decoration: none;">Terms</a>
               </p>
             </td>
           </tr>

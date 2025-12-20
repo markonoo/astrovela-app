@@ -16,7 +16,7 @@ Your repository is **100% ready** to push to GitHub. Here's what's been done:
 1. **Create Repository on GitHub**:
    - Go to: https://github.com/new
    - Name: `astrovela-app`
-   - Description: `AstroVela Companion App - Personal astrology control center`
+   - Description: `AstroVela Aura - Personal astrology control center`
    - Visibility: **Private** ✅
    - **DO NOT** initialize with README, .gitignore, or license
    - Click "Create repository"

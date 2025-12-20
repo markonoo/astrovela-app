@@ -1,8 +1,8 @@
 {
-  "name": "AstroVela Companion",
+  "name": "AstroVela Aura",
   "short_name": "AstroVela",
   "description": "Your personal astrology control center",
-  "start_url": "/companion",
+  "start_url": "/aura",
   "display": "standalone",
   "background_color": "#f7f7f7",
   "theme_color": "#28293d",
@@ -22,14 +22,14 @@
       "name": "Today",
       "short_name": "Today",
       "description": "View today's astrology insights",
-      "url": "/companion",
+      "url": "/aura",
       "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     },
     {
       "name": "Love",
       "short_name": "Love",
       "description": "Check love compatibility",
-      "url": "/companion/love",
+      "url": "/aura/love",
       "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     }
   ]

@@ -1,8 +1,8 @@
-# Design Integration Analysis - Companion App
+# Design Integration Analysis - Aura App
 
 ## Executive Summary
 
-The Companion App design is **partially integrated** with the existing codebase. While it uses the same color palette and component library, there are opportunities to improve consistency by leveraging the existing design tokens and patterns more fully.
+The Aura App design is **partially integrated** with the existing codebase. While it uses the same color palette and component library, there are opportunities to improve consistency by leveraging the existing design tokens and patterns more fully.
 
 ---
 
@@ -36,12 +36,12 @@ The Companion App design is **partially integrated** with the existing codebase.
 ### 1. Design Token Usage
 
 **Current State:**
-- Companion app uses hardcoded colors: `text-[#28293d]`, `bg-[#f7f7f7]`
+- Aura app uses hardcoded colors: `text-[#28293d]`, `bg-[#f7f7f7]`
 - Existing app has Tailwind tokens defined: `astrovela.text`, `astrovela.background`
 
 **Issue:**
 ```typescript
-// Companion app (hardcoded)
+// Aura app (hardcoded)
 className="text-[#28293d]"
 className="bg-[#f7f7f7]"
 
@@ -58,7 +58,7 @@ className="bg-astrovela-background"
 ### 2. Background Gradients
 
 **Current State:**
-- Companion app uses: `bg-gradient-to-b from-[#f7f7f7] to-[#e8e8e8]`
+- Aura app uses: `bg-gradient-to-b from-[#f7f7f7] to-[#e8e8e8]`
 - Existing app uses: `bg-[#f7f7f7]` (solid)
 
 **Issue:** Slightly different visual treatment
@@ -70,11 +70,11 @@ className="bg-astrovela-background"
 ### 3. Navigation Consistency
 
 **Current State:**
-- Companion app has its own navigation (`CompanionNav`)
+- Aura app has its own navigation (`AuraNav`)
 - Existing app uses `DrawerMenu` + `HamburgerButton`
 
 **Analysis:**
-- ✅ Different navigation is appropriate (companion app is separate section)
+- ✅ Different navigation is appropriate (aura app is separate section)
 - ✅ Both use same mobile-first patterns
 - ✅ Both use same color scheme
 
@@ -83,12 +83,12 @@ className="bg-astrovela-background"
 ### 4. Card Styling
 
 **Current State:**
-- Companion app: `border-0 shadow-lg` with gradient headers
+- Aura app: `border-0 shadow-lg` with gradient headers
 - Existing app: Uses standard Card component with borders
 
 **Analysis:**
 - ✅ Both use same Card component
-- ⚠️ Companion app adds custom styling (gradient headers)
+- ⚠️ Aura app adds custom styling (gradient headers)
 - This is acceptable for visual distinction
 
 **Status:** ✅ Acceptable - Adds visual interest
@@ -96,7 +96,7 @@ className="bg-astrovela-background"
 ### 5. Button Styles
 
 **Current State:**
-- Companion app: `bg-[#28293d] text-white` with `hover:bg-[#1a1b2e]`
+- Aura app: `bg-[#28293d] text-white` with `hover:bg-[#1a1b2e]`
 - Existing app: Uses Button component from UI library
 
 **Issue:** Not using existing Button component
@@ -118,7 +118,7 @@ astrovela: {
 }
 ```
 
-### Companion App Usage
+### Aura App Usage
 | Token | Should Use | Currently Uses | Status |
 |-------|------------|----------------|--------|
 | Background | `bg-astrovela-background` | `bg-[#f7f7f7]` | ⚠️ Hardcoded |
@@ -132,7 +132,7 @@ astrovela: {
 
 ### Priority 1: Use Design Tokens
 
-**File:** All companion app pages
+**File:** All aura app pages
 
 **Change:**
 ```typescript
@@ -160,7 +160,7 @@ className="bg-astrovela-background"
 
 ### Priority 3: Consistent Accent Colors
 
-**File:** All companion app pages
+**File:** All aura app pages
 
 **Change:**
 ```typescript
@@ -213,13 +213,13 @@ className="text-astrovela-accent"
 
 ### Low Priority
 1. Review if gradient backgrounds should be standardized
-2. Consider adding companion app to design system docs
+2. Consider adding aura app to design system docs
 
 ---
 
 ## Conclusion
 
-The Companion App design is **90% integrated** with the existing codebase. The main areas for improvement are:
+The Aura App design is **90% integrated** with the existing codebase. The main areas for improvement are:
 
 1. **Using design tokens** instead of hardcoded colors
 2. **Using Button component** for consistency

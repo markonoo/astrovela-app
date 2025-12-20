@@ -26,7 +26,7 @@ All quiz/user input data is now correctly linked to the report generation, inclu
 
 ---
 
-### 2. Report Data API (`/api/companion/report`)
+### 2. Report Data API (`/api/aura/report`)
 **Returns:**
 - ✅ Birth date (formatted)
 - ✅ Birth time
@@ -44,7 +44,7 @@ All quiz/user input data is now correctly linked to the report generation, inclu
 
 ---
 
-### 3. PDF Generation (`/api/companion/report/pdf`)
+### 3. PDF Generation (`/api/aura/report/pdf`)
 **Uses:**
 - ✅ All quiz data (birth date, time, place, name)
 - ✅ **Cover color** applied to first page
@@ -58,7 +58,7 @@ All quiz/user input data is now correctly linked to the report generation, inclu
 
 ---
 
-### 4. Report Viewer (`/companion/report/viewer`)
+### 4. Report Viewer (`/aura/report/viewer`)
 **Displays:**
 - ✅ Personalized pages with user data
 - ✅ Cover color available for styling
@@ -135,13 +135,13 @@ model QuizResponse {
 
 ### 1. Get Report Data
 ```
-GET /api/companion/report
+GET /api/aura/report
 ```
 **Returns:** `ReportDataResponse` with all quiz data including cover color
 
 ### 2. Generate PDF
 ```
-GET /api/companion/report/pdf
+GET /api/aura/report/pdf
 ```
 **Uses:** All quiz data + cover color for PDF generation
 
@@ -159,16 +159,16 @@ POST /api/quiz/submit
 - ✅ `types/api.ts` - Added `coverColor`, `firstName`, `lastName`, `gender` to `ReportDataResponse`
 
 ### API Routes
-- ✅ `app/api/companion/report/route.ts` - Returns cover color and all quiz data
-- ✅ `app/api/companion/report/pdf/route.ts` - Uses cover color for PDF generation
+- ✅ `app/api/aura/report/route.ts` - Returns cover color and all quiz data
+- ✅ `app/api/aura/report/pdf/route.ts` - Uses cover color for PDF generation
 
 ### Personalization
 - ✅ `lib/document-maker/personalize.ts` - Supports firstName, lastName, coverColor
 - ✅ `lib/document-maker/cover-colors.ts` - NEW: Cover color mapping utility
 
 ### UI Components
-- ✅ `app/companion/report/page.tsx` - Displays cover color in birth data
-- ✅ `app/companion/report/viewer/page.tsx` - Passes cover color to personalization
+- ✅ `app/aura/report/page.tsx` - Displays cover color in birth data
+- ✅ `app/aura/report/viewer/page.tsx` - Passes cover color to personalization
 
 ---
 

@@ -1,4 +1,4 @@
-# AstroVela Companion App - Testing Checklist
+# AstroVela Aura - Testing Checklist
 
 ## Testing Strategy
 
@@ -35,7 +35,7 @@
 ## Detailed Test Plan
 
 ### 1. File Structure Verification
-- [ ] All companion app pages exist
+- [ ] All aura app pages exist
 - [ ] All API routes exist
 - [ ] All components exist
 - [ ] All utility files exist

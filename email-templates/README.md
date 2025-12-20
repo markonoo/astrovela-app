@@ -33,7 +33,7 @@ In ALL email templates, replace:
 ```
 With your actual domain:
 ```html
-<img src="https://astrovela.com/images/astrovela-logo.png"
+<img src="https://tryastrovela.com/images/astrovela-logo.png"
 ```
 
 ### Step 2: Choose Email Service

@@ -56,8 +56,8 @@
 - ✅ Validation: `isValidBirthDate()`
 
 **Files Updated:**
-- `app/api/companion/report/route.ts` - Uses utility functions
-- `app/api/companion/report/pdf/route.ts` - Uses utility functions
+- `app/api/aura/report/route.ts` - Uses utility functions
+- `app/api/aura/report/pdf/route.ts` - Uses utility functions
 
 ---
 
@@ -86,7 +86,7 @@
 
 **Files Updated:**
 - `app/api/quiz/submit/route.ts` - Uses logger
-- `app/api/companion/report/pdf/route.ts` - Uses logger
+- `app/api/aura/report/pdf/route.ts` - Uses logger
 
 ---
 
@@ -149,8 +149,8 @@ All fixes maintain backward compatibility:
 1. ✅ `app/api/chart-image/route.ts` - Standardized variable names
 2. ✅ `app/api/quiz/submit/route.ts` - Standardized + added logging
 3. ✅ `app/api/zodiac-signs/route.ts` - Standardized sessionId
-4. ✅ `app/api/companion/report/route.ts` - Uses birth date utilities
-5. ✅ `app/api/companion/report/pdf/route.ts` - Uses birth date utilities
+4. ✅ `app/api/aura/report/route.ts` - Uses birth date utilities
+5. ✅ `app/api/aura/report/pdf/route.ts` - Uses birth date utilities
 
 ### Utilities:
 1. ✅ `utils/birth-date.ts` - NEW: Birth date utilities

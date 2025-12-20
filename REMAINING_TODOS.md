@@ -50,7 +50,7 @@
 
 - [ ] **Create email sending service (`lib/email-service.ts`)**
   - Use Resend (recommended) or SendGrid
-  - Function: `sendCompanionAppWelcomeEmail(...)` as per `EMAIL_NOTIFICATION_SPEC.md`
+  - Function: `sendAuraAppWelcomeEmail(...)` as per `EMAIL_NOTIFICATION_SPEC.md`
 - [ ] **Add environment keys**
   - `RESEND_API_KEY` or `SENDGRID_API_KEY`, and from-address
 - [ ] **Wire into Shopify webhook**
@@ -216,7 +216,7 @@ SENTRY_AUTH_TOKEN=
   - Identify large dependencies
   - Optimize imports
 - [ ] **Code splitting**
-  - Lazy load companion app routes
+  - Lazy load aura app routes
   - Lazy load heavy components
 - [ ] **Image optimization**
   - Remove `unoptimized: true` flags
@@ -352,7 +352,7 @@ SENTRY_AUTH_TOKEN=
 
 **Overall Completion:** ~85%
 
-- ✅ **Core Features:** 100% (All companion app features implemented)
+- ✅ **Core Features:** 100% (All aura app features implemented)
 - ✅ **Design & UX:** 100% (Apple-style design complete)
 - ✅ **Mobile:** 100% (Fully responsive, safe areas)
 - ⚠️ **Code Quality:** 70% (Needs cleanup)

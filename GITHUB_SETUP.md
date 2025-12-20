@@ -13,7 +13,7 @@ Since GitHub CLI (`gh`) is not installed, you have two options:
 1. **Go to GitHub**: https://github.com/new
 2. **Repository Settings**:
    - Repository name: `astrovela-app` (or your preferred name)
-   - Description: "AstroVela Companion App - Personal astrology control center"
+   - Description: "AstroVela Aura - Personal astrology control center"
    - Visibility: **Private** ✅
    - **DO NOT** initialize with README, .gitignore, or license (we already have these)
 3. **Click "Create repository"**

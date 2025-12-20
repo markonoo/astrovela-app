@@ -23,7 +23,7 @@ export default function AskAIPage() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm your astrology AI companion. Ask me anything about your chart, transits, or astrology in general.",
+      content: "Hello! I'm your astrology AI assistant. Ask me anything about your chart, transits, or astrology in general.",
       timestamp: new Date(),
     },
   ])

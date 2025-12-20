@@ -11,7 +11,7 @@
 
 ```bash
 # Replace YOUR_EMAIL with your actual email
-curl -X POST https://astrovela.com/api/test-email \
+curl -X POST https://tryastrovela.com/api/test-email \
   -H "Content-Type: application/json" \
   -d '{"email":"YOUR_EMAIL@gmail.com"}'
 ```
@@ -36,7 +36,7 @@ curl -X POST http://localhost:3000/api/test-email \
 
 ## 📧 What the Email Looks Like
 
-**Subject:** Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now! 🌟
+**Subject:** Welcome to AstroVela Aura - Your 30-Day Free Trial Starts Now! 🌟
 
 **From:** `onboarding@resend.dev` (until domain verified)
 
@@ -73,7 +73,7 @@ Priority: 10
 
 1. Go to https://resend.com/domains
 2. Click "Add Domain"
-3. Enter: `astrovela.com`
+3. Enter: `tryastrovela.com`
 4. Copy DNS records shown
 5. Add to your domain registrar
 6. Wait 5-10 minutes

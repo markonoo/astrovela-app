@@ -1,14 +1,14 @@
-# Email Notification Specification - Companion App
+# Email Notification Specification - Aura App
 
 ## Overview
 
-This document specifies the email notification flow for the AstroVela Companion App, triggered when users purchase a PDF/book and receive their 30-day free trial.
+This document specifies the email notification flow for the AstroVela Aura, triggered when users purchase a PDF/book and receive their 30-day free trial.
 
 ---
 
 ## Email Trigger Points
 
-### 1. Purchase Confirmation + Companion App Access
+### 1. Purchase Confirmation + Aura App Access
 **Trigger:** Shopify webhook receives order completion  
 **When:** Immediately after purchase  
 **Recipient:** Customer email from order
@@ -43,7 +43,7 @@ This document specifies the email notification flow for the AstroVela Companion 
 
 ## Email Template Structure
 
-### Email 1: Welcome to Companion App
+### Email 1: Welcome to Aura App
 
 **Subject:** `Welcome to AstroVela Companion - Your 30-Day Free Trial Starts Now!`
 
@@ -63,7 +63,7 @@ Body:
    - "Thank you for purchasing {productName}!"
    - Order confirmation details
 
-3. Companion App Access:
+3. Aura App Access:
    - "As a thank you, you now have 30 days of free access to AstroVela Companion"
    - "Your personal astrology control center with daily insights, weekly forecasts, and more"
 
@@ -75,8 +75,8 @@ Body:
    - Zodiac encyclopedia access
 
 5. Call to Action:
-   - Button: "Access Your Companion App"
-   - Link: https://astrovela.com/companion
+   - Button: "Access Your Aura App"
+   - Link: https://tryastrovela.com/aura
 
 6. Trial Information:
    - "Your free trial expires on {freeUntilDate}"
@@ -93,7 +93,7 @@ Footer:
 - `{productName}` - Ebook/Paperback/App
 - `{orderNumber}` - Shopify order number
 - `{freeUntilDate}` - Trial expiration date (formatted)
-- `{companionAppUrl}` - Link to companion app
+- `{auraAppUrl}` - Link to aura app
 
 ---
 
@@ -104,7 +104,7 @@ Footer:
 
 **Function Signature:**
 ```typescript
-export async function sendCompanionAppWelcomeEmail(data: {
+export async function sendAuraAppWelcomeEmail(data: {
   email: string
   firstName?: string
   productName: string
@@ -119,7 +119,7 @@ export async function sendCompanionAppWelcomeEmail(data: {
 **Add after entitlement creation:**
 ```typescript
 // After creating entitlement
-await sendCompanionAppWelcomeEmail({
+await sendAuraAppWelcomeEmail({
   email: customerEmail,
   firstName: order.customer?.first_name,
   productName: hasPaperback ? "Paperback Book" : hasEbook ? "Ebook" : "App Subscription",
@@ -146,7 +146,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-export async function sendCompanionAppWelcomeEmail(data: {
+export async function sendAuraAppWelcomeEmail(data: {
   email: string
   firstName?: string
   productName: string

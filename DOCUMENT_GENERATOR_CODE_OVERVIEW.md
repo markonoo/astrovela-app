@@ -581,8 +581,8 @@ Visit `/olivialimon-admin/preview/document-generator` and verify page 74 loads.
 ## 📚 Related Files
 
 - **Admin Preview:** `app/olivialimon-admin/preview/document-generator/page.tsx`
-- **User Report Viewer:** `app/companion/report/viewer/page.tsx` (if exists)
-- **PDF Generation:** `app/api/companion/report/pdf/route.ts` (if exists)
+- **User Report Viewer:** `app/aura/report/viewer/page.tsx` (if exists)
+- **PDF Generation:** `app/api/aura/report/pdf/route.ts` (if exists)
 
 ---
 

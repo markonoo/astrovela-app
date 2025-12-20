@@ -3,7 +3,7 @@ import { createOrUpdateEntitlement, calculateFreeUntil } from "@/lib/entitlement
 import { prisma } from "@/lib/prisma"
 import crypto from "crypto"
 import { logger } from "@/utils/logger"
-import { sendCompanionAppWelcomeEmail } from "@/lib/email-service"
+import { sendAuraAppWelcomeEmail } from "@/lib/email-service"
 
 /**
  * Shopify webhook handler for order completion
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       ? 'Ebook' 
       : 'App Subscription';
     
-    await sendCompanionAppWelcomeEmail({
+    await sendAuraAppWelcomeEmail({
       email: customerEmail,
       firstName: order.customer?.first_name,
       productName,

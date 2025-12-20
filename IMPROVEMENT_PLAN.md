@@ -10,7 +10,7 @@
 - [ ] Remove debug logs from production builds
 
 ### 1.2 Type Safety ✅
-- [ ] Fix all `any` types in companion app
+- [ ] Fix all `any` types in aura app
 - [ ] Create centralized API response types
 - [ ] Add proper interfaces for all state management
 

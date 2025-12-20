@@ -23,7 +23,7 @@ If you want to create a new private repository called `astrovela-app`:
 1. **Create the repository on GitHub**:
    - Go to: https://github.com/new
    - Name: `astrovela-app`
-   - Description: `AstroVela Companion App - Personal astrology control center`
+   - Description: `AstroVela Aura - Personal astrology control center`
    - Visibility: **Private** ✅
    - **DO NOT** initialize with README, .gitignore, or license
 
