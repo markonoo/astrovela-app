@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabaseClient"
-import { prisma } from "@/lib/prisma"
-import { Prisma } from "@prisma/client"
+import { createClient } from '@supabase/supabase-js'
+import { env } from '@/utils/environment'
 import { logger } from "@/utils/logger"
 import { getClientIP } from "@/lib/rate-limit"
 
@@ -14,12 +13,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { cookies, marketing, analytics } = body
 
+    // Create Supabase client
+    const supabase = createClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    )
+
     // Get user if authenticated
     const { data: { user } } = await supabase.auth.getUser()
-    const userId = user ? await prisma.user.findUnique({
-      where: { email: user.email || '' },
-      select: { id: true },
-    }).then(u => u?.id) : null
+    let userId: number | null = null
+    
+    if (user?.email) {
+      const { data: dbUser } = await supabase
+        .from('User')
+        .select('id')
+        .eq('email', user.email)
+        .single()
+      userId = dbUser?.id || null
+    }
 
     const clientIP = getClientIP(request)
     const userAgent = request.headers.get('user-agent') || undefined
@@ -32,47 +43,62 @@ export async function POST(request: NextRequest) {
 
     // Cookies consent (analytics)
     if (cookies !== undefined) {
-      const consent = await prisma.consent.create({
-        data: {
-          ...(userId && { userId }),
-          ...(sessionId && { sessionId }),
+      const { data, error } = await supabase
+        .from('Consent')
+        .insert({
+          userId,
+          sessionId,
           consentType: 'cookies',
           granted: Boolean(cookies),
           ipAddress: clientIP,
-          userAgent: userAgent || undefined,
-        } as any, // Type assertion to bypass Prisma's overly strict types
-      })
-      consents.push(consent)
+          userAgent,
+        })
+        .select()
+        .single()
+      
+      if (!error && data) {
+        consents.push(data)
+      }
     }
 
     // Marketing consent
     if (marketing !== undefined) {
-      const consent = await prisma.consent.create({
-        data: {
-          ...(userId && { userId }),
-          ...(sessionId && { sessionId }),
+      const { data, error } = await supabase
+        .from('Consent')
+        .insert({
+          userId,
+          sessionId,
           consentType: 'marketing',
           granted: Boolean(marketing),
           ipAddress: clientIP,
-          userAgent: userAgent || undefined,
-        } as any,
-      })
-      consents.push(consent)
+          userAgent,
+        })
+        .select()
+        .single()
+      
+      if (!error && data) {
+        consents.push(data)
+      }
     }
 
     // Analytics consent
     if (analytics !== undefined) {
-      const consent = await prisma.consent.create({
-        data: {
-          ...(userId && { userId }),
-          ...(sessionId && { sessionId }),
+      const { data, error } = await supabase
+        .from('Consent')
+        .insert({
+          userId,
+          sessionId,
           consentType: 'analytics',
           granted: Boolean(analytics),
           ipAddress: clientIP,
-          userAgent: userAgent || undefined,
-        } as any,
-      })
-      consents.push(consent)
+          userAgent,
+        })
+        .select()
+        .single()
+      
+      if (!error && data) {
+        consents.push(data)
+      }
     }
 
     logger.info("Consent preferences saved", {
@@ -99,6 +125,12 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Create Supabase client
+    const supabase = createClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    )
+
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user || !user.email) {
@@ -108,10 +140,11 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
-      select: { id: true },
-    })
+    const { data: dbUser } = await supabase
+      .from('User')
+      .select('id')
+      .eq('email', user.email)
+      .single()
 
     if (!dbUser) {
       return NextResponse.json({
@@ -120,14 +153,19 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const consents = await prisma.consent.findMany({
-      where: { userId: dbUser.id },
-      orderBy: { createdAt: 'desc' },
-    })
+    const { data: consents, error } = await supabase
+      .from('Consent')
+      .select('*')
+      .eq('userId', dbUser.id)
+      .order('createdAt', { ascending: false })
+
+    if (error) {
+      throw error
+    }
 
     return NextResponse.json({
       success: true,
-      consents,
+      consents: consents || [],
     })
   } catch (error) {
     logger.error("Failed to get consent preferences", error)

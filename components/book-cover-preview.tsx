@@ -53,6 +53,12 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   const { firstName, lastName } = userInfo
   const hasLastName = lastName && lastName.trim() !== ""
 
+  // #region agent log
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:55',message:'Name configuration',data:{firstName,lastName,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+  }, [firstName, lastName, hasLastName]);
+  // #endregion
+
   const [progress, setProgress] = React.useState(0)
   React.useEffect(() => {
     let start: number | null = null
@@ -76,11 +82,27 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   }, [isLoading, selectedIcon])
 
   return (
-    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible">
+    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible" ref={(el) => {
+      // #region agent log
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:79',message:'Cover container dimensions',data:{width:rect.width,height:rect.height,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D,E'})}).catch(()=>{});
+      }
+      // #endregion
+    }}>
       {/* Clean book cover container without 3D effects */}
       <div className="relative shadow-lg w-full h-full overflow-visible">
         <div
           className={`${themeColor.bg} ${themeColor.text} w-full h-full p-[5%] flex flex-col items-center relative overflow-visible font-montserrat`}
+          ref={(el) => {
+            // #region agent log
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              const computed = window.getComputedStyle(el);
+              fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:83',message:'Inner container dimensions and padding',data:{width:rect.width,height:rect.height,padding:computed.padding,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
+            }
+            // #endregion
+          }}
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-[1]">
@@ -96,10 +118,17 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
           {/* Content container - ensure it's above the design layer */}
           <div className="relative z-[2] w-full h-full flex flex-col items-center">
             {/* Top section with name - moved lower */}
-            <div className="text-center mt-12 mb-2">
+            <div className="text-center mt-8 mb-2" ref={(el) => {
+              // #region agent log
+              if (el) {
+                const rect = el.getBoundingClientRect();
+                fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:99',message:'Name section dimensions',data:{height:rect.height,top:rect.top,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A,B'})}).catch(()=>{});
+              }
+              // #endregion
+            }}>
               {hasLastName ? (
                 <>
-                  <h1 className="text-2xl font-bold tracking-wider mb-1">
+                  <h1 className="text-2xl font-bold tracking-wider mb-0.5">
                     {firstName ? firstName.toUpperCase() : "YOUR NAME"}
                   </h1>
                   <h2 className="text-2xl font-bold tracking-wider">{lastName.toUpperCase()}</h2>
@@ -110,9 +139,23 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
             </div>
 
             {/* Chart container - centered with bigger chart */}
-            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-8">
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-10" ref={(el) => {
+              // #region agent log
+              if (el) {
+                const rect = el.getBoundingClientRect();
+                fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:113',message:'Chart container dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
+              }
+              // #endregion
+            }}>
               {/* Chart Image based on selection - BIGGER */}
-              <div className="relative w-[300px] sm:w-[300px] h-[300px] sm:h-[300px] flex items-center justify-center">
+              <div className="relative w-[280px] sm:w-[280px] h-[280px] sm:h-[280px] flex items-center justify-center" ref={(el) => {
+                // #region agent log
+                if (el) {
+                  const rect = el.getBoundingClientRect();
+                  fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:115',message:'Chart image dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
+                }
+                // #endregion
+              }}>
                 {selectedIcon === "custom-natal-chart" ? (
                   isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full">
@@ -178,10 +221,17 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="-mt-12 pointer-events-none">
+              <div className="-mt-10 pointer-events-none" ref={(el) => {
+                // #region agent log
+                if (el) {
+                  const rect = el.getBoundingClientRect();
+                  fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:181',message:'Curved text dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
+                }
+                // #endregion
+              }}>
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
-                  radius={130}
+                  radius={125}
                   fontSize={11}
                   color={textColorValue}
                   width={260}
