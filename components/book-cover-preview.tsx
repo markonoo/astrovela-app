@@ -53,12 +53,6 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   const { firstName, lastName } = userInfo
   const hasLastName = lastName && lastName.trim() !== ""
 
-  // #region agent log
-  React.useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:55',message:'Name configuration',data:{firstName,lastName,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-  }, [firstName, lastName, hasLastName]);
-  // #endregion
-
   const [progress, setProgress] = React.useState(0)
   React.useEffect(() => {
     let start: number | null = null
@@ -82,27 +76,11 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
   }, [isLoading, selectedIcon])
 
   return (
-    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible" ref={(el) => {
-      // #region agent log
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:79',message:'Cover container dimensions',data:{width:rect.width,height:rect.height,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D,E'})}).catch(()=>{});
-      }
-      // #endregion
-    }}>
+    <div className="relative w-full max-w-[350px] h-auto aspect-[3/4] overflow-visible">
       {/* Clean book cover container without 3D effects */}
       <div className="relative shadow-lg w-full h-full overflow-visible">
         <div
           className={`${themeColor.bg} ${themeColor.text} w-full h-full p-[5%] flex flex-col items-center relative overflow-visible font-montserrat`}
-          ref={(el) => {
-            // #region agent log
-            if (el) {
-              const rect = el.getBoundingClientRect();
-              const computed = window.getComputedStyle(el);
-              fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:83',message:'Inner container dimensions and padding',data:{width:rect.width,height:rect.height,padding:computed.padding,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
-            }
-            // #endregion
-          }}
         >
           {/* Design layer SVG overlay */}
           <div className="absolute inset-0 w-full h-full pointer-events-none z-[1]">

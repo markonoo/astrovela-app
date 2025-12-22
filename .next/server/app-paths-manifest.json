@@ -1,1 +1,9 @@
-{}
+{
+  "/page": "app/page.js",
+  "/help-center/page": "app/help-center/page.js",
+  "/quiz/page": "app/quiz/page.js",
+  "/api/shopify/products/route": "app/api/shopify/products/route.js",
+  "/contact-us/page": "app/contact-us/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/pricing/page": "app/pricing/page.js"
+}
