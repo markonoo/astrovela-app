@@ -1,18 +1,21 @@
 # Crisp Chat Integration Summary
 
 ## Date: December 19, 2025
+## Last Updated: December 22, 2025
 
 ## What Was Implemented
 
 ### 1. Crisp Chat Widget Integration
 - **Created**: `/components/CrispChat.tsx` - A React component that loads the Crisp chat widget
 - **Website ID**: `958abb51-98fe-4d1b-980d-401cf8716015`
-- **Scope**: Site-wide (available on all pages)
+- **Scope**: ~~Site-wide (available on all pages)~~ **Support pages only** (Help Center & Contact Us)
 
-### 2. Root Layout Update
-- **File**: `/app/layout.tsx`
-- **Change**: Added `<CrispChat />` component to the root layout
-- **Result**: Crisp chat widget will now appear on every page of the site
+### 2. ~~Root Layout Update~~ Support Pages Integration (Updated Dec 22, 2025)
+- **Files**: 
+  - `/app/help-center/page.tsx` - Added `<CrispChat />` component
+  - `/app/contact-us/page.tsx` - Added `<CrispChat />` component
+- **Change**: Removed from root layout, added only to support pages
+- **Result**: Crisp chat widget now appears ONLY on Help Center and Contact Us pages where users actively seek support
 
 ### 3. Contact Page Updates
 - **File**: `/app/contact-us/page.tsx`
@@ -25,10 +28,11 @@
 
 ## How It Works
 
-1. **Automatic Loading**: The Crisp chat widget loads automatically on every page
-2. **Bottom Right Corner**: Users will see a chat bubble in the bottom right corner
+1. **Selective Loading**: The Crisp chat widget loads automatically ONLY on support pages (Help Center & Contact Us)
+2. **Bottom Right Corner**: Users will see a chat bubble in the bottom right corner on support pages
 3. **Real-time Notifications**: When logged into your Crisp dashboard, you'll receive real-time notifications when users message you
 4. **Mobile Responsive**: Works perfectly on mobile and desktop
+5. **No Distraction**: Chat widget is hidden on other pages (landing, pricing, quiz) to avoid distracting users from conversion flows
 
 ## What Users Will See
 

@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/shared/page-layout"
 import { Search, BookOpen, MessageSquare, FileText, Phone } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
+import CrispChat from "@/components/CrispChat"
 
 // FAQ data organized by categories
 const faqCategories = [
@@ -193,8 +194,10 @@ export default function HelpCenterPage() {
   const activeCategoryData = faqCategories.find((cat) => cat.id === activeCategory)
 
   return (
-    <PageLayout title="Help Center" description="Find answers to frequently asked questions and get support">
-      {/* Search Bar */}
+    <>
+      <CrispChat />
+      <PageLayout title="Help Center" description="Find answers to frequently asked questions and get support">
+        {/* Search Bar */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div className="relative max-w-xl mx-auto">
           <input
@@ -313,7 +316,8 @@ export default function HelpCenterPage() {
           Contact Support
         </Link>
       </div>
-    </PageLayout>
+      </PageLayout>
+    </>
   )
 }
 

@@ -5,6 +5,7 @@ import type React from "react"
 import { PageLayout } from "@/components/shared/page-layout"
 import { Mail, MessageSquare, Clock, Send } from "lucide-react"
 import { useState } from "react"
+import CrispChat from "@/components/CrispChat"
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -48,8 +49,10 @@ export default function ContactUsPage() {
   }
 
   return (
-    <PageLayout title="Contact Us" description="We're here to help with any questions or concerns">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <>
+      <CrispChat />
+      <PageLayout title="Contact Us" description="We're here to help with any questions or concerns">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Contact Form */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-bold mb-4">Send Us a Message</h2>
@@ -257,8 +260,9 @@ export default function ContactUsPage() {
             </a>
           </div>
         </div>
-      </div>
-    </PageLayout>
+        </div>
+      </PageLayout>
+    </>
   )
 }
 

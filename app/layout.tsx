@@ -3,7 +3,6 @@ import { QuizProvider } from "@/contexts/quiz-context"
 import { UserProvider } from "@/contexts/UserContext"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { CookieBannerWrapper } from "@/components/consent/CookieBannerWrapper"
-import CrispChat from "@/components/CrispChat"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { AnalyticsSetup } from './analytics-setup';
@@ -107,7 +106,6 @@ export default function RootLayout({
           </QuizProvider>
         </UserProvider>
         <CookieBannerWrapper />
-        <CrispChat />
       </body>
     </html>
   )

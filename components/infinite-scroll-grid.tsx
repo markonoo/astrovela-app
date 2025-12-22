@@ -17,6 +17,7 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
   const [columnHeight, setColumnHeight] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
   const isMobile = useMobileDetector()
 
   useEffect(() => {
@@ -25,12 +26,53 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
 
   useEffect(() => {
     if (columnRef.current && isMounted) {
-      setColumnHeight(columnRef.current.scrollHeight / 2)
-      // Small delay to ensure images are loaded before animation starts
-      const timer = setTimeout(() => setIsVisible(true), 200)
-      return () => clearTimeout(timer)
+      // Wait for images to load before calculating height
+      const images = columnRef.current.querySelectorAll('img')
+      let loadedCount = 0
+      const totalImages = images.length
+
+      const checkAllLoaded = () => {
+        loadedCount++
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true)
+          // Calculate height after all images are loaded
+          if (columnRef.current) {
+            setColumnHeight(columnRef.current.scrollHeight / 2)
+          }
+          // Start animation after height is calculated
+          const timer = setTimeout(() => setIsVisible(true), 100)
+          return () => clearTimeout(timer)
+        }
+      }
+
+      // Check if images are already loaded
+      images.forEach((img) => {
+        if (img.complete) {
+          checkAllLoaded()
+        } else {
+          img.addEventListener('load', checkAllLoaded)
+        }
+      })
+
+      // Fallback: start animation after 500ms even if not all images loaded
+      const fallbackTimer = setTimeout(() => {
+        if (!imagesLoaded) {
+          setImagesLoaded(true)
+          if (columnRef.current) {
+            setColumnHeight(columnRef.current.scrollHeight / 2)
+          }
+          setIsVisible(true)
+        }
+      }, 500)
+
+      return () => {
+        clearTimeout(fallbackTimer)
+        images.forEach((img) => {
+          img.removeEventListener('load', checkAllLoaded)
+        })
+      }
     }
-  }, [isMounted])
+  }, [isMounted, imagesLoaded])
 
   // Mobile-responsive image dimensions
   // Mobile/Tablet (< 1024px): 120x160
@@ -72,6 +114,7 @@ const ScrollingColumn = ({ images, speed, delay = 0, direction = "down" }: Scrol
         style={{
           animation: isVisible ? `scroll ${animationDuration} linear ${animationDelay} infinite ${animationDirection}` : 'none',
           transform: isVisible ? "translateY(0)" : "translateY(-20px)",
+          willChange: 'transform', // GPU acceleration for smoother performance
         }}
       >
         {/* First set of images */}
@@ -171,7 +214,8 @@ export function InfiniteScrollGrid() {
   }
 
   // Adjust column speeds for mobile - slower on mobile for better UX
-  const speedMultiplier = isMobile ? 0.6 : 1
+  // Increased base speeds from 30-40s to 60-80s for more elegant, viewable scroll tempo
+  const speedMultiplier = isMobile ? 0.7 : 1
 
   return (
     <div
@@ -180,9 +224,9 @@ export function InfiniteScrollGrid() {
       onMouseLeave={() => setIsPaused(false)}
       style={{ animationPlayState: isPaused ? "paused" : "running" }}
     >
-      <ScrollingColumn images={imageData.column1} speed={30 * speedMultiplier} direction="down" />
-      <ScrollingColumn images={imageData.column2} speed={40 * speedMultiplier} delay={0.5} direction="up" />
-      <ScrollingColumn images={imageData.column3} speed={35 * speedMultiplier} delay={1} direction="down" />
+      <ScrollingColumn images={imageData.column1} speed={60 * speedMultiplier} direction="down" />
+      <ScrollingColumn images={imageData.column2} speed={80 * speedMultiplier} delay={0.5} direction="up" />
+      <ScrollingColumn images={imageData.column3} speed={70 * speedMultiplier} delay={1} direction="down" />
     </div>
   )
 }
