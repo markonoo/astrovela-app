@@ -50,7 +50,7 @@ const CurvedText: React.FC<CurvedTextProps> = ({
         fontSize={fontSize}
         fontFamily={fontFamily}
         fontWeight={400}
-        letterSpacing="0.05em"
+        letterSpacing="0.03em"
         style={{ 
           textTransform: "uppercase"
         }}

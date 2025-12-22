@@ -96,14 +96,7 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
           {/* Content container - ensure it's above the design layer */}
           <div className="relative z-[2] w-full h-full flex flex-col items-center">
             {/* Top section with name - moved lower */}
-            <div className="text-center mt-8 mb-2" ref={(el) => {
-              // #region agent log
-              if (el) {
-                const rect = el.getBoundingClientRect();
-                fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:99',message:'Name section dimensions',data:{height:rect.height,top:rect.top,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A,B'})}).catch(()=>{});
-              }
-              // #endregion
-            }}>
+            <div className="text-center mt-8 mb-2">
               {hasLastName ? (
                 <>
                   <h1 className="text-2xl font-bold tracking-wider mb-0.5">
@@ -116,24 +109,10 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               )}
             </div>
 
-            {/* Chart container - centered with bigger chart */}
-            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-10" ref={(el) => {
-              // #region agent log
-              if (el) {
-                const rect = el.getBoundingClientRect();
-                fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:113',message:'Chart container dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
-              }
-              // #endregion
-            }}>
+            {/* Chart container - centered with bigger chart - moved up by 2% */}
+            <div className="relative w-full flex-grow flex flex-col items-center justify-center -mt-12">
               {/* Chart Image based on selection - BIGGER */}
-              <div className="relative w-[280px] sm:w-[280px] h-[280px] sm:h-[280px] flex items-center justify-center" ref={(el) => {
-                // #region agent log
-                if (el) {
-                  const rect = el.getBoundingClientRect();
-                  fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:115',message:'Chart image dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
-                }
-                // #endregion
-              }}>
+              <div className="relative w-[280px] sm:w-[280px] h-[280px] sm:h-[280px] flex items-center justify-center">
                 {selectedIcon === "custom-natal-chart" ? (
                   isLoading ? (
                     <div className="flex flex-col items-center justify-center w-full h-full">
@@ -199,20 +178,13 @@ export function BookCoverPreview({ userInfo, themeColor, selectedIcon, customCha
               </div>
 
               {/* Curved date/place text - positioned closer to chart with custom SVG */}
-              <div className="-mt-10 pointer-events-none" ref={(el) => {
-                // #region agent log
-                if (el) {
-                  const rect = el.getBoundingClientRect();
-                  fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'book-cover-preview.tsx:181',message:'Curved text dimensions',data:{height:rect.height,top:rect.top,bottom:rect.bottom,hasLastName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
-                }
-                // #endregion
-              }}>
+              <div className="-mt-10 pointer-events-none">
                 <CurvedText
                   text={`${formattedDate} · ${placeOfBirth || "Place of Birth"}`}
-                  radius={125}
-                  fontSize={11}
+                  radius={135}
+                  fontSize={10}
                   color={textColorValue}
-                  width={260}
+                  width={300}
                   height={30}
                 />
               </div>
