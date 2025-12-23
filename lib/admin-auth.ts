@@ -46,27 +46,49 @@ export async function requireAdminAuth(
   adminId?: string
   response?: Response
 }> {
-  const auth = await verifyAdminAuth(request)
-  
-  if (!auth || !auth.authenticated) {
+  try {
+    const auth = await verifyAdminAuth(request)
+    
+    if (!auth || !auth.authenticated) {
+      console.log('[requireAdminAuth] Auth failed', { 
+        hasAuth: !!auth, 
+        authenticated: auth?.authenticated 
+      })
+      return {
+        authenticated: false,
+        response: new Response(
+          JSON.stringify({ error: 'Unauthorized', reason: 'Invalid or expired session' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        ),
+      }
+    }
+    
+    // Log data access (don't let this fail the request)
+    try {
+      await logAdminDataAccess(
+        resource,
+        auth.adminId,
+        getClientIP(request),
+        request.headers.get('user-agent') || undefined
+      )
+    } catch (auditError) {
+      console.warn('[requireAdminAuth] Audit logging failed (non-fatal)', auditError)
+    }
+    
+    return auth
+  } catch (error) {
+    console.error('[requireAdminAuth] Unexpected error', error)
     return {
       authenticated: false,
       response: new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: 'Authentication error', 
+          details: error instanceof Error ? error.message : String(error)
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       ),
     }
   }
-  
-  // Log data access
-  await logAdminDataAccess(
-    resource,
-    auth.adminId,
-    getClientIP(request),
-    request.headers.get('user-agent') || undefined
-  )
-  
-  return auth
 }
 
 

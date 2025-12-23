@@ -12,11 +12,18 @@ export const dynamic = 'force-dynamic'
  */
 export async function GET(request: NextRequest) {
   try {
-    logger.info("Aura stats API called")
+    logger.info("Aura stats API called", {
+      hasAuthCookie: request.cookies.has('admin_session'),
+      userAgent: request.headers.get('user-agent'),
+    })
+    
     // Verify admin authentication and log access
     const auth = await requireAdminAuth(request, '/api/admin/aura-stats')
     if (!auth.authenticated || auth.response) {
-      logger.info("Auth failed or response returned", { authenticated: auth.authenticated })
+      logger.info("Auth failed or response returned", { 
+        authenticated: auth.authenticated,
+        hasResponse: !!auth.response 
+      })
       return auth.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     logger.info("Auth successful, fetching stats")

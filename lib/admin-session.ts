@@ -47,11 +47,19 @@ export function verifyAdminSession(token: string): AdminSession | null {
     
     // Additional validation
     if (decoded.type !== 'admin' || decoded.authenticated !== true) {
+      console.log('[verifyAdminSession] Invalid token type or auth status', {
+        type: decoded.type,
+        authenticated: decoded.authenticated
+      })
       return null
     }
     
     // Check expiration
     if (decoded.expiresAt && Date.now() > decoded.expiresAt) {
+      console.log('[verifyAdminSession] Token expired', {
+        expiresAt: new Date(decoded.expiresAt).toISOString(),
+        now: new Date().toISOString()
+      })
       return null
     }
     
@@ -62,6 +70,13 @@ export function verifyAdminSession(token: string): AdminSession | null {
     }
   } catch (error) {
     // Token invalid, expired, or malformed
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.log('[verifyAdminSession] JWT verification failed', { 
+      error: errorMsg,
+      reason: error instanceof Error && error.name === 'JsonWebTokenError' 
+        ? 'Invalid signature (wrong JWT_SECRET?)' 
+        : errorMsg
+    })
     return null
   }
 }
