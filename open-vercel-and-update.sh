@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "🔧 Opening Vercel Dashboard to Update DATABASE_URL"
+echo ""
+echo "✅ VERIFIED WORKING CONNECTION STRING:"
+echo "postgresql://postgres:sU6HTnmgEYv54hED@db.zzkvjfqjojerhwmkfdfn.supabase.co:5432/postgres"
+echo ""
+echo "📋 Steps to follow in Vercel:"
+echo "1. Login if needed"
+echo "2. Select your project"
+echo "3. Settings → Environment Variables"
+echo "4. Edit DATABASE_URL"
+echo "5. Paste the connection string above"
+echo "6. Save and Redeploy"
+echo ""
+echo "Opening Vercel dashboard..."
+open "https://vercel.com/dashboard"
+
+echo ""
+echo "✅ Database connection string is also saved in: WORKING_DATABASE_URL.txt"
+echo "✅ Full instructions in: UPDATE_VERCEL_NOW.md"
