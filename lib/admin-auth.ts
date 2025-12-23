@@ -4,7 +4,7 @@
  */
 
 import { NextRequest } from 'next/server'
-import { getAdminSessionCookie, verifyAdminSession } from './admin-session'
+import { verifyAdminSession } from './admin-session'
 import { logAdminDataAccess } from './admin-audit'
 import { getClientIP } from './rate-limit'
 
@@ -16,15 +16,18 @@ export async function verifyAdminAuth(request: NextRequest): Promise<{
   authenticated: boolean
   adminId?: string
 } | null> {
-  const sessionToken = await getAdminSessionCookie()
+  // Use request.cookies directly in route handlers (not cookies() helper)
+  const sessionToken = request.cookies.get('admin_session')?.value
   
   if (!sessionToken) {
+    console.log('[verifyAdminAuth] No session token found in cookies')
     return { authenticated: false }
   }
   
   const session = verifyAdminSession(sessionToken)
   
   if (!session || !session.authenticated) {
+    console.log('[verifyAdminAuth] Session validation failed')
     return { authenticated: false }
   }
   
