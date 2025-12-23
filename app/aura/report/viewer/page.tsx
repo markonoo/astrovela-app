@@ -283,7 +283,7 @@ export default function ReportViewerPage() {
   // Render 195-page document with user data from Supabase
   return (
     <AuraShell title="Your Report" activeTab="horoscope">
-      <div className="w-full min-h-screen">
+      <div className="report-page w-full min-h-screen">
         <ReportDataProvider userId={user.id} adminMode={false}>
           <ReportViewport>
             {/* Page 1: Cover */}
