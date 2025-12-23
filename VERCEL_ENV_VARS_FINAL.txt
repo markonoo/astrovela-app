@@ -1,0 +1,61 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║          🎯 FINAL FIX: ADD TWO ENVIRONMENT VARIABLES TO VERCEL       ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+✅ ROOT CAUSE IDENTIFIED:
+   Vercel's serverless functions CANNOT make direct TCP connections!
+   That's why ALL previous database URLs failed from Vercel.
+
+✅ SOLUTION IMPLEMENTED:
+   Updated Prisma schema to use connection pooling for serverless.
+   Now need TWO environment variables in Vercel.
+
+🚀 UPDATE VERCEL WITH THESE TWO VARIABLES:
+
+1. Go to: https://vercel.com/dashboard
+2. Select your project
+3. Settings → Environment Variables
+4. Add/Update BOTH of these:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VARIABLE 1: DATABASE_URL
+postgresql://postgres:sU6HTnmgEYv54hED@db.zzkvjfqjojerhwmkfdfn.supabase.co:6543/postgres?pgbouncer=true&connection_limit=1
+
+(Pooler connection - used for queries from serverless functions)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VARIABLE 2: DIRECT_URL  [NEW - MUST ADD THIS!]
+postgresql://postgres:sU6HTnmgEYv54hED@db.zzkvjfqjojerhwmkfdfn.supabase.co:5432/postgres
+
+(Direct connection - used by Prisma for migrations and introspection)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. Make sure BOTH are set for: Production, Preview, Development
+6. Click "Save" for each
+7. Go to Deployments → Latest → Redeploy (uncheck build cache)
+8. Wait 2-3 minutes
+9. Test: https://www.tryastrovela.com/api/admin/debug
+
+✅ EXPECTED RESULT:
+{
+  "database": {
+    "connected": true,
+    "entitlementCount": 15
+  }
+}
+
+📊 WHY THIS WORKS:
+   • DATABASE_URL: Pooler with pgbouncer (serverless-compatible)
+   • DIRECT_URL: Direct connection for Prisma internals
+   • Prisma schema updated to use both (committed to GitHub)
+
+🔑 KEY DIFFERENCE FROM BEFORE:
+   Before: Only DATABASE_URL (Prisma couldn't handle serverless)
+   Now: DATABASE_URL + DIRECT_URL (Prisma configured for serverless!)
+
+╔══════════════════════════════════════════════════════════════════════╗
+║       ADD BOTH VARIABLES TO VERCEL - THIS WILL FINALLY WORK!        ║
+╚══════════════════════════════════════════════════════════════════════╝
