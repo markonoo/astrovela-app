@@ -19,14 +19,24 @@ export async function GET(request: NextRequest) {
   try {
     const dbUrl = process.env.DATABASE_URL || '';
     const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':***@'); // Mask password
+    
+    // Extract password to check if it exists and its length (for verification)
+    const passwordMatch = dbUrl.match(/:([^:@]+)@/);
+    const hasPassword = !!passwordMatch;
+    const passwordLength = passwordMatch?.[1]?.length || 0;
+    const passwordPrefix = passwordMatch?.[1]?.substring(0, 3) || '';
+    
     debug.checks.databaseUrl = {
       exists: !!process.env.DATABASE_URL,
       format: maskedUrl.substring(0, 80) + '...',
       hasPooler: dbUrl.includes('pgbouncer=true'),
-      port: dbUrl.match(/:(\d+)\//)?.[1] || 'unknown'
+      port: dbUrl.match(/:(\d+)\//)?.[1] || 'unknown',
+      hasPassword: hasPassword,
+      passwordLength: passwordLength,
+      passwordPrefix: hasPassword ? passwordPrefix + '***' : 'NONE'
     }
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'debug/route.ts:26',message:'DATABASE_URL parsed',data:{exists:!!process.env.DATABASE_URL,port:debug.checks.databaseUrl.port,hasPooler:debug.checks.databaseUrl.hasPooler},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'debug/route.ts:33',message:'DATABASE_URL parsed',data:{exists:!!process.env.DATABASE_URL,port:debug.checks.databaseUrl.port,hasPooler:debug.checks.databaseUrl.hasPooler,hasPassword:hasPassword,passwordLength:passwordLength},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
     // #endregion
   } catch (error) {
     debug.checks.databaseUrl = { error: String(error) }
@@ -36,13 +46,20 @@ export async function GET(request: NextRequest) {
   try {
     const directUrl = process.env.DIRECT_URL || '';
     const maskedDirectUrl = directUrl.replace(/:([^:@]+)@/, ':***@');
+    
+    const directPasswordMatch = directUrl.match(/:([^:@]+)@/);
+    const directHasPassword = !!directPasswordMatch;
+    const directPasswordLength = directPasswordMatch?.[1]?.length || 0;
+    
     debug.checks.directUrl = {
       exists: !!process.env.DIRECT_URL,
       format: maskedDirectUrl.substring(0, 80) + '...',
-      port: directUrl.match(/:(\d+)\//)?.[1] || 'unknown'
+      port: directUrl.match(/:(\d+)\//)?.[1] || 'unknown',
+      hasPassword: directHasPassword,
+      passwordLength: directPasswordLength
     }
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'debug/route.ts:45',message:'DIRECT_URL parsed',data:{exists:!!process.env.DIRECT_URL,port:debug.checks.directUrl.port},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'debug/route.ts:59',message:'DIRECT_URL parsed',data:{exists:!!process.env.DIRECT_URL,port:debug.checks.directUrl.port,hasPassword:directHasPassword,passwordLength:directPasswordLength},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
   } catch (error) {
     debug.checks.directUrl = { error: String(error) }
