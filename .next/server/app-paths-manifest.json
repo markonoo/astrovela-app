@@ -1,1 +1,6 @@
-{}
+{
+  "/api/consent/route": "app/api/consent/route.js",
+  "/aura/ask-ai/page": "app/aura/ask-ai/page.js",
+  "/aura/page": "app/aura/page.js",
+  "/aura/settings/page": "app/aura/settings/page.js"
+}

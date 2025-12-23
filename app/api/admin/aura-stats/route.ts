@@ -12,11 +12,14 @@ export const dynamic = 'force-dynamic'
  */
 export async function GET(request: NextRequest) {
   try {
+    logger.info("Aura stats API called")
     // Verify admin authentication and log access
     const auth = await requireAdminAuth(request, '/api/admin/aura-stats')
     if (!auth.authenticated || auth.response) {
+      logger.info("Auth failed or response returned", { authenticated: auth.authenticated })
       return auth.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    logger.info("Auth successful, fetching stats")
 
     // Get total entitlements
     const totalEntitlements = await prisma.appEntitlement.count()
@@ -94,8 +97,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     logger.error("Failed to fetch aura app stats", error)
+    console.error("Detailed error in aura-stats:", error)
     return NextResponse.json(
-      { error: "Failed to fetch aura app statistics" },
+      { error: "Failed to fetch aura app statistics", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
