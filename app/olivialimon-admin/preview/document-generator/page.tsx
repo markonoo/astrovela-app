@@ -5,7 +5,7 @@ import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute"
 import { ReportDataProvider } from "@/components/astrology/report-data"
 import ReportViewport from "@/components/astrology/report-viewport"
 import ReportPage from "@/components/astrology/report-page"
-import { ArrowLeft, Download, Eye, TestTube } from "lucide-react"
+import { ArrowLeft, Download, Eye, TestTube, ExternalLink } from "lucide-react"
 import Link from "next/link"
 
 // Import first few pages for preview
@@ -171,30 +171,68 @@ function AdminDocumentGeneratorContent() {
           <div className="bg-[#050719] rounded-xl overflow-hidden">
             <ReportDataProvider adminMode={true}>
               <ReportViewport>
-                {/* First 6 pages for preview */}
-                <ReportPage id="cover-preview" pageNumber={1}>
-                  <CoverPage />
-                </ReportPage>
+                {!showFullReport ? (
+                  /* Preview: First 6 pages only */
+                  <>
+                    <ReportPage id="cover-preview" pageNumber={1}>
+                      <CoverPage />
+                    </ReportPage>
 
-                <ReportPage id="personalized-cover-preview" pageNumber={3}>
-                  <PersonalizedCover pageNumber={3} />
-                </ReportPage>
+                    <ReportPage id="personalized-cover-preview" pageNumber={3}>
+                      <PersonalizedCover pageNumber={3} />
+                    </ReportPage>
 
-                <ReportPage id="table-of-contents-preview" pageNumber={4}>
-                  <EnglishTableOfContents />
-                </ReportPage>
+                    <ReportPage id="table-of-contents-preview" pageNumber={4}>
+                      <EnglishTableOfContents />
+                    </ReportPage>
 
-                <ReportPage id="intro-preview" pageNumber={5}>
-                  <AstrologyIntroductionPage5 pageNumber={5} />
-                </ReportPage>
+                    <ReportPage id="intro-preview" pageNumber={5}>
+                      <AstrologyIntroductionPage5 pageNumber={5} />
+                    </ReportPage>
 
-                <ReportPage id="sun-sign-preview" pageNumber={10}>
-                  <SunSignPageReplica pageNumber={10} />
-                </ReportPage>
+                    <ReportPage id="sun-sign-preview" pageNumber={10}>
+                      <SunSignPageReplica pageNumber={10} />
+                    </ReportPage>
 
-                <ReportPage id="zodiac-content-preview" pageNumber={11}>
-                  <DynamicZodiacContentPage pageNumber={11} planet="sun" />
-                </ReportPage>
+                    <ReportPage id="zodiac-content-preview" pageNumber={11}>
+                      <DynamicZodiacContentPage pageNumber={11} planet="sun" />
+                    </ReportPage>
+                  </>
+                ) : (
+                  /* Full Report: Show link to full viewer */
+                  <div className="p-12 text-center">
+                    <div className="mb-6">
+                      <h3 className="text-[24px] leading-[32px] font-bold text-white mb-3">
+                        Full 195-Page Report
+                      </h3>
+                      <p className="text-[15px] leading-[20px] text-white/60 max-w-2xl mx-auto">
+                        To view and interact with the complete 195-page document with full editing capabilities,
+                        use the dedicated report viewer which loads all components dynamically.
+                      </p>
+                    </div>
+                    
+                    <Link 
+                      href="/aura/report/viewer"
+                      target="_blank"
+                      className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-br from-[#7a5bff] to-[#ff4de1] text-white text-[17px] leading-[24px] font-semibold shadow-[0_0_20px_rgba(122,91,255,0.7)] hover:shadow-[0_0_30px_rgba(122,91,255,0.9)] transition-all"
+                    >
+                      <Eye className="w-5 h-5" />
+                      Open Full 195-Page Viewer
+                      <ExternalLink className="w-5 h-5" />
+                    </Link>
+
+                    <div className="mt-8 p-6 rounded-xl bg-white/5 border border-white/10 max-w-2xl mx-auto">
+                      <p className="text-[13px] leading-[18px] text-white/70 mb-4">
+                        <strong className="text-white">Why a separate viewer?</strong>
+                      </p>
+                      <p className="text-[13px] leading-[18px] text-white/60">
+                        Loading all 195 pages (367 components + 199 images) in the admin preview
+                        would be very slow and memory-intensive. The dedicated viewer is optimized
+                        for viewing and editing the complete document with better performance.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </ReportViewport>
             </ReportDataProvider>
           </div>
