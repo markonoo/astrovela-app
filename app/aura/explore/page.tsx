@@ -37,8 +37,8 @@ export default function ExplorePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-apple-gray-4 border-t-apple-gray-1"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
       </div>
     )
   }
@@ -55,8 +55,8 @@ export default function ExplorePage() {
   const selectedSignData = zodiacSignsData[selectedSign] || zodiacSignsData.aries
 
   return (
-    <div className="container mx-auto px-6 py-8 md:px-8 md:py-12 md:pt-32">
-      <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-10 animate-fadeIn">Explore Astrology</h1>
+    <div className="px-4 mt-6 space-y-6 mb-24">
+      <h1 className="text-[28px] leading-[36px] font-bold text-white mb-6">Explore Astrology</h1>
 
       <Tabs defaultValue="signs" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-8 rounded-apple-md bg-apple-gray-5 p-1">

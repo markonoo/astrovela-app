@@ -54,8 +54,8 @@ export default function CareerPage() {
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-apple-gray-5 to-apple-gray-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-apple-gray-4 border-t-apple-gray-1"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
       </div>
     )
   }
@@ -65,8 +65,8 @@ export default function CareerPage() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8 md:px-8 md:py-12 md:pt-32">
-      <h1 className="text-[36px] leading-[44px] font-bold text-apple-gray-1 mb-10 animate-fadeIn">Career & Timing</h1>
+    <div className="px-4 mt-6 space-y-6 mb-24">
+      <h1 className="text-[28px] leading-[36px] font-bold text-white mb-6">Career & Timing</h1>
 
       {/* Career Today */}
       <Card className="mb-8 border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">

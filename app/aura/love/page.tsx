@@ -6,7 +6,7 @@ import { Paywall } from "@/components/aura/paywall"
 import { AuraShell } from "@/components/aura/AuraShell"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Heart, CheckCircle, XCircle, Calendar } from "lucide-react"
-import { compatibilityData, getCompatibility } from "@/lib/zodiac-compatibility"
+import { getCompatibility } from "@/lib/zodiac-compatibility-complete"
 import { EntitlementData } from "@/types/api"
 import { logger } from "@/utils/logger"
 
@@ -72,8 +72,14 @@ export default function LovePage() {
   }
 
   const loadCompatibility = () => {
-    const compat = getCompatibility(userSign, partnerSign)
-    setCompatibility(compat)
+    const compat = getCompatibility(userSign as any, partnerSign as any)
+    setCompatibility({
+      score: compat.score,
+      overview: compat.summary,
+      greenFlags: compat.love.strengths,
+      redFlags: compat.love.challenges,
+      dateIdeas: compat.dateIdeas
+    })
   }
 
   if (loading || loadingData) {

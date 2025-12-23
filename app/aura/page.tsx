@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useUser } from "@/contexts/UserContext"
 import { Paywall } from "@/components/aura/paywall"
 import { AuraShell } from "@/components/aura/AuraShell"
-import { Sun, Moon, Sparkles, Calendar, TrendingUp } from "lucide-react"
+import { Sun, Moon, Sparkles, Calendar, TrendingUp, Briefcase, BookOpen, ChevronRight } from "lucide-react"
+import Link from "next/link"
 import { format } from "date-fns"
 import { EntitlementData, TodayDataResponse } from "@/types/api"
 import { logger } from "@/utils/logger"
@@ -246,6 +247,58 @@ export default function AuraTodayPage() {
             </p>
             <p className="text-[15px] leading-[20px] text-white/80">{todayData.transits.keyAspect}</p>
           </div>
+        </div>
+
+        {/* Quick Access Navigation */}
+        <div className="space-y-4">
+          <h3 className="text-[17px] leading-[24px] font-semibold text-white/80 px-2">
+            Explore More
+          </h3>
+          
+          <Link href="/aura/weekly">
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 active:scale-[0.98] transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-6 h-6 text-purple-400" />
+                  <div>
+                    <h4 className="text-[18px] leading-[24px] font-semibold text-white">Weekly Outlook</h4>
+                    <p className="text-[13px] leading-[18px] text-white/60">See your week ahead</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-white/40" />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/aura/career">
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 active:scale-[0.98] transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Briefcase className="w-6 h-6 text-blue-400" />
+                  <div>
+                    <h4 className="text-[18px] leading-[24px] font-semibold text-white">Career & Timing</h4>
+                    <p className="text-[13px] leading-[18px] text-white/60">Best days for action</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-white/40" />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/aura/explore">
+            <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6 hover:bg-white/8 active:scale-[0.98] transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-6 h-6 text-pink-400" />
+                  <div>
+                    <h4 className="text-[18px] leading-[24px] font-semibold text-white">Explore Astrology</h4>
+                    <p className="text-[13px] leading-[18px] text-white/60">Learn about signs & planets</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-white/40" />
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </AuraShell>

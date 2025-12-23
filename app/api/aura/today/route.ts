@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { getDailyHoroscope } from "@/services/astrology-api-service"
 import { TodayDataResponse } from "@/types/api"
 import { logger } from "@/utils/logger"
+import { getMoonPhase, getApproximateMoonSign, formatMoonPhase } from "@/lib/moon-phase"
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,22 +41,26 @@ export async function GET(request: NextRequest) {
       // Fallback to static content
     }
 
-    // Get today's date info
+    // Get today's date info and moon phase
     const today = new Date()
     const dayOfWeek = today.getDay()
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+    const moonPhase = getMoonPhase(today)
+    const moonSign = getApproximateMoonSign(today)
 
-    // Generate today's energy based on horoscope or fallback
+    // Generate today's energy based on horoscope, moon phase, or fallback
     const energy = {
       title: horoscopeData?.prediction
         ? "Today's Cosmic Energy"
-        : isWeekend
-        ? "Weekend Reflection Time"
-        : "New Beginnings Await",
+        : `${moonPhase.emoji} ${moonPhase.energy}`,
       description:
         horoscopeData?.prediction ||
-        "The stars align to bring you opportunities for growth and reflection. Trust your intuition and embrace the day's energy.",
-      mood: horoscopeData?.mood || (isWeekend ? "Relaxed" : "Motivated"),
+        `${moonPhase.description} With the moon in ${moonSign}, ${
+          isWeekend
+            ? "use this time to reflect and recharge."
+            : "trust your intuition throughout the day."
+        }`,
+      mood: horoscopeData?.mood || moonPhase.energy,
     }
 
     // Love insights
@@ -80,10 +85,12 @@ export async function GET(request: NextRequest) {
         : "Take initiative on important projects",
     }
 
-    // Transits (simplified - in production, fetch from API)
+    // Transits with real moon data
     const transits = {
-      moonSign: "Scorpio", // This would come from transit API
-      keyAspect: "Moon trine Venus brings harmony to relationships today.",
+      moonSign: moonSign,
+      moonPhase: formatMoonPhase(moonPhase),
+      moonEnergy: moonPhase.energy,
+      keyAspect: `${moonPhase.emoji} ${moonPhase.name} in ${moonSign} - ${moonPhase.description}`,
     }
 
     const todayData: TodayDataResponse = {
