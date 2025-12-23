@@ -27,6 +27,9 @@ type SignName =
   | 'leo' | 'virgo' | 'libra' | 'scorpio' 
   | 'sagittarius' | 'capricorn' | 'aquarius' | 'pisces'
 
+// Type alias for compatibility with other code
+export type ZodiacSign = SignName
+
 export const zodiacCompatibility: Record<SignName, Record<SignName, CompatibilityData>> = {
   aries: {
     aries: {
@@ -4288,47 +4291,8 @@ export function getCompatibility(sign1: ZodiacSign, sign2: ZodiacSign): Compatib
 /**
  * All zodiac signs in order
  */
-export const allSigns: ZodiacSign[] = [
-  "aries", "taurus", "gemini", "cancer", "leo", "virgo",
-  "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"
-]
-
-/**
- * Helper function to get compatibility between two signs
- */
-export function getCompatibility(sign1: SignName, sign2: SignName): CompatibilityData {
-  const sign1Lower = sign1.toLowerCase() as SignName
-  const sign2Lower = sign2.toLowerCase() as SignName
-  
-  if (zodiacCompatibility[sign1Lower] && zodiacCompatibility[sign1Lower][sign2Lower]) {
-    return zodiacCompatibility[sign1Lower][sign2Lower]
-  }
-  
-  // Fallback for incomplete data
-  return {
-    score: 6,
-    element: "Universal",
-    summary: `${sign1} and ${sign2} can create a meaningful connection with understanding and communication.`,
-    love: {
-      strengths: ["Mutual respect", "Open communication", "Shared growth"],
-      challenges: ["Different communication styles", "Need for compromise", "Patience required"]
-    },
-    compatibility: {
-      emotional: 6,
-      physical: 6,
-      intellectual: 6,
-      overall: 6
-    },
-    advice: "Focus on open communication and mutual understanding. Every relationship requires effort and respect.",
-    dateIdeas: ["Coffee dates", "Nature walks", "Cultural events", "Meaningful conversations", "Shared hobbies"]
-  }
-}
-
-/**
- * Get all signs
- */
 export const allSigns: SignName[] = [
-  'aries', 'taurus', 'gemini', 'cancer',
-  'leo', 'virgo', 'libra', 'scorpio',
-  'sagittarius', 'capricorn', 'aquarius', 'pisces'
+  'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
+  'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'
 ]
+

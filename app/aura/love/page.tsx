@@ -73,6 +73,12 @@ export default function LovePage() {
 
   const loadCompatibility = () => {
     const compat = getCompatibility(userSign as any, partnerSign as any)
+    
+    if (!compat) {
+      console.error('No compatibility data found for', userSign, partnerSign)
+      return
+    }
+    
     setCompatibility({
       score: compat.score,
       overview: compat.summary,

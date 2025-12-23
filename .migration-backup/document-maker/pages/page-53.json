@@ -1,0 +1,22 @@
+{
+  "id": "p-53",
+  "number": 53,
+  "title": "THE INNER CANCER",
+  "type": "zodiac-inner",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "THE INNER CANCER", "className": "text-xl font-semibold text-center mb-2" },
+    { "type": "paragraph", "content": "On the inside, Cancers possess a depth of emotion and empathy. They have a unique strength that occurs from their emotional intelligence, allowing them to be compassionate. Cancers are deeply loyal and value the security of home and family above all. They are sensitive and can be strongly affected by the emotions and environments around them. Their intuition is a guiding force, often leading them to form deep, meaningful connections." },
+    { "type": "heading", "level": 3, "content": "HOW OTHERS SEE CANCER", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "To others, Cancers appear as compassionate, caring, and highly intuitive. They often serve as emotional support in their relationships. Their loyalty and protective nature make them beloved friends and partners. However, their emotional depth can sometimes be perceived as moodiness or oversensitivity. Cancers’ ability to create a cozy, welcoming atmosphere is appreciated by their close ones, whom they can provide with warmth and care." },
+    { "type": "heading", "level": 3, "content": "HEALTH AND DIET", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Cancers should pay particular attention to their emotional well-being, as stress and negative emotions can directly impact their physical health. Practices such as meditation, journaling, or therapy can be beneficial. A diet that supports digestive health, including high-fiber fruits, vegetables, and plenty of water, can help manage stomach sensitivities. Incorporating regular, gentle exercise like walking or swimming can also support both their physical and emotional health." },
+    { "type": "heading", "level": 3, "content": "LOVE AND RELATIONSHIPS", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Ruled by the Moon, Cancers approach love with sensitivity and depth. They seek emotional security and a deep, nurturing connection with their partners. Cancers show love through caring actions, creating a cozy and protective space for the ones they love. They have a strong instinct for the needs of their partners, often going to great lengths to ensure their comfort and happiness." },
+    { "type": "heading", "level": 3, "content": "CAREER AND FINANCE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Cancers are nurturing and supportive, qualities that make them excel in professions involving care, like healthcare, education, or social work. They are also good at managing resources, which makes them excellent in administrative or managerial roles. Financial security is a priority for Cancers, and they tend to be conservative with investments, preferring safety over high returns. It’s important for them not to let their caution turn into missed opportunities." },
+    { "type": "heading", "level": 3, "content": "CELEBRITIES WITH CANCER SUN", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Meryl Streep (June 22), Tom Hanks (July 9), Princess Diana (July 1), Selena Gomez (July 22), Nelson Mandela (July 18), Robin Williams (July 21), Ariana Grande (June 26), Frida Kahlo (July 6), Kevin Hart (July 6), Chris Pratt (June 21), Lana Del Rey (June 21), George Orwell (June 25), Harrison Ford (July 13), Liv Tyler (July 1), Pamela Anderson (July 1)" }
+  ]
+}
+

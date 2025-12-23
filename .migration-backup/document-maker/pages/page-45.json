@@ -1,0 +1,14 @@
+{
+  "id": "p-45",
+  "number": 45,
+  "title": "4 – The Significance",
+  "type": "zodiac-overview",
+  "background": "#efe6d7",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "4 – The Significance", "className": "text-center font-serif text-2xl mb-2" },
+    { "type": "paragraph", "content": "Each zodiac sign is ruled by a specific planet, which greatly influences the sign’s characteristics and energy. The planetary ruler adds another layer of depth to the sign’s traits, coloring its expression with the planet’s symbolic qualities.", "className": "max-w-[150mm] mx-auto text-[11pt] leading-[1.75]" },
+    { "type": "paragraph", "content": "Zodiac signs also play a crucial role in the astrological houses, with each house associated with a specific area of life. The sign that governs a house in a natal chart further defines how the energies of that house are expressed in an individual’s life.", "className": "max-w-[150mm] mx-auto text-[11pt] leading-[1.75] mt-2" },
+    { "type": "paragraph", "content": "“The sign that governs a house in a natal chart further defines how the energies of that house are expressed in an individual’s life.”", "className": "text-neutral-600 italic text-center mt-3" }
+  ]
+}
+

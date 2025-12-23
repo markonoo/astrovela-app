@@ -1,0 +1,26 @@
+{
+  "id": "p-46",
+  "number": 46,
+  "title": "ARIES",
+  "type": "zodiac-sign",
+  "background": "#000",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "ARIES", "className": "text-center font-serif text-4xl text-zodiac-gold mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Aries", "traits": {
+      "Duality": "Masculine",
+      "Element": "Fire",
+      "Quality": "Cardinal",
+      "Lucky Day": "Tuesday",
+      "Written Symbol": "The symbol represents the ram’s horns, signifying assertiveness, initiative, and leadership.",
+      "Symbol": "The Ram",
+      "Ruling Planet": "Mars. Mars infuses Aries with aggression, courage, and a competitive spirit.",
+      "Dominant Keyword": "\"I Am\"",
+      "Lucky Number": "1, 9, and the combination of these in any form.",
+      "Body Part Ruled": "Head"
+    } },
+    { "type": "paragraph", "content": "Aries is the first sign of the zodiac, symbolizing the onset of something energetic and turbulent. Those born under this sign are continuously looking for dynamics, speed, and competition. They are natural leaders, motivated by their strong initiative and determination. Aries possess undeniable courage and confidence that often leads them to take initiative.", "className": "text-zodiac-gold text-[11pt] leading-[1.75]" },
+    { "type": "paragraph", "content": "Their impulsive nature and tendency to jump into challenges without thinking can sometimes put them at risk. Aries are passionate and straightforward, with a love for justice, and they often take on the role of a hero in the lives of others. Their fiery energy and adventurous spirit make them inspiring figures.", "className": "text-zodiac-gold text-[11pt] leading-[1.75] mt-3" },
+    { "type": "paragraph", "content": "Best Compatible With: Gemini, Leo, Sagittarius, Aquarius", "className": "text-zodiac-gold font-semibold mt-4" }
+  ]
+}
+

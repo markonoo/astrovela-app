@@ -1,0 +1,57 @@
+{
+  "id": "p-50",
+  "number": 50,
+  "title": "Gemini",
+  "type": "zodiac-sign",
+  "background": "#000",
+  "sections": [
+    {
+      "type": "heading",
+      "level": 1,
+      "content": "GEMINI",
+      "className": "text-center font-serif text-4xl text-zodiac-gold mb-4"
+    },
+    {
+      "type": "traits-box",
+      "title": "Fundamental Traits of Gemini",
+      "traits": {
+        "Duality": "Masculine",
+        "Element": "Air",
+        "Quality": "Mutable",
+        "Lucky Day": "Wednesday",
+        "Written Symbol": "By representing two pillars united at the top and base, it signifies the connection and communication between dual entities.",
+        "Symbol": "The Twins",
+        "Ruling Planet": "Mercury. The planet of communication influences Gemini to be curious, expressive, and skilled in expressing their thoughts and ideas.",
+        "Dominant Keyword": "\"I Think\"",
+        "Lucky Number": "5, 7, and any combination of them",
+        "Body Part Ruled": "Arms, shoulders, hands, and lungs"
+      }
+    },
+    {
+      "type": "paragraph",
+      "content": "Gemini, an air sign symbolized by the celestial twins, embodies dual aspects of personality, offering a mix of yin and yang energy. This sign is characterized by its vibrant, dynamic, and communicative nature. Geminis are curious and intellectual, with a constant thirst for knowledge and experiences. Their ability to exchange ideas and indulge in conversations makes them excellent communicators and friends.",
+      "className": "text-zodiac-gold text-[11pt] leading-[1.75] mt-4"
+    },
+    {
+      "type": "paragraph",
+      "content": "However, their dual nature can sometimes lead to indecisiveness and inconsistency, as they attempt to explore multiple interests simultaneously. Geminis are adaptable and outgoing, often thriving in fast-paced, varied environments. Their wit and humor, combined with their intellectual curiosity, make them fascinating and lively companions.",
+      "className": "text-zodiac-gold text-[11pt] leading-[1.75] mt-3"
+    },
+    {
+      "type": "paragraph",
+      "content": "Gemini represents the dual nature and inherent versatility of those born under this sign. They navigate life through communication and are also known for their wit, intellect, and dynamic personalities.",
+      "className": "text-zodiac-gold text-[11pt] leading-[1.75] mt-3"
+    },
+    {
+      "type": "paragraph",
+      "content": "Best Compatible With: Aries, Leo, Libra, Aquarius",
+      "className": "text-zodiac-gold font-semibold mt-4"
+    }
+  ],
+  "metadata": {
+    "zodiacSign": "Gemini",
+    "dateRange": "May 21 – June 20",
+    "compatibility": ["Aries", "Leo", "Libra", "Aquarius"]
+  }
+}
+

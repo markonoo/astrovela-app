@@ -1,0 +1,16 @@
+{
+  "id": "p-43",
+  "number": 43,
+  "title": "THE MODALITIES",
+  "type": "zodiac-overview",
+  "background": "#efe6d7",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "THE MODALITIES", "className": "text-center font-serif text-3xl mb-4" },
+    { "type": "paragraph", "content": "Quadruplicity, or modality, divides the zodiac into three groups of four signs, each group associated with one of the three modalities: Cardinal, Fixed, and Mutable. This classification sheds light on the signs’ approach to change, action, and their way of engaging with the world.", "className": "max-w-[150mm] mx-auto text-[11pt] leading-[1.75]" },
+    { "type": "paragraph", "content": "Cardinal Signs (Aries, Cancer, Libra, Capricorn) — Are initiators, known for their leadership qualities and ability to start new endeavors. They are dynamic, ambitious, and driven, often setting trends and embracing change.", "className": "mt-2" },
+    { "type": "paragraph", "content": "Fixed Signs (Taurus, Leo, Scorpio, Aquarius) — Are stabilizers, focusing on persistence, reliability, and depth. These signs are known for their determination, resistance to change, and ability to see projects through to completion.", "className": "mt-2" },
+    { "type": "paragraph", "content": "Mutable Signs (Gemini, Virgo, Sagittarius, Pisces) — Are adaptable, flexible, and versatile. They are the finishers, capable of adjusting to changing circumstances and embracing transformation. Mutable signs are known for their resourcefulness, flexibility, and communicative skills.", "className": "mt-2" },
+    { "type": "paragraph", "content": "“This classification sheds light on the signs’ approach to change, action, and their way of engaging with the world.”", "className": "text-neutral-600 italic mt-3" }
+  ]
+}
+

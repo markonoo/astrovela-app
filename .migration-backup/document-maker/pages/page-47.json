@@ -1,0 +1,22 @@
+{
+  "id": "p-47",
+  "number": 47,
+  "title": "ARIES — Inner",
+  "type": "zodiac-inner",
+  "background": "#000",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "The Inner Aries", "className": "text-zodiac-gold text-xl mb-2" },
+    { "type": "paragraph", "content": "Aries are a bundle of energy and dynamism. They possess an inherent passion for life that pushes them to pursue their goals with enthusiasm. Aries are natural-born leaders, often finding themselves in positions of authority due to their ability to take initiative and inspire others. Despite their tough exterior, Aries have a childlike innocence and a pure belief in the possibilities life has to offer. They crave adventure and are always on the lookout for new challenges to overcome.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Health and Diet", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Aries need to pay special attention to their head and face, as these are their most vulnerable areas. Engaging in regular physical exercise is crucial for maintaining their high energy levels. A diet rich in iron, such as leafy green vegetables and lean meats, can help fight fatigue. Stress-reducing activities should be incorporated to help with Aries’ tendency toward stress headaches.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "How Others See Aries", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "To the outside world, Aries appear as confident, passionate, and unstoppable forces of nature. Their courage and willingness to take risks are admired, though sometimes seen as intimidating. Their directness can be perceived as tactless, but their genuine desire to help and lead shines through.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Love and Relationships", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Aries in love are bold and spontaneous. They pursue romance with passion and often take the lead. They thrive on adventure and need partners who can keep up with their energy. They are passionate lovers, but patience in long-term relationships can be a struggle.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Career and Finance", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Aries are natural leaders who thrive in roles that allow bold action. Careers often include entrepreneurship, sales, or leadership roles. However, they must avoid impulsive financial risks.", "className": "text-zodiac-gold" },
+    { "type": "heading", "level": 3, "content": "Celebrities with Aries Sun", "className": "text-zodiac-gold font-semibold mt-4" },
+    { "type": "paragraph", "content": "Lady Gaga (Mar 28), Robert Downey Jr. (Apr 4), Leonardo da Vinci (Apr 15), Elton John (Mar 25), Emma Watson (Apr 15), Jackie Chan (Apr 7), Mariah Carey (Mar 27), Vincent van Gogh (Mar 30), Celine Dion (Mar 30), Russell Crowe (Apr 7), Steven Tyler (Mar 26), Reese Witherspoon (Mar 22), Kiera Knightley (Mar 26), Alec Baldwin (Apr 3), Quentin Tarantino (Mar 27)", "className": "text-zodiac-gold" }
+  ]
+}
+

@@ -1,0 +1,23 @@
+{
+  "id": "p-58",
+  "number": 58,
+  "title": "LIBRA (September 23 – October 22)",
+  "type": "zodiac-sign",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 1, "content": "LIBRA (September 23 – October 22)", "className": "text-2xl font-bold text-center mb-4" },
+    { "type": "traits-box", "title": "Fundamental Traits of Libra", "traits": {
+      "Duality": "Masculine",
+      "Element": "Air",
+      "Quality": "Cardinal",
+      "Lucky Day": "Friday",
+      "Symbol": "The Scales",
+      "Ruling Planet": "Venus – love, beauty, aesthetics.",
+      "Dominant Keyword": "\"I Balance\"",
+      "Lucky Number": "6, 15",
+      "Body Part Ruled": "Kidneys & lower back"
+    } },
+    { "type": "paragraph", "content": "Libras are diplomatic, charming, balanced, and harmony-seeking." }
+  ]
+}
+

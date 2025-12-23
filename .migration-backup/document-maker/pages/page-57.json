@@ -1,0 +1,20 @@
+{
+  "id": "p-57",
+  "number": 57,
+  "title": "THE INNER VIRGO",
+  "type": "zodiac-inner",
+  "background": "#fff",
+  "sections": [
+    { "type": "heading", "level": 2, "content": "THE INNER VIRGO", "className": "text-xl font-semibold text-center mb-2" },
+    { "type": "paragraph", "content": "Intelligent, thoughtful, detail-oriented, critical, and service-driven." },
+    { "type": "heading", "level": 3, "content": "HEALTH AND DIET", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Care for digestion. High-fiber diet, probiotics, stress-reducing exercises." },
+    { "type": "heading", "level": 3, "content": "LOVE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Express affection through service, seek perfection." },
+    { "type": "heading", "level": 3, "content": "CAREER AND FINANCE", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Thrive in science, healthcare, consulting. Must avoid over-caution." },
+    { "type": "heading", "level": 3, "content": "CELEBRITIES WITH VIRGO SUN", "className": "font-semibold mt-4" },
+    { "type": "paragraph", "content": "Beyoncé, Michael Jackson, Keanu Reeves, Mother Teresa, Stephen King, Freddie Mercury, Amy Poehler, Blake Lively, Chris Pine, Cameron Diaz." }
+  ]
+}
+

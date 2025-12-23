@@ -1,0 +1,16 @@
+{
+  "id": "p-70",
+  "number": 70,
+  "title": "Planets Illustration",
+  "type": "illustration",
+  "background": "#fff",
+  "sections": [
+    {
+      "type": "image",
+      "src": "/images/page70-planets.png",
+      "alt": "Planets illustration with the Sun, Saturn, Earth and others",
+      "className": "w-full h-full object-contain"
+    }
+  ]
+}
+
