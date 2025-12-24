@@ -22,6 +22,11 @@ export async function GET(request: NextRequest) {
   // Determine which service key to use (prefer integration key)
   const serviceKey = secretKey || serviceRoleKey;
 
+  // Validate JWT format (real service keys start with 'eyJ')
+  const isServiceRoleKeyJWT = serviceRoleKey.startsWith('eyJ');
+  const isSecretKeyJWT = secretKey.startsWith('eyJ');
+  const isAnonKeyJWT = anonKey.startsWith('eyJ');
+
   results.envVars = {
     hasSupabaseUrl: !!supabaseUrl,
     hasServiceRoleKey: !!serviceRoleKey,
@@ -31,6 +36,9 @@ export async function GET(request: NextRequest) {
     usingKey: secretKey ? 'SUPABASE_SECRET_KEY' : serviceRoleKey ? 'SUPABASE_SERVICE_ROLE_KEY' : 'NONE',
     supabaseUrlPrefix: supabaseUrl.substring(0, 30) || 'MISSING',
     serviceKeyPrefix: serviceKey ? serviceKey.substring(0, 20) + '...' : 'MISSING',
+    serviceRoleKeyFormat: serviceRoleKey ? (isServiceRoleKeyJWT ? 'JWT (valid)' : 'NOT JWT (invalid!)') : 'MISSING',
+    secretKeyFormat: secretKey ? (isSecretKeyJWT ? 'JWT (valid)' : 'NOT JWT (invalid!)') : 'MISSING',
+    anonKeyFormat: anonKey ? (isAnonKeyJWT ? 'JWT (valid)' : 'NOT JWT (invalid!)') : 'MISSING',
     keysMatch: serviceRoleKey && secretKey ? serviceRoleKey === secretKey : null
   }
 
@@ -96,7 +104,36 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Test 3b: If we have BOTH keys, test with the OTHER one
+    // Test 3b: Test with anon key (should work for basic connectivity)
+    if (anonKey) {
+      try {
+        const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement`
+        
+        const restResponse = await fetch(restUrl, {
+          method: 'HEAD',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'count=exact'
+          }
+        })
+
+        results.tests.anonKeyTest = {
+          testedKey: 'ANON_KEY (should work, may hit RLS)',
+          status: restResponse.status,
+          statusText: restResponse.statusText,
+          contentRange: Object.fromEntries(restResponse.headers.entries())['content-range'],
+          success: restResponse.status >= 200 && restResponse.status < 300
+        }
+      } catch (anonError) {
+        results.tests.anonKeyTest = {
+          error: anonError instanceof Error ? anonError.message : String(anonError)
+        }
+      }
+    }
+
+    // Test 3c: If we have BOTH keys, test with the OTHER one
     if (serviceRoleKey && secretKey && serviceRoleKey !== secretKey) {
       try {
         const otherKey = secretKey ? serviceRoleKey : secretKey;
@@ -113,7 +150,7 @@ export async function GET(request: NextRequest) {
         })
 
         results.tests.alternateKeyTest = {
-          testedKey: 'SUPABASE_SERVICE_ROLE_KEY (old)',
+          testedKey: 'SUPABASE_SERVICE_ROLE_KEY (manually added)',
           status: restResponse.status,
           statusText: restResponse.statusText,
           contentRange: Object.fromEntries(restResponse.headers.entries())['content-range'],
