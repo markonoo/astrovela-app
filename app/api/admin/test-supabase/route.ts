@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '';
 
-  // Determine which service key to use (prefer integration key)
-  const serviceKey = secretKey || serviceRoleKey;
+  // Determine which service key to use (prefer JWT format)
+  const serviceKey = (secretKey && isSecretKeyJWT) ? secretKey : serviceRoleKey;
 
   // Validate JWT format (real service keys start with 'eyJ')
   const isServiceRoleKeyJWT = serviceRoleKey.startsWith('eyJ');
@@ -67,16 +67,16 @@ export async function GET(request: NextRequest) {
     })
     results.tests.adminClientCreated = true
 
-    // Test 3: Direct REST API call with HEAD request (correct format)
+    // Test 3: Direct REST API call with GET to see error body
     try {
-      const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement`
+      const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement?select=id&limit=1`
       
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:67',message:'Making direct REST call (HEAD)',data:{url:restUrl},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:67',message:'Making direct REST call (GET)',data:{url:restUrl,keyUsed:serviceKey.substring(0,20)+'...'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
 
       const restResponse = await fetch(restUrl, {
-        method: 'HEAD',
+        method: 'GET',
         headers: {
           'apikey': serviceKey,
           'Authorization': `Bearer ${serviceKey}`,
@@ -87,15 +87,22 @@ export async function GET(request: NextRequest) {
 
       const restStatus = restResponse.status
       const restHeaders = Object.fromEntries(restResponse.headers.entries())
+      let restBody = ''
+      try {
+        restBody = await restResponse.text()
+      } catch (e) {
+        restBody = 'Could not read response body'
+      }
 
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:84',message:'REST response received',data:{status:restStatus,contentRange:restHeaders['content-range']},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:87',message:'REST response received',data:{status:restStatus,bodyLength:restBody?.length,bodyPreview:restBody?.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
 
       results.tests.directRestCall = {
         status: restStatus,
         statusText: restResponse.statusText,
         contentRange: restHeaders['content-range'],
+        body: restBody,
         success: restStatus >= 200 && restStatus < 300
       }
     } catch (restError) {
@@ -133,33 +140,24 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Test 3c: If we have BOTH keys, test with the OTHER one
-    if (serviceRoleKey && secretKey && serviceRoleKey !== secretKey) {
-      try {
-        const otherKey = secretKey ? serviceRoleKey : secretKey;
-        const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement`
-        
-        const restResponse = await fetch(restUrl, {
-          method: 'HEAD',
-          headers: {
-            'apikey': otherKey,
-            'Authorization': `Bearer ${otherKey}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'count=exact'
-          }
-        })
-
-        results.tests.alternateKeyTest = {
-          testedKey: 'SUPABASE_SERVICE_ROLE_KEY (manually added)',
-          status: restResponse.status,
-          statusText: restResponse.statusText,
-          contentRange: Object.fromEntries(restResponse.headers.entries())['content-range'],
-          success: restResponse.status >= 200 && restResponse.status < 300
+    // Test 3c: Test with fresh Supabase key from Dashboard
+    // Try to parse JWT to check claims
+    try {
+      const jwtParts = serviceKey.split('.');
+      if (jwtParts.length === 3) {
+        // Decode JWT payload (middle part)
+        const payload = JSON.parse(Buffer.from(jwtParts[1], 'base64').toString());
+        results.tests.jwtClaims = {
+          role: payload.role,
+          iss: payload.iss,
+          iat: payload.iat,
+          exp: payload.exp,
+          isExpired: payload.exp ? Date.now() / 1000 > payload.exp : false
         }
-      } catch (altError) {
-        results.tests.alternateKeyTest = {
-          error: altError instanceof Error ? altError.message : String(altError)
-        }
+      }
+    } catch (jwtError) {
+      results.tests.jwtClaims = {
+        error: 'Could not parse JWT'
       }
     }
 
