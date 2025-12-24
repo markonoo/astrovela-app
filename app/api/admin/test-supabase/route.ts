@@ -12,18 +12,26 @@ export async function GET(request: NextRequest) {
     tests: {}
   }
 
-  // Test 1: Check environment variables
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  // Test 1: Check ALL Supabase environment variables
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const secretKey = process.env.SUPABASE_SECRET_KEY || '';
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '';
+
+  // Determine which service key to use (prefer integration key)
+  const serviceKey = secretKey || serviceRoleKey;
 
   results.envVars = {
     hasSupabaseUrl: !!supabaseUrl,
-    hasServiceRoleKey: !!serviceKey,
+    hasServiceRoleKey: !!serviceRoleKey,
+    hasSecretKey: !!secretKey,
     hasAnonKey: !!anonKey,
+    hasPublishableKey: !!publishableKey,
+    usingKey: secretKey ? 'SUPABASE_SECRET_KEY' : serviceRoleKey ? 'SUPABASE_SERVICE_ROLE_KEY' : 'NONE',
     supabaseUrlPrefix: supabaseUrl.substring(0, 30) || 'MISSING',
     serviceKeyPrefix: serviceKey ? serviceKey.substring(0, 20) + '...' : 'MISSING',
-    anonKeyPrefix: anonKey ? anonKey.substring(0, 20) + '...' : 'MISSING'
+    keysMatch: serviceRoleKey && secretKey ? serviceRoleKey === secretKey : null
   }
 
   // #region agent log
@@ -51,16 +59,16 @@ export async function GET(request: NextRequest) {
     })
     results.tests.adminClientCreated = true
 
-    // Test 3: Direct REST API call to see raw response
+    // Test 3: Direct REST API call with HEAD request (correct format)
     try {
-      const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement?select=count&head=true`
+      const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement`
       
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:58',message:'Making direct REST call',data:{url:restUrl},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:67',message:'Making direct REST call (HEAD)',data:{url:restUrl},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
 
       const restResponse = await fetch(restUrl, {
-        method: 'GET',
+        method: 'HEAD',
         headers: {
           'apikey': serviceKey,
           'Authorization': `Bearer ${serviceKey}`,
@@ -71,27 +79,50 @@ export async function GET(request: NextRequest) {
 
       const restStatus = restResponse.status
       const restHeaders = Object.fromEntries(restResponse.headers.entries())
-      let restBody = null
-      try {
-        restBody = await restResponse.text()
-      } catch (e) {
-        restBody = 'Could not read response body'
-      }
 
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:82',message:'REST response received',data:{status:restStatus,contentRange:restHeaders['content-range'],bodyLength:restBody?.length || 0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:84',message:'REST response received',data:{status:restStatus,contentRange:restHeaders['content-range']},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
 
       results.tests.directRestCall = {
         status: restStatus,
         statusText: restResponse.statusText,
         contentRange: restHeaders['content-range'],
-        body: restBody,
         success: restStatus >= 200 && restStatus < 300
       }
     } catch (restError) {
       results.tests.directRestCall = {
         error: restError instanceof Error ? restError.message : String(restError)
+      }
+    }
+
+    // Test 3b: If we have BOTH keys, test with the OTHER one
+    if (serviceRoleKey && secretKey && serviceRoleKey !== secretKey) {
+      try {
+        const otherKey = secretKey ? serviceRoleKey : secretKey;
+        const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement`
+        
+        const restResponse = await fetch(restUrl, {
+          method: 'HEAD',
+          headers: {
+            'apikey': otherKey,
+            'Authorization': `Bearer ${otherKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'count=exact'
+          }
+        })
+
+        results.tests.alternateKeyTest = {
+          testedKey: 'SUPABASE_SERVICE_ROLE_KEY (old)',
+          status: restResponse.status,
+          statusText: restResponse.statusText,
+          contentRange: Object.fromEntries(restResponse.headers.entries())['content-range'],
+          success: restResponse.status >= 200 && restResponse.status < 300
+        }
+      } catch (altError) {
+        results.tests.alternateKeyTest = {
+          error: altError instanceof Error ? altError.message : String(altError)
+        }
       }
     }
 
