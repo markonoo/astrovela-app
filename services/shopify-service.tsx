@@ -117,13 +117,17 @@ export async function getShopifyProducts(): Promise<ShopifyProduct[]> {
 export async function getProductVariantId(productType: "app" | "paperback" | "ebook"): Promise<string> {
   try {
     const products = await getShopifyProducts();
-    const productMap: Record<string, string> = {
-      app: "app-subscription",
-      paperback: "paperback-book",
-      ebook: "ebook",
+    // Support both legacy and current handles discovered in store
+    const productHandleMap: Record<"app" | "paperback" | "ebook", string[]> = {
+      app: ["app-subscription", "app"],
+      paperback: ["astrology-paperback", "paperback-book", "paperback"],
+      ebook: ["astrology-ebook", "ebook"],
     };
 
-    const product = products.find(p => p.handle === productMap[productType]);
+    const handles = productHandleMap[productType];
+    const product = products.find((p) =>
+      handles.includes(p.handle?.toLowerCase?.() || p.handle)
+    );
     if (!product) {
       throw new ShopifyError(
         `Product type "${productType}" not found in store`,
