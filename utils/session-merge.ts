@@ -47,7 +47,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
-        })
+        } as any)
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
@@ -70,7 +70,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
           userId: userId,
           email: email,
           session_id: null // Clear session_id once linked to user
-        })
+        } as any)
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
@@ -92,7 +92,7 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
-        })
+        } as any)
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
