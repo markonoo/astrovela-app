@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createSupabaseAdmin } from "@/lib/supabase-admin"
 import { logger } from "@/utils/logger"
 import { requireAdminAuth } from "@/lib/admin-auth"
 
@@ -28,78 +28,80 @@ export async function GET(request: NextRequest) {
     }
     logger.info("Auth successful, fetching stats")
 
-    // Get total entitlements
-    const totalEntitlements = await prisma.appEntitlement.count()
+    // Create Supabase admin client (uses REST API)
+    const supabase = createSupabaseAdmin()
 
-    // Get entitlements by plan
-    const entitlementsByPlan = await prisma.appEntitlement.groupBy({
-      by: ['plan'],
-      _count: true,
-    })
+    // Get total entitlements
+    const { count: totalEntitlements } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+
+    // Get entitlements by plan (manual grouping)
+    const { data: allEntitlements } = await supabase
+      .from('AppEntitlement')
+      .select('plan')
+    
+    const planCounts = (allEntitlements || []).reduce((acc, item) => {
+      acc[item.plan] = (acc[item.plan] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+
+    const entitlementsByPlan = Object.entries(planCounts).map(([plan, count]) => ({
+      plan,
+      count
+    }))
 
     // Get active subscriptions (trial + active)
-    const activeSubscriptions = await prisma.appEntitlement.count({
-      where: {
-        OR: [
-          { plan: 'trial' },
-          { plan: 'active' },
-        ],
-      },
-    })
+    const { count: activeSubscriptions } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .in('plan', ['trial', 'active'])
 
     // Get expired trials
-    const expiredTrials = await prisma.appEntitlement.count({
-      where: {
-        plan: 'expired',
-      },
-    })
+    const { count: expiredTrials } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .eq('plan', 'expired')
 
     // Get users with reports
-    const usersWithReports = await prisma.appEntitlement.count({
-      where: {
-        hasReport: true,
-      },
-    })
+    const { count: usersWithReports } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .eq('hasReport', true)
 
     // Get recent entitlements (last 30 days)
-    const recentEntitlements = await prisma.appEntitlement.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-    })
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const { count: recentEntitlements } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .gte('createdAt', thirtyDaysAgo)
 
     // Get entitlements expiring soon (next 7 days)
-    const expiringSoon = await prisma.appEntitlement.count({
-      where: {
-        freeUntil: {
-          gte: new Date(),
-          lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        },
-        plan: 'trial',
-      },
-    })
+    const now = new Date().toISOString()
+    const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    const { count: expiringSoon } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .eq('plan', 'trial')
+      .gte('freeUntil', now)
+      .lte('freeUntil', sevenDaysLater)
 
     // Calculate conversion rate (active subscriptions / total)
-    const conversionRate = totalEntitlements > 0
-      ? ((activeSubscriptions / totalEntitlements) * 100).toFixed(1)
+    const conversionRate = totalEntitlements && totalEntitlements > 0
+      ? ((activeSubscriptions! / totalEntitlements) * 100).toFixed(1)
       : '0'
 
     return NextResponse.json({
       summary: {
-        totalEntitlements,
-        activeSubscriptions,
-        expiredTrials,
-        usersWithReports,
-        recentEntitlements,
-        expiringSoon,
+        totalEntitlements: totalEntitlements || 0,
+        activeSubscriptions: activeSubscriptions || 0,
+        expiredTrials: expiredTrials || 0,
+        usersWithReports: usersWithReports || 0,
+        recentEntitlements: recentEntitlements || 0,
+        expiringSoon: expiringSoon || 0,
         conversionRate: `${conversionRate}%`,
       },
-      byPlan: entitlementsByPlan.map((item: { plan: string; _count: number }) => ({
-        plan: item.plan,
-        count: item._count,
-      })),
+      byPlan: entitlementsByPlan,
       timestamp: new Date().toISOString(),
     })
   } catch (error) {

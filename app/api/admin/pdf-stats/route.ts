@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { createSupabaseAdmin } from "@/lib/supabase-admin"
 import { logger } from "@/utils/logger"
 import { requireAdminAuth } from "@/lib/admin-auth"
 
@@ -18,50 +18,51 @@ export async function GET(request: NextRequest) {
       return auth.response || NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Create Supabase admin client (uses REST API)
+    const supabase = createSupabaseAdmin()
+
     // Get total users with reports (potential PDF downloads)
-    const usersWithReports = await prisma.appEntitlement.count({
-      where: {
-        hasReport: true,
-      },
-    })
+    const { count: usersWithReports } = await supabase
+      .from('AppEntitlement')
+      .select('*', { count: 'exact', head: true })
+      .eq('hasReport', true)
 
     // Get total chart interpretations (potential for PDF generation)
-    const totalChartInterpretations = await prisma.natalChartInterpretation.count()
+    const { count: totalChartInterpretations } = await supabase
+      .from('NatalChartInterpretation')
+      .select('*', { count: 'exact', head: true })
 
     // Get chart interpretations by date (last 30 days)
-    const recentCharts = await prisma.natalChartInterpretation.count({
-      where: {
-        created_at: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-    })
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const { count: recentCharts } = await supabase
+      .from('NatalChartInterpretation')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', thirtyDaysAgo)
 
     // Get chart images stored (related to document generation)
-    const totalChartImages = await prisma.chartImage.count()
+    const { count: totalChartImages } = await supabase
+      .from('ChartImage')
+      .select('*', { count: 'exact', head: true })
 
     // Get recent chart images (last 30 days)
-    const recentChartImages = await prisma.chartImage.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        },
-      },
-    })
+    const { count: recentChartImages } = await supabase
+      .from('ChartImage')
+      .select('*', { count: 'exact', head: true })
+      .gte('createdAt', thirtyDaysAgo)
 
     // Calculate potential PDF generation rate
     // (users with reports / total chart interpretations)
-    const pdfGenerationRate = totalChartInterpretations > 0
-      ? ((usersWithReports / totalChartInterpretations) * 100).toFixed(1)
+    const pdfGenerationRate = totalChartInterpretations && totalChartInterpretations > 0
+      ? ((usersWithReports! / totalChartInterpretations) * 100).toFixed(1)
       : '0'
 
     return NextResponse.json({
       summary: {
-        usersWithReports,
-        totalChartInterpretations,
-        recentCharts,
-        totalChartImages,
-        recentChartImages,
+        usersWithReports: usersWithReports || 0,
+        totalChartInterpretations: totalChartInterpretations || 0,
+        recentCharts: recentCharts || 0,
+        totalChartImages: totalChartImages || 0,
+        recentChartImages: recentChartImages || 0,
         pdfGenerationRate: `${pdfGenerationRate}%`,
       },
       documentMaker: {
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logger.error("Failed to fetch PDF stats", error)
     return NextResponse.json(
-      { error: "Failed to fetch PDF statistics" },
+      { error: "Failed to fetch PDF statistics", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
