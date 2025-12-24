@@ -42,9 +42,9 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 1. Update QuizResponse records
     try {
-      // @ts-ignore - Supabase type inference issue with update
-      const { data: quizData, error: quizError } = await getSupabaseClient()
-        .from('QuizResponse')
+      const client = getSupabaseClient().from('QuizResponse')
+      // @ts-expect-error - Supabase type inference issue with update
+      const { data: quizData, error: quizError } = await client
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
@@ -65,9 +65,9 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 2. Update ChartImage records
     try {
-      // @ts-ignore - Supabase type inference issue with update
-      const { data: chartData, error: chartError } = await getSupabaseClient()
-        .from('ChartImage')
+      const client = getSupabaseClient().from('ChartImage')
+      // @ts-expect-error - Supabase type inference issue with update
+      const { data: chartData, error: chartError } = await client
         .update({ 
           userId: userId,
           email: email,
@@ -89,9 +89,9 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 3. Update NatalChartInterpretation records
     try {
-      // @ts-ignore - Supabase type inference issue with update
-      const { data: interpData, error: interpError } = await getSupabaseClient()
-        .from('NatalChartInterpretation')
+      const client = getSupabaseClient().from('NatalChartInterpretation')
+      // @ts-expect-error - Supabase type inference issue with update
+      const { data: interpData, error: interpError } = await client
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
