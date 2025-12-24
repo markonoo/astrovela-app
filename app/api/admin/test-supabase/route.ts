@@ -19,13 +19,13 @@ export async function GET(request: NextRequest) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '';
 
-  // Determine which service key to use (prefer JWT format)
-  const serviceKey = (secretKey && isSecretKeyJWT) ? secretKey : serviceRoleKey;
-
   // Validate JWT format (real service keys start with 'eyJ')
   const isServiceRoleKeyJWT = serviceRoleKey.startsWith('eyJ');
   const isSecretKeyJWT = secretKey.startsWith('eyJ');
   const isAnonKeyJWT = anonKey.startsWith('eyJ');
+
+  // Determine which service key to use (prefer JWT format)
+  const serviceKey = (secretKey && isSecretKeyJWT) ? secretKey : serviceRoleKey;
 
   results.envVars = {
     hasSupabaseUrl: !!supabaseUrl,
