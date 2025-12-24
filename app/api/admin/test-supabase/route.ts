@@ -67,48 +67,67 @@ export async function GET(request: NextRequest) {
     })
     results.tests.adminClientCreated = true
 
-    // Test 3: Direct REST API call with GET to see error body
-    try {
-      const restUrl = `${supabaseUrl}/rest/v1/AppEntitlement?select=id&limit=1`
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:67',message:'Making direct REST call (GET)',data:{url:restUrl,keyUsed:serviceKey.substring(0,20)+'...'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
+    // Test 3: Try multiple tables to see if ANY work
+    const tablesToTest = ['AppEntitlement', 'User', 'QuizResponse', 'ChartImage'];
+    results.tests.tableAccess = {};
+    
+    for (const table of tablesToTest) {
+      try {
+        const restUrl = `${supabaseUrl}/rest/v1/${table}?select=id&limit=1`;
+        
+        const restResponse = await fetch(restUrl, {
+          method: 'GET',
+          headers: {
+            'apikey': serviceKey,
+            'Authorization': `Bearer ${serviceKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
 
-      const restResponse = await fetch(restUrl, {
+        let restBody = '';
+        try {
+          restBody = await restResponse.text();
+        } catch (e) {
+          restBody = 'Could not read response body';
+        }
+
+        results.tests.tableAccess[table] = {
+          status: restResponse.status,
+          statusText: restResponse.statusText,
+          body: restBody.substring(0, 200),
+          success: restResponse.status >= 200 && restResponse.status < 300
+        };
+      } catch (error) {
+        results.tests.tableAccess[table] = {
+          error: error instanceof Error ? error.message : String(error)
+        };
+      }
+    }
+
+    // Test 3b: Try to list all tables via OpenAPI endpoint
+    try {
+      const openApiUrl = `${supabaseUrl}/rest/v1/`;
+      const openApiResponse = await fetch(openApiUrl, {
         method: 'GET',
         headers: {
           'apikey': serviceKey,
           'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'count=exact'
+          'Accept': 'application/openapi+json'
         }
-      })
+      });
 
-      const restStatus = restResponse.status
-      const restHeaders = Object.fromEntries(restResponse.headers.entries())
-      let restBody = ''
-      try {
-        restBody = await restResponse.text()
-      } catch (e) {
-        restBody = 'Could not read response body'
+      if (openApiResponse.ok) {
+        const openApiData = await openApiResponse.json();
+        results.tests.availableTables = Object.keys(openApiData.definitions || {});
+      } else {
+        results.tests.availableTables = {
+          error: `Status ${openApiResponse.status}: ${openApiResponse.statusText}`
+        };
       }
-
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/67caa157-9cb8-446d-be8c-efd22b165e9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'test-supabase/route.ts:87',message:'REST response received',data:{status:restStatus,bodyLength:restBody?.length,bodyPreview:restBody?.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
-
-      results.tests.directRestCall = {
-        status: restStatus,
-        statusText: restResponse.statusText,
-        contentRange: restHeaders['content-range'],
-        body: restBody,
-        success: restStatus >= 200 && restStatus < 300
-      }
-    } catch (restError) {
-      results.tests.directRestCall = {
-        error: restError instanceof Error ? restError.message : String(restError)
-      }
+    } catch (error) {
+      results.tests.availableTables = {
+        error: error instanceof Error ? error.message : String(error)
+      };
     }
 
     // Test 3b: Test with anon key (should work for basic connectivity)
