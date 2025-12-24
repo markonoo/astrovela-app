@@ -42,12 +42,13 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 1. Update QuizResponse records
     try {
+      // @ts-ignore - Supabase type inference issue with update
       const { data: quizData, error: quizError } = await getSupabaseClient()
         .from('QuizResponse')
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
-        } as any)
+        })
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
@@ -64,13 +65,14 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 2. Update ChartImage records
     try {
+      // @ts-ignore - Supabase type inference issue with update
       const { data: chartData, error: chartError } = await getSupabaseClient()
         .from('ChartImage')
         .update({ 
           userId: userId,
           email: email,
           session_id: null // Clear session_id once linked to user
-        } as any)
+        })
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
@@ -87,12 +89,13 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 3. Update NatalChartInterpretation records
     try {
+      // @ts-ignore - Supabase type inference issue with update
       const { data: interpData, error: interpError } = await getSupabaseClient()
         .from('NatalChartInterpretation')
         .update({ 
           userId: userId,
           session_id: null // Clear session_id once linked to user
-        } as any)
+        })
         .eq('session_id', sessionId)
         .is('userId', null)
         .select('id')
