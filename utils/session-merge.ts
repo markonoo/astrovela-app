@@ -43,7 +43,6 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
     // 1. Update QuizResponse records
     try {
       const client = getSupabaseClient().from('QuizResponse')
-      // @ts-expect-error - Supabase type inference issue with update
       const { data: quizData, error: quizError } = await client
         .update({ 
           userId: userId,
@@ -66,7 +65,6 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
     // 2. Update ChartImage records
     try {
       const client = getSupabaseClient().from('ChartImage')
-      // @ts-expect-error - Supabase type inference issue with update
       const { data: chartData, error: chartError } = await client
         .update({ 
           userId: userId,
@@ -90,7 +88,6 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
     // 3. Update NatalChartInterpretation records
     try {
       const client = getSupabaseClient().from('NatalChartInterpretation')
-      // @ts-expect-error - Supabase type inference issue with update
       const { data: interpData, error: interpError } = await client
         .update({ 
           userId: userId,
