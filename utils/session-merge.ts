@@ -42,8 +42,8 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 1. Update QuizResponse records
     try {
-      const client = getSupabaseClient().from('QuizResponse')
-      // @ts-ignore - Supabase type inference issue with placeholder credentials
+      const client = getSupabaseClient().from('QuizResponse') as any
+      // Supabase types resolve to `never` at build time with placeholder envs; cast client to any to allow updates
       const { data: quizData, error: quizError } = await client
         .update({ 
           userId: userId,
@@ -65,8 +65,8 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 2. Update ChartImage records
     try {
-      const client = getSupabaseClient().from('ChartImage')
-      // @ts-ignore - Supabase type inference issue with placeholder credentials
+      const client = getSupabaseClient().from('ChartImage') as any
+      // Supabase types resolve to `never` at build time with placeholder envs; cast client to any to allow updates
       const { data: chartData, error: chartError } = await client
         .update({ 
           userId: userId,
@@ -89,8 +89,8 @@ export async function mergeSessionWithUser(sessionId: string, userId: number, em
 
     // 3. Update NatalChartInterpretation records
     try {
-      const client = getSupabaseClient().from('NatalChartInterpretation')
-      // @ts-ignore - Supabase type inference issue with placeholder credentials
+      const client = getSupabaseClient().from('NatalChartInterpretation') as any
+      // Supabase types resolve to `never` at build time with placeholder envs; cast client to any to allow updates
       const { data: interpData, error: interpError } = await client
         .update({ 
           userId: userId,
