@@ -307,10 +307,18 @@ export function PersonalizedLanding() {
         <section className="bg-white rounded-lg shadow-sm p-8 mb-8 text-center">
           <div className="flex justify-center mb-4">
             <div className="flex -space-x-2">
-              <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
-              <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white"></div>
-              <div className="w-8 h-8 rounded-full bg-gray-500 border-2 border-white"></div>
-              <div className="w-8 h-8 rounded-full bg-gray-600 border-2 border-white"></div>
+              <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                <img src="/images/social-proof/avatar-1-book.jpg" alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                <img src="/images/social-proof/avatar-2-customer.jpg" alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                <img src="/images/social-proof/avatar-3-book.jpg" alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
+                <img src="/images/social-proof/avatar-4-customer.jpg" alt="" className="w-full h-full object-cover" />
+              </div>
               <div className="w-8 h-8 rounded-full bg-gray-700 border-2 border-white flex items-center justify-center text-white text-xs">
                 +
               </div>
@@ -337,7 +345,7 @@ export function PersonalizedLanding() {
           <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
             <div className="w-full md:w-1/3">
               <div className="rounded-lg overflow-hidden">
-                <img src="/placeholder.svg" alt="Astrologer" className="w-full h-auto" />
+                <img src="/images/astrologer-workspace.jpg" alt="Astrologer" className="w-full h-auto" />
               </div>
             </div>
 

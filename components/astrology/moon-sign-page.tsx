@@ -17,7 +17,7 @@ export function MoonSignPage({ pageNumber }: MoonSignPageProps) {
         <div className="relative">
           <div className="w-80 h-80 border-2 border-amber-300">
             <img 
-              src="/placeholder.svg" 
+              src="/images/moon-mystical.jpg" 
               alt="Moon" 
               className="w-full h-full object-cover filter grayscale"
               style={{

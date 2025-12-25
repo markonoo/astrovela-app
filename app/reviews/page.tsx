@@ -15,7 +15,7 @@ const reviewsData = [
     title: "Life-changing guidance!",
     content:
       "I got astrovela book for my birthday, and it's been an incredible journey of self-discovery since. I use it daily with my friends to really understand what's happening in our lives. The insights about my career path were spot-on and helped me make a decision I was struggling with for months.",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/sarah-johnson.jpg",
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ const reviewsData = [
     title: "Total game-changer for my relationships",
     content:
       "Total game-changer. It gave me the understanding I needed about my crush I had for past 5 months. I finally got the hope back that there's a chance. We'll see how it goes. The compatibility insights were incredibly accurate and helped me understand patterns in my relationships I never noticed before.",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/rachel-williams.jpg",
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const reviewsData = [
     title: "Impressive accuracy",
     content:
       "I was skeptical at first, but the personalized report was surprisingly accurate about my personality traits and tendencies. The career guidance section was especially helpful as I was considering a job change. Could use more actionable advice, but overall very impressed.",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/mark-thompson.jpg",
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ const reviewsData = [
     title: "Best astrology book I've ever read",
     content:
       "I've read many astrology books before, but none as personalized and detailed as astrovela. The way it breaks down my birth chart and explains the influences of each planet is incredibly insightful. I've been recommending it to all my friends!",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/emily-lopez.jpg",
   },
   {
     id: 5,
@@ -59,7 +59,7 @@ const reviewsData = [
     title: "Great insights for personal growth",
     content:
       "As someone focused on personal development, I found the astrovela book to be a valuable tool. It highlighted areas for growth I wasn't fully aware of and provided strategies tailored to my astrological profile. The only reason for 4 stars instead of 5 is I wish the digital version had more interactive elements.",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/david-kumar.jpg",
   },
   {
     id: 6,
@@ -70,7 +70,7 @@ const reviewsData = [
     title: "Uncannily accurate",
     content:
       "I was blown away by how accurately the book described aspects of my personality that even close friends don't know about. The section on how my moon sign affects my emotional responses was particularly eye-opening. Worth every penny!",
-    imageSrc: "/placeholder.svg",
+    imageSrc: "/images/reviews/jessica-martin.jpg",
   },
 ]
 
