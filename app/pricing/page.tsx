@@ -561,7 +561,7 @@ export default function PricingPage() {
                       ]}
                       price="€55.99"
                       originalPrice="€169.97"
-                      imageSrc="/placeholder.svg"
+                      imageSrc="/images/products/paperback-book.jpg"
                       isSelected={selectedOptions.paperback}
                       onSelect={() => handleOptionSelect("paperback")}
                       saleTag="SALE 65% OFF"
@@ -578,7 +578,7 @@ export default function PricingPage() {
                     ]}
                     price={getEbookPrice()}
                     originalPrice="€49.99"
-                    imageSrc="/placeholder.svg"
+                    imageSrc="/images/products/ebook-digital.jpg"
                     isSelected={selectedOptions.ebook}
                     onSelect={() => handleOptionSelect("ebook")}
                     saleTag={selectedOptions.paperback ? "INCLUDED" : ""}
@@ -594,7 +594,7 @@ export default function PricingPage() {
                     ]}
                     price={getAppPrice()}
                     originalPrice="€30.99"
-                    imageSrc="/placeholder.svg"
+                    imageSrc="/images/products/app-interface.jpg"
                     isSelected={selectedOptions.app}
                     onSelect={() => handleOptionSelect("app")}
                     saleTag={selectedOptions.paperback || selectedOptions.ebook ? "FREE TRIAL" : ""}
