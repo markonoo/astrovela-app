@@ -710,7 +710,7 @@ export function QuizController() {
             <div className="flex items-center justify-center mb-4">
               <div className="w-96 h-96 rounded-xl border-4 border-yellow-300 bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg">
                 <img
-                  src="/placeholder.svg"
+                  src="/images/testimonials/quiz-testimonial.jpg"
                   alt="Testimonial placeholder"
                   className="object-cover w-full h-full"
                 />

@@ -661,22 +661,22 @@ export default function PricingPage() {
               <h2 className="text-xl md:text-2xl font-bold text-center mb-8">What our customers say</h2>
               <div className="grid md:grid-cols-3 gap-6">
                 <TestimonialCard
-                  name="Sarah M."
+                  name="Jasmine M."
                   rating={5}
                   quote="This book completely changed my perspective on life! The personalized insights were incredibly accurate and helped me understand myself better."
-                  imageSrc="/placeholder.svg"
+                  imageSrc="/images/testimonials/jasmine-m.jpg"
                 />
                 <TestimonialCard
-                  name="Michael R."
+                  name="Emilia F."
                   rating={5}
                   quote="I was skeptical at first, but the level of detail in my personalized book blew me away. It's like having a personal astrologer!"
-                  imageSrc="/placeholder.svg"
+                  imageSrc="/images/testimonials/emilia-f.jpg"
                 />
                 <TestimonialCard
                   name="Emma L."
                   rating={5}
                   quote="The relationship compatibility section saved my marriage. We finally understand each other's needs and communicate better."
-                  imageSrc="/placeholder.svg"
+                  imageSrc="/images/testimonials/emma-l.jpg"
                 />
               </div>
               
