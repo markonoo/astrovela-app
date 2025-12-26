@@ -68,7 +68,7 @@ export function Paywall({ daysRemaining }: PaywallProps) {
                 href="/aura/billing"
                 className="block w-full py-3.5 px-6 bg-apple-gray-1 text-white rounded-apple-md text-[17px] leading-[24px] font-semibold hover:bg-apple-gray-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 shadow-apple-sm"
               >
-                Subscribe Now - €30.99/month
+                Subscribe Now - €14.99/month
               </Link>
               <p className="text-[13px] leading-[18px] text-apple-gray-3">
                 Cancel anytime. No commitment.

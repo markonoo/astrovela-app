@@ -345,7 +345,7 @@ export function PersonalizedLanding() {
           <div className="flex flex-col md:flex-row gap-6 items-center mb-6">
             <div className="w-full md:w-1/3">
               <div className="rounded-lg overflow-hidden">
-                <img src="/images/astrologer-workspace.jpg" alt="Astrologer" className="w-full h-auto" />
+                <img src="/images/testimonials/quiz-testimonial.jpg" alt="Astrologer" className="w-full h-auto" />
               </div>
             </div>
 

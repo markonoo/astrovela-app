@@ -705,26 +705,26 @@ export function QuizController() {
       }
       case "testimonial":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[30vh] py-3 text-yellow-100">
+          <div className="flex flex-col items-center justify-center min-h-[30vh] py-3 text-yellow-100 relative z-10">
             {/* Large square photo placeholder - increased by 2x */}
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-96 h-96 rounded-xl border-4 border-yellow-300 bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg">
+            <div className="flex items-center justify-center mb-4 relative z-10">
+              <div className="w-96 h-96 rounded-xl border-4 border-yellow-300 bg-gray-200 flex items-center justify-center overflow-hidden shadow-lg relative z-10">
                 <img
                   src="/images/testimonials/quiz-testimonial.jpg"
                   alt="Testimonial placeholder"
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full relative z-10"
                 />
               </div>
             </div>
             {/* Star rating */}
-            <div className="flex space-x-1 mb-2">
+            <div className="flex space-x-1 mb-2 relative z-10">
               <span className="text-yellow-300 text-2xl">★★★★★</span>
             </div>
-            <div className="text-xl italic text-yellow-100 mb-2 font-medium max-w-xl text-center">{stepConfig.quote || "This book changed my life! The astrological insights were incredibly accurate and have helped me understand myself better."}</div>
-            <div className="text-base text-yellow-200 mb-4">Astrovela Customer</div>
+            <div className="text-xl italic text-yellow-100 mb-2 font-medium max-w-xl text-center relative z-10">{stepConfig.quote || "This book changed my life! The astrological insights were incredibly accurate and have helped me understand myself better."}</div>
+            <div className="text-base text-yellow-200 mb-4 relative z-10">Astrovela Customer</div>
             <button
               onClick={nextStep}
-              className="px-12 py-4 bg-yellow-300 rounded-full text-gray-900 font-medium text-lg hover:bg-yellow-400 transition-colors shadow"
+              className="px-12 py-4 bg-yellow-300 rounded-full text-gray-900 font-medium text-lg hover:bg-yellow-400 transition-colors shadow relative z-10"
             >
               Continue
             </button>

@@ -171,7 +171,7 @@ export async function createShopifyCheckout({
     // Bundle pricing logic:
     // - Paperback selected: charge only paperback (€55.99)
     // - App + Ebook (no paperback): charge only ebook (€49.99)  
-    // - Only App: charge app (€30.99)
+    // - Only App: charge app (€14.99)
     // - Only Ebook: charge ebook (€49.99)
     
     if (selectedOptions.paperback) {

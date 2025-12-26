@@ -226,7 +226,7 @@ export default function PricingPage() {
 
     if (selectedOptions.app && !selectedOptions.paperback && !selectedOptions.ebook) {
       // Only app subscription selected
-      total += parseFloat(getProductPrice("app-subscription") || "30.99")
+      total += parseFloat(getProductPrice("app-subscription") || "14.99")
     } else if (selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app) {
       // Only ebook selected
       total += parseFloat(getProductPrice("ebook") || "49.99")
@@ -261,8 +261,8 @@ export default function PricingPage() {
   const getAppPrice = () => {
     if (isPaperback) return "FREE" // Free with paperback
     if (isAppAndEbook) return "FREE" // Free with ebook
-    if (isOnlyApp) return "€30.99" // Standalone app price
-    return "€30.99" // Default price
+    if (isOnlyApp) return "€14.99" // Standalone app price
+    return "€14.99" // Default price
   }
 
   // Handle option selection with debugging
@@ -593,7 +593,7 @@ export default function PricingPage() {
                       "FREE 1-month trial with ebook or paperback"
                     ]}
                     price={getAppPrice()}
-                    originalPrice="€30.99"
+                    originalPrice="€14.99"
                     imageSrc="/images/products/app-interface.jpg"
                     isSelected={selectedOptions.app}
                     onSelect={() => handleOptionSelect("app")}
@@ -649,7 +649,7 @@ export default function PricingPage() {
                   </div>
                   {selectedOptions.app && (
                     <p className="text-[10px] md:text-xs text-gray-500 text-center mt-2">
-                      By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €30.99 every 1 month thereafter until I cancel by contacting us at hello@tryastrovela.com
+                      By clicking "Order Now," I agree that if I do not cancel the app subscription before the end of the free 1 month trial, astrovela will automatically charge my payment method the regular price of €14.99 every 1 month thereafter until I cancel by contacting us at hello@tryastrovela.com
                     </p>
                   )}
                 </div>

@@ -131,7 +131,7 @@ export default function BillingPage() {
           <CardContent className="px-6 py-6">
             <div className="space-y-5">
               <div className="bg-white rounded-apple-lg p-5 border-2 border-apple-gray-1">
-                <div className="text-[32px] leading-[40px] font-bold text-apple-gray-1 mb-1">€30.99</div>
+                <div className="text-[32px] leading-[40px] font-bold text-apple-gray-1 mb-1">€14.99</div>
                 <div className="text-[15px] leading-[20px] text-apple-gray-2">per month</div>
               </div>
               <Link

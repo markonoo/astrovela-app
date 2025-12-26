@@ -120,7 +120,7 @@ function generateWelcomeEmailHTML(data: {
               <div style="background-color: #fffbe6; border-left: 4px solid #f7c800; padding: 16px; margin: 30px 0;">
                 <p style="margin: 0; font-size: 14px; color: #4d4d4d; line-height: 1.6;">
                   <strong>Your free trial expires on ${data.freeUntilDate}</strong><br>
-                  After 30 days, continue for just €30.99/month. Cancel anytime.
+                  After 30 days, continue for just €14.99/month. Cancel anytime.
                 </p>
               </div>
               
