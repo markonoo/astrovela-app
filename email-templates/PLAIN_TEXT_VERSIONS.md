@@ -121,7 +121,7 @@ Your personalized astrology book is still waiting, and we've added an EXTRA 10% 
 
 That's 60% OFF TOTAL - our biggest discount ever!
 
-"I was hesitant at first, but this book has been life-changing. It helped me understand why certain relationships weren't working and guided me to my perfect partner. Worth every penny!" — Emma L. ⭐⭐⭐⭐⭐
+"I was hesitant at first, but this book has been life-changing. It helped me understand why certain relationships weren't working and guided me to my perfect partner. Worth every penny!" — Emily L. ⭐⭐⭐⭐⭐
 
 ⏰ THIS OFFER EXPIRES IN 4 DAYS
 

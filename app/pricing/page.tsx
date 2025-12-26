@@ -229,10 +229,10 @@ export default function PricingPage() {
       total += parseFloat(getProductPrice("app-subscription") || "14.99")
     } else if (selectedOptions.ebook && !selectedOptions.paperback && !selectedOptions.app) {
       // Only ebook selected
-      total += parseFloat(getProductPrice("ebook") || "49.99")
+      total += parseFloat(getProductPrice("ebook") || "29.99")
     } else if (selectedOptions.ebook && selectedOptions.app && !selectedOptions.paperback) {
       // Ebook + app bundle (special pricing)
-      total += parseFloat(getProductPrice("ebook") || "49.99")
+      total += parseFloat(getProductPrice("ebook") || "29.99")
       // App is free with ebook
     } else if (selectedOptions.paperback) {
       // Paperback selected (app and ebook are free with paperback)
@@ -253,9 +253,9 @@ export default function PricingPage() {
   // Pricing display logic helpers
   const getEbookPrice = () => {
     if (isPaperback) return "FREE" // Free with paperback
-    if (isOnlyEbook) return "€49.99" // Standalone ebook price
-    if (isAppAndEbook) return "€49.99" // Bundle price (app is free)
-    return "€49.99" // Default price
+    if (isOnlyEbook) return "€29.99" // Standalone ebook price
+    if (isAppAndEbook) return "€29.99" // Bundle price (app is free)
+    return "€29.99" // Default price
   }
 
   const getAppPrice = () => {
@@ -577,7 +577,7 @@ export default function PricingPage() {
                       "FREE with the paperback"
                     ]}
                     price={getEbookPrice()}
-                    originalPrice="€49.99"
+                    originalPrice="€29.99"
                     imageSrc="/images/products/ebook-digital.jpg"
                     isSelected={selectedOptions.ebook}
                     onSelect={() => handleOptionSelect("ebook")}
@@ -673,7 +673,7 @@ export default function PricingPage() {
                   imageSrc="/images/testimonials/emilia-f.jpg"
                 />
                 <TestimonialCard
-                  name="Emma L."
+                  name="Emily L."
                   rating={5}
                   quote="The relationship compatibility section saved my marriage. We finally understand each other's needs and communicate better."
                   imageSrc="/images/testimonials/emma-l.jpg"
