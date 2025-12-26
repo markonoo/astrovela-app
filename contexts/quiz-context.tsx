@@ -274,9 +274,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           firstName: quizState.firstName || '',
           lastName: quizState.lastName || '',
           gender: quizState.gender || '',
-          coverDesign: quizState.coverColorScheme || null, // Fixed: was coverColorScheme
+          coverDesign: quizState.coverColorScheme || null,
           session_id: sessionId,
-          userId: null // Will be set later when user registers/logs in
+          // Don't include userId if it's null - validator expects undefined or a number
+          ...(quizState.userId && { userId: quizState.userId })
         })
       })
 
