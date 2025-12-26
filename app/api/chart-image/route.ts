@@ -25,9 +25,36 @@ export async function POST(request: Request) {
     const finalChartType = chartType || 'natal'
     const finalSessionId = sessionId || session_id
     
+    devLog('🔍 Chart-image API called with:', { 
+      hasChartUrl: !!finalChartUrl, 
+      hasBirthData: !!finalBirthData,
+      chartUrlType: finalChartUrl ? (finalChartUrl.startsWith('http') ? 'HTTP URL' : 'Data URL') : 'none',
+      sessionId: finalSessionId 
+    });
+    
     if (!finalChartUrl || !finalBirthData) {
-      devError('Missing required fields', { chartUrl: finalChartUrl, birthData: finalBirthData });
-      return NextResponse.json({ error: 'Missing required fields: chartUrl and birthData' }, { status: 400 })
+      devError('❌ Missing required fields', { 
+        hasChartUrl: !!finalChartUrl, 
+        hasBirthData: !!finalBirthData,
+        chartUrl: finalChartUrl ? 'present' : 'missing',
+        birthData: finalBirthData ? 'present' : 'missing'
+      });
+      return NextResponse.json({ 
+        error: 'Missing required fields: chartUrl and birthData',
+        details: {
+          chartUrl: !!finalChartUrl,
+          birthData: !!finalBirthData
+        }
+      }, { status: 400 })
+    }
+
+    // Validate environment variables
+    if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      devError('❌ Missing Supabase environment variables');
+      return NextResponse.json({ 
+        error: 'Server configuration error: Missing Supabase credentials',
+        details: 'NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not set'
+      }, { status: 500 })
     }
 
     // Use the public Supabase client for anonymous uploads
@@ -82,6 +109,7 @@ export async function POST(request: Request) {
     // Upload to Supabase storage (bucket: 'charts')
     let uploadResult;
     try {
+      devLog('📤 Attempting upload to Supabase storage bucket: charts');
       uploadResult = await supabaseAuth.storage
         .from('charts')
         .upload(fileName, buffer, { 
@@ -90,18 +118,31 @@ export async function POST(request: Request) {
         })
       
       if (uploadResult.error) {
-        devError('Failed to upload image to storage:', uploadResult.error)
+        devError('❌ Failed to upload image to storage:', uploadResult.error)
+        
+        // Provide more specific error messages
+        if (uploadResult.error.message?.includes('Bucket not found') || 
+            uploadResult.error.message?.includes('bucket does not exist')) {
+          return NextResponse.json({ 
+            error: 'Storage bucket not configured', 
+            details: 'The "charts" storage bucket does not exist in Supabase. Please create it in Supabase Storage settings.',
+            supabaseError: uploadResult.error.message 
+          }, { status: 500 })
+        }
+        
         return NextResponse.json({ 
           error: 'Failed to upload image to storage', 
-          details: uploadResult.error.message 
+          details: uploadResult.error.message,
+          fileName: fileName 
         }, { status: 500 })
       }
-      devLog('Successfully uploaded to Supabase storage')
+      devLog('✅ Successfully uploaded to Supabase storage')
     } catch (err) {
-      devError('Error during Supabase upload:', err)
+      devError('❌ Error during Supabase upload:', err)
       return NextResponse.json({ 
         error: 'Failed to upload to storage', 
-        details: err instanceof Error ? err.message : 'Unknown error' 
+        details: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined 
       }, { status: 500 })
     }
 
@@ -137,6 +178,13 @@ export async function POST(request: Request) {
         createdAt: new Date().toISOString(),
       }
       
+      devLog('💾 Saving chart metadata to database:', { 
+        hasUserId: !!userId, 
+        hasEmail: !!email, 
+        hasSessionId: !!finalSessionId,
+        imageUrl: imageUrl ? 'present' : 'missing'
+      });
+      
       const { data, error } = await supabaseAuth
         .from('ChartImage')
         .insert([chartImageData])
@@ -144,19 +192,36 @@ export async function POST(request: Request) {
         .single()
       
       if (error) {
-        devError('Error saving chart metadata to Supabase:', error)
+        devError('❌ Error saving chart metadata to Supabase:', error)
+        
+        // Provide more specific error messages
+        if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+          await supabaseAuth.storage.from('charts').remove([fileName])
+          return NextResponse.json({ 
+            error: 'Database table not found', 
+            details: 'The ChartImage table does not exist in the database. Please run migrations.',
+            supabaseError: error.message 
+          }, { status: 500 })
+        }
+        
         throw error
       }
       
       chartImage = data
-      devLog('Successfully saved chart metadata:', chartImage.id)
+      devLog('✅ Successfully saved chart metadata:', chartImage.id)
     } catch (err) {
-      devError('Error saving chart metadata:', err)
+      devError('❌ Error saving chart metadata:', err)
       // Clean up the uploaded file since we couldn't save the metadata
-      await supabaseAuth.storage.from('charts').remove([fileName])
+      try {
+        await supabaseAuth.storage.from('charts').remove([fileName])
+        devLog('🗑️ Cleaned up orphaned file from storage')
+      } catch (cleanupErr) {
+        devError('Failed to clean up file:', cleanupErr)
+      }
       return NextResponse.json({ 
         error: 'Failed to save chart metadata', 
-        details: err instanceof Error ? err.message : 'Unknown error' 
+        details: err instanceof Error ? err.message : 'Unknown error',
+        hint: 'Check if ChartImage table exists and has correct schema'
       }, { status: 500 })
     }
 

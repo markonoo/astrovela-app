@@ -248,6 +248,18 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       const sessionId = getOrCreateSessionId()
       logger.quiz('Using session ID for quiz submission', { sessionId })
       
+      // Format birthDate to match validation schema (convert strings to numbers)
+      const formattedBirthDate = {
+        day: quizState.birthDate.day ? parseInt(quizState.birthDate.day) : 1,
+        month: quizState.birthDate.month ? parseInt(quizState.birthDate.month) : 1,
+        year: quizState.birthDate.year ? parseInt(quizState.birthDate.year) : 2000,
+        hour: quizState.birthTime ? parseInt(quizState.birthTime.split(':')[0]) : undefined,
+        min: quizState.birthTime ? parseInt(quizState.birthTime.split(':')[1]) : undefined,
+        lat: quizState.birthLocation.latitude || undefined,
+        lon: quizState.birthLocation.longitude || undefined,
+        tzone: 0 // Default timezone
+      }
+      
       const response = await fetch('/api/quiz/submit', {
         method: 'POST',
         headers: {
@@ -256,13 +268,13 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           email: quizState.email || '',
           answers: quizState.answers,
-          birthDate: quizState.birthDate,
+          birthDate: formattedBirthDate,
           birthPlace: quizState.birthPlace || '',
           birthTime: quizState.birthTime || '',
           firstName: quizState.firstName || '',
           lastName: quizState.lastName || '',
           gender: quizState.gender || '',
-          coverColorScheme: quizState.coverColorScheme || null,
+          coverDesign: quizState.coverColorScheme || null, // Fixed: was coverColorScheme
           session_id: sessionId,
           userId: null // Will be set later when user registers/logs in
         })
