@@ -49,9 +49,14 @@ export async function POST(request: Request) {
       ? encryptBirthData(quizData.birthDate)
       : quizData.birthDate
     
+    // Generate a unique ID for QuizResponse (using cuid format to match schema)
+    // Note: When using Supabase client directly, Prisma's @default() doesn't work
+    const quizResponseId = crypto.randomUUID();
+    
     const { data, error } = await supabase
       .from('QuizResponse')
       .insert({
+        id: quizResponseId, // ← FIX: Must provide id when using Supabase client directly
         email: quizData.email || '',
         answers: quizData.answers,
         birthDate: birthDateToStore,
