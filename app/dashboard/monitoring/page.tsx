@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AstrovelaIcon from '@/components/icons/AstrovelaIcon';
 
 interface ShopifyAnalytics {
   status: 'connected' | 'disconnected' | 'error';
@@ -385,24 +386,87 @@ export default function MonitoringDashboard() {
 
   return (
     <ProtectedRoute>
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        {/* Header with Branding */}
+        <div className="bg-gradient-to-r from-[#28293d] to-[#3a3b52] p-8 rounded-xl shadow-lg">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">🚀 AstroBook Monitoring Dashboard</h1>
-              <p className="text-gray-600 mt-1">
-                Last updated: {lastRefresh.toLocaleTimeString()} • Auto-refresh: 30s
-              </p>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#f7c800] p-3 rounded-xl shadow-md">
+                <AstrovelaIcon width={40} height={40} className="text-[#28293d]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                  <h1 className="text-3xl font-bold text-white">AstroVela</h1>
+                  <span className="px-3 py-1 bg-[#f7c800] text-[#28293d] text-sm font-semibold rounded-full">
+                    Admin Dashboard
+                  </span>
+                </div>
+                <p className="text-gray-300 text-sm flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  Last updated: {lastRefresh.toLocaleTimeString()} • Auto-refresh: 30s
+                </p>
+              </div>
             </div>
             <button 
               onClick={fetchAllData}
               disabled={loading}
-              className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded transition-colors"
+              className="bg-[#f7c800] hover:bg-[#e5b700] disabled:bg-gray-400 text-[#28293d] font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg disabled:transform-none"
             >
-              {loading ? '🔄 Refreshing...' : '🔄 Refresh'}
+              {loading ? '🔄 Refreshing...' : '🔄 Refresh Data'}
             </button>
+          </div>
+          
+          {/* Quick Stats Bar */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-sm">Total Users</p>
+                  <p className="text-2xl font-bold text-white">
+                    {auraAppStats?.summary.totalEntitlements || 0}
+                  </p>
+                </div>
+                <div className="text-3xl">👥</div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-sm">Active Subscriptions</p>
+                  <p className="text-2xl font-bold text-white">
+                    {auraAppStats?.summary.activeSubscriptions || 0}
+                  </p>
+                </div>
+                <div className="text-3xl">⚡</div>
+              </div>
+              <p className="text-xs text-green-300 mt-1">
+                {auraAppStats?.summary.conversionRate || '0%'} conversion rate
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-sm">Reports Generated</p>
+                  <p className="text-2xl font-bold text-white">
+                    {pdfStats?.summary.usersWithReports || 0}
+                  </p>
+                </div>
+                <div className="text-3xl">📄</div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-300 text-sm">Expiring Soon</p>
+                  <p className="text-2xl font-bold text-white">
+                    {auraAppStats?.summary.expiringSoon || 0}
+                  </p>
+                </div>
+                <div className="text-3xl">⏰</div>
+              </div>
+              <p className="text-xs text-yellow-300 mt-1">Trials expiring in 7 days</p>
+            </div>
           </div>
         </div>
 
