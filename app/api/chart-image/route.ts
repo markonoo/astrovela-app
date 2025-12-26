@@ -168,7 +168,11 @@ export async function POST(request: Request) {
     // Save metadata in the ChartImage table using Supabase instead of Prisma
     let chartImage;
     try {
+      // Generate a unique ID for ChartImage (required field with no default)
+      const chartImageId = crypto.randomUUID();
+      
       const chartImageData = {
+        id: chartImageId, // ← FIX: ChartImage.id has no @default(), so we must provide it
         userId: userId ? Number(userId) : null,
         email: email || null,
         session_id: finalSessionId || null,
@@ -179,6 +183,7 @@ export async function POST(request: Request) {
       }
       
       devLog('💾 Saving chart metadata to database:', { 
+        id: chartImageId,
         hasUserId: !!userId, 
         hasEmail: !!email, 
         hasSessionId: !!finalSessionId,
