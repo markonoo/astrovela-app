@@ -75,8 +75,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data: data[0] })
   } catch (error) {
     logger.error("Failed to save quiz data", error)
+    
+    // Extract detailed error information
+    let errorDetails = 'Unknown error';
+    let supabaseError = null;
+    
+    if (error instanceof Error) {
+      errorDetails = error.message;
+    } else if (error && typeof error === 'object') {
+      // Handle Supabase error object
+      const err = error as any;
+      errorDetails = err.message || err.details || JSON.stringify(err);
+      supabaseError = err;
+    } else if (typeof error === 'string') {
+      errorDetails = error;
+    }
+    
     return NextResponse.json(
-      { error: "Failed to save quiz data", details: error instanceof Error ? error.message : String(error) },
+      { 
+        error: "Failed to save quiz data", 
+        details: errorDetails,
+        supabaseError: supabaseError,
+        errorType: typeof error,
+        errorConstructor: error?.constructor?.name
+      },
       { status: 500 }
     )
   }
