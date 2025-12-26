@@ -204,7 +204,14 @@ export async function POST(request: Request) {
           }, { status: 500 })
         }
         
-        throw error
+        // Return full Supabase error details
+        await supabaseAuth.storage.from('charts').remove([fileName])
+        return NextResponse.json({ 
+          error: 'Failed to save chart metadata', 
+          details: error.message || error.details || JSON.stringify(error),
+          supabaseError: error,
+          hint: 'Check if ChartImage table exists and has correct schema'
+        }, { status: 500 })
       }
       
       chartImage = data
@@ -218,9 +225,23 @@ export async function POST(request: Request) {
       } catch (cleanupErr) {
         devError('Failed to clean up file:', cleanupErr)
       }
+      
+      // Extract error details
+      let errorDetails = 'Unknown error';
+      if (err instanceof Error) {
+        errorDetails = err.message;
+      } else if (err && typeof err === 'object') {
+        errorDetails = (err as any).message || (err as any).details || JSON.stringify(err);
+      } else if (typeof err === 'string') {
+        errorDetails = err;
+      }
+      
       return NextResponse.json({ 
         error: 'Failed to save chart metadata', 
-        details: err instanceof Error ? err.message : 'Unknown error',
+        details: errorDetails,
+        errorType: typeof err,
+        errorConstructor: err?.constructor?.name,
+        fullError: err && typeof err === 'object' ? JSON.stringify(err) : String(err),
         hint: 'Check if ChartImage table exists and has correct schema'
       }, { status: 500 })
     }
