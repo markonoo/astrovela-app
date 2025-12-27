@@ -241,15 +241,15 @@ export default function ReportViewerPage() {
         return
       }
 
-      try {
-        const response = await fetch("/api/aura/entitlement")
-        if (response.ok) {
-          const data = await response.json()
+    try {
+      const response = await fetch("/api/aura/entitlement")
+      if (response.ok) {
+        const data = await response.json()
           setHasAccess(data.hasAccess)
-        }
-      } catch (error) {
-        logger.error("Failed to check access", error)
-      } finally {
+      }
+    } catch (error) {
+      logger.error("Failed to check access", error)
+    } finally {
         setLoadingAccess(false)
       }
     }

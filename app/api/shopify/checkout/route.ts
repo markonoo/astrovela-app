@@ -24,6 +24,14 @@ interface CheckoutRequest {
     lastName?: string;
     email?: string;
   };
+  personalizationData?: {
+    coverColor?: string;
+    birthDate?: string;
+    birthTime?: string;
+    birthPlace?: string;
+    sunSign?: string;
+    moonSign?: string;
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -168,6 +176,30 @@ export async function POST(request: NextRequest) {
     // and rely on automatic discounts to make bundle items free
     // This is more reliable than draft orders for customer experience
     
+    // Build cart attributes for personalization data
+    const cartAttributes: Record<string, string> = {};
+    
+    if (body.personalizationData) {
+      if (body.personalizationData.coverColor) {
+        cartAttributes['Cover Color'] = body.personalizationData.coverColor;
+      }
+      if (body.personalizationData.birthDate) {
+        cartAttributes['Birth Date'] = body.personalizationData.birthDate;
+      }
+      if (body.personalizationData.birthTime) {
+        cartAttributes['Birth Time'] = body.personalizationData.birthTime;
+      }
+      if (body.personalizationData.birthPlace) {
+        cartAttributes['Birth Place'] = body.personalizationData.birthPlace;
+      }
+      if (body.personalizationData.sunSign) {
+        cartAttributes['Sun Sign'] = body.personalizationData.sunSign;
+      }
+      if (body.personalizationData.moonSign) {
+        cartAttributes['Moon Sign'] = body.personalizationData.moonSign;
+      }
+    }
+    
     // Create multi-product checkout URL using proper Shopify cart format
     let checkoutUrl: string;
     
@@ -177,13 +209,24 @@ export async function POST(request: NextRequest) {
       const variant = variants[0];
       const variantIdNumber = variant.id.split('/').pop();
       
+      let baseUrl: string;
       if (lineItem.sellingPlanId) {
         const sellingPlanIdNumber = lineItem.sellingPlanId.split('/').pop();
-        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}?selling_plan=${sellingPlanIdNumber}`;
+        baseUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}?selling_plan=${sellingPlanIdNumber}`;
       } else {
-        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}`;
+        baseUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${variantIdNumber}:${lineItem.quantity}`;
       }
-    } else {
+      
+      // Add cart attributes if present
+      if (Object.keys(cartAttributes).length > 0) {
+        const attributeParams = Object.entries(cartAttributes)
+          .map(([key, value]) => `attributes[${encodeURIComponent(key)}]=${encodeURIComponent(value)}`)
+          .join('&');
+        checkoutUrl = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${attributeParams}`;
+      } else {
+        checkoutUrl = baseUrl;
+      }
+    }     else {
       // Multiple products - send ALL items to cart
       const cartItemsForUrl: string[] = [];
       let hasSellingPlan = false;
@@ -207,10 +250,21 @@ export async function POST(request: NextRequest) {
       
       const cartPath = cartItemsForUrl.join(',');
       
+      let baseUrl: string;
       if (hasSellingPlan && sellingPlanId) {
-        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}?selling_plan=${sellingPlanId}`;
+        baseUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}?selling_plan=${sellingPlanId}`;
       } else {
-        checkoutUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}`;
+        baseUrl = `https://${SHOPIFY_CONFIG.SHOP_DOMAIN}/cart/${cartPath}`;
+      }
+      
+      // Add cart attributes if present
+      if (Object.keys(cartAttributes).length > 0) {
+        const attributeParams = Object.entries(cartAttributes)
+          .map(([key, value]) => `attributes[${encodeURIComponent(key)}]=${encodeURIComponent(value)}`)
+          .join('&');
+        checkoutUrl = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${attributeParams}`;
+      } else {
+        checkoutUrl = baseUrl;
       }
     }
 

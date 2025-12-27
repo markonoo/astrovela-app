@@ -114,7 +114,10 @@ export async function getShopifyProducts(): Promise<ShopifyProduct[]> {
   }
 }
 
-export async function getProductVariantId(productType: "app" | "paperback" | "ebook"): Promise<string> {
+export async function getProductVariantId(
+  productType: "app" | "paperback" | "ebook", 
+  colorVariant?: string
+): Promise<string> {
   try {
     const products = await getShopifyProducts();
     // Support both legacy and current handles discovered in store
@@ -128,12 +131,30 @@ export async function getProductVariantId(productType: "app" | "paperback" | "eb
     const product = products.find((p) =>
       handles.includes(p.handle?.toLowerCase?.() || p.handle)
     );
+    
     if (!product) {
       throw new ShopifyError(
         `Product type "${productType}" not found in store`,
         ShopifyErrorCodes.PRODUCT_NOT_FOUND,
         404
       );
+    }
+
+    // For paperback, if colorVariant is provided, try to find matching variant
+    if (productType === "paperback" && colorVariant && product.variants.length > 1) {
+      // Normalize color name for matching (e.g., "navy" or "Navy")
+      const normalizedColor = colorVariant.toLowerCase();
+      
+      // Try to find variant by title matching the color
+      const matchingVariant = product.variants.find((v) => 
+        v.title?.toLowerCase().includes(normalizedColor)
+      );
+      
+      if (matchingVariant?.id) {
+        return matchingVariant.id;
+      }
+      
+      // If no color match found, fall through to default (first variant)
     }
 
     if (!product.variants[0]?.id) {
@@ -176,7 +197,7 @@ export async function createShopifyCheckout({
     
     if (selectedOptions.paperback) {
       // Paperback bundle: charge only paperback, others are free
-      const paperbackVariantId = await getProductVariantId("paperback");
+      const paperbackVariantId = await getProductVariantId("paperback", quizState.coverColorScheme);
       chargedProducts.push({ 
         type: "paperback", 
         variantId: paperbackVariantId
@@ -246,6 +267,17 @@ export async function createShopifyCheckout({
           firstName: quizState.firstName || "",
           lastName: quizState.lastName || "",
           email: quizState.email,
+        },
+        // Add personalization data for order notes/properties
+        personalizationData: {
+          coverColor: quizState.coverColorScheme,
+          birthDate: quizState.birthDate?.year && quizState.birthDate?.month && quizState.birthDate?.day
+            ? `${quizState.birthDate.year}-${quizState.birthDate.month}-${quizState.birthDate.day}`
+            : "",
+          birthTime: quizState.birthTime || "",
+          birthPlace: quizState.birthPlace || "",
+          sunSign: quizState.sunSign || "",
+          moonSign: quizState.moonSign || "",
         }
       }),
     });
