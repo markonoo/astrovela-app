@@ -559,7 +559,7 @@ export default function PricingPage() {
                         "FREE shipping",
                         "FREE app & ebook included"
                       ]}
-                      price="€55.99"
+                      price="€49.99"
                       originalPrice="€169.97"
                       imageSrc={`/images/products/paperback-book-${state.coverColorScheme}.jpg`}
                       isSelected={selectedOptions.paperback}

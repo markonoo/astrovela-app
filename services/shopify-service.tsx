@@ -185,48 +185,81 @@ export async function createShopifyCheckout({
       );
     }
 
-    // FIXED APPROACH: Send only products that should be charged
-    // This ensures customers are only charged for what they should pay
-    const chargedProducts: Array<{type: string, variantId: string, sellingPlanId?: string}> = [];
+    // NEW APPROACH: Send ALL selected products to checkout
+    // Shopify will show all items, with correct pricing based on bundles
+    const allProducts: Array<{type: string, variantId: string, sellingPlanId?: string, price: string}> = [];
     
     // Bundle pricing logic:
-    // - Paperback selected: charge only paperback (€55.99)
-    // - App + Ebook (no paperback): charge only ebook (€49.99)  
-    // - Only App: charge app (€14.99)
-    // - Only Ebook: charge ebook (€49.99)
+    // - Paperback selected: paperback €49.99, ebook FREE, app FREE
+    // - App + Ebook (no paperback): ebook €29.99, app FREE  
+    // - Only App: app €14.99
+    // - Only Ebook: ebook €29.99
     
     if (selectedOptions.paperback) {
-      // Paperback bundle: charge only paperback, others are free
+      // Paperback bundle: paperback at full price, others are free
       const paperbackVariantId = await getProductVariantId("paperback", quizState.coverColorScheme);
-      chargedProducts.push({ 
+      allProducts.push({ 
         type: "paperback", 
-        variantId: paperbackVariantId
+        variantId: paperbackVariantId,
+        price: "49.99"
       });
+      
+      // Add ebook if selected (free with paperback)
+      if (selectedOptions.ebook) {
+        const ebookVariantId = await getProductVariantId("ebook", quizState.coverColorScheme);
+        allProducts.push({ 
+          type: "ebook", 
+          variantId: ebookVariantId,
+          price: "0.00"
+        });
+      }
+      
+      // Add app if selected (free with paperback)
+      if (selectedOptions.app) {
+        const appVariantId = await getProductVariantId("app");
+        allProducts.push({ 
+          type: "app", 
+          variantId: appVariantId,
+          sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307",
+          price: "0.00"
+        });
+      }
     } else if (selectedOptions.ebook && selectedOptions.app) {
-      // App + Ebook bundle: charge only ebook (with color), app is free
+      // App + Ebook bundle: charge ebook, app is free
       const ebookVariantId = await getProductVariantId("ebook", quizState.coverColorScheme);
-      chargedProducts.push({ 
+      allProducts.push({ 
         type: "ebook", 
-        variantId: ebookVariantId
+        variantId: ebookVariantId,
+        price: "29.99"
+      });
+      
+      const appVariantId = await getProductVariantId("app");
+      allProducts.push({ 
+        type: "app", 
+        variantId: appVariantId,
+        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307",
+        price: "0.00"
       });
     } else if (selectedOptions.ebook) {
-      // Only ebook selected (with color)
+      // Only ebook selected
       const ebookVariantId = await getProductVariantId("ebook", quizState.coverColorScheme);
-      chargedProducts.push({ 
+      allProducts.push({ 
         type: "ebook", 
-        variantId: ebookVariantId
+        variantId: ebookVariantId,
+        price: "29.99"
       });
     } else if (selectedOptions.app) {
       // Only app selected
       const appVariantId = await getProductVariantId("app");
-      chargedProducts.push({ 
+      allProducts.push({ 
         type: "app", 
         variantId: appVariantId,
-        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307"
+        sellingPlanId: env.SHOPIFY_APP_SELLING_PLAN_ID || "gid://shopify/SellingPlan/710674514307",
+        price: "14.99"
       });
     }
 
-    if (chargedProducts.length === 0) {
+    if (allProducts.length === 0) {
       throw new ShopifyError(
         "At least one product must be selected",
         ShopifyErrorCodes.VALIDATION_ERROR,
@@ -234,8 +267,8 @@ export async function createShopifyCheckout({
       );
     }
 
-    // Convert to line items format - send only charged products
-    const lineItems = chargedProducts.map(product => {
+    // Convert to line items format - send ALL selected products
+    const lineItems = allProducts.map(product => {
       const lineItem: any = { 
         variantId: product.variantId, 
         quantity: 1
@@ -258,9 +291,10 @@ export async function createShopifyCheckout({
         email: quizState.email,
         bundlePricing: {
           // Send bundle information to checkout API
-          selectedProducts: chargedProducts.map((p: any) => ({
+          selectedProducts: allProducts.map((p: any) => ({
             type: p.type,
-            shouldCharge: true // Only charged products are sent now
+            price: p.price,
+            shouldCharge: parseFloat(p.price) > 0
           }))
         },
         customerData: {
