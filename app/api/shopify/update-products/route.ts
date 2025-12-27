@@ -80,11 +80,16 @@ export async function POST(request: NextRequest) {
       logger.api("update-shopify-products", `Processing ${handle}`);
 
       // Determine image path based on handle
+      // Note: For paperback and ebook, we upload a default image to Shopify,
+      // but the app dynamically shows color variants (black, navy, purple, green, burgundy, cream)
+      // based on user selection in the quiz using the pattern:
+      // - Paperback: /images/products/paperback-book-{color}.jpg
+      // - Ebook: /images/products/ebook-digital-{color}.jpg
       let imagePath = '';
       if (handle === 'paperback-book') {
-        imagePath = '/images/products/paperback-book.jpg';
+        imagePath = '/images/products/paperback-book.jpg'; // Default image
       } else if (handle === 'ebook') {
-        imagePath = '/images/products/ebook-digital.jpg';
+        imagePath = '/images/products/ebook-digital.jpg'; // Default image
       } else if (handle === 'app-subscription') {
         imagePath = '/images/products/app-interface.jpg';
       }

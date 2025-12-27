@@ -23,20 +23,39 @@
 
 ---
 
-### ✅ **2. Uploaded Product Images to Shopify**
+### ✅ **2. Product Images with Color Variants**
 
-All 3 products now have their correct images:
+All 3 products have their images, with **color variants** for Paperback and Ebook:
 
-| Product | Handle | Image | Status |
-|---------|--------|-------|--------|
-| **Paperback Book** | `astrology-paperback` | `paperback-book.jpg` | ✅ Uploaded |
-| **Ebook** | `astrology-ebook` | `ebook-digital.jpg` | ✅ Uploaded |
-| **App Subscription** | `app-subscription` | `app-interface.jpg` | ✅ Uploaded |
+| Product | Handle | Default Image | Color Variants | Status |
+|---------|--------|---------------|----------------|--------|
+| **Paperback Book** | `astrology-paperback` | `paperback-book.jpg` | 6 colors (black, navy, purple, green, burgundy, cream) | ✅ Configured |
+| **Ebook** | `astrology-ebook` | `ebook-digital.jpg` | 6 colors (black, navy, purple, green, burgundy, cream) | ✅ Configured |
+| **App Subscription** | `app-subscription` | `app-interface.jpg` | No variants | ✅ Uploaded |
 
 **Image sources:**
-- `/public/images/products/paperback-book.jpg`
-- `/public/images/products/ebook-digital.jpg`
+- `/public/images/products/paperback-book.jpg` (default)
+- `/public/images/products/paperback-book-{color}.jpg` (6 variants)
+- `/public/images/products/ebook-digital.jpg` (default)
+- `/public/images/products/ebook-digital-{color}.jpg` (6 variants)
 - `/public/images/products/app-interface.jpg`
+
+**Color Variants:**
+The app dynamically displays color-specific images based on user selection in the quiz:
+- `paperback-book-black.jpg`
+- `paperback-book-navy.jpg`
+- `paperback-book-purple.jpg`
+- `paperback-book-green.jpg`
+- `paperback-book-burgundy.jpg`
+- `paperback-book-cream.jpg`
+- `ebook-digital-black.jpg`
+- `ebook-digital-navy.jpg`
+- `ebook-digital-purple.jpg`
+- `ebook-digital-green.jpg`
+- `ebook-digital-burgundy.jpg`
+- `ebook-digital-cream.jpg`
+
+📖 **See:** `COLOR_VARIANT_IMAGES_GUIDE.md` for complete implementation details
 
 ---
 
