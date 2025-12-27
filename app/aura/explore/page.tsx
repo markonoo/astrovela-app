@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BookOpen, Sparkles } from "lucide-react"
 import { zodiacSignsData } from "@/lib/zodiac-data"
 
+export default function ExplorePage() {
+  const [selectedSign, setSelectedSign] = useState<string>("aries")
+
   const signs = [
     "aries", "taurus", "gemini", "cancer", "leo", "virgo",
     "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"
