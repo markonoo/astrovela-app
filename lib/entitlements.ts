@@ -20,30 +20,69 @@ export interface AppEntitlement {
   updatedAt: Date;
 }
 
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function calculateDaysLeft(freeUntil: Date) {
+  return Math.max(0, Math.ceil((freeUntil.getTime() - Date.now()) / MS_PER_DAY));
+}
+
 /**
- * Check if user has active access to the aura app
+ * Normalize an entitlement record, auto-expiring trials when needed.
  */
-export async function hasActiveAccess(userId: number): Promise<boolean> {
-  const entitlement = await prisma.appEntitlement.findUnique({
-    where: { userId },
-  });
+async function normalizeEntitlement(
+  entitlement: AppEntitlement | null
+): Promise<AppEntitlement | null> {
+  if (!entitlement) return null;
 
-  if (!entitlement) {
-    return false;
-  }
-
-  // Check if trial/access is still valid
   const now = new Date();
-  if (entitlement.freeUntil < now && entitlement.plan === 'trial') {
+  if (entitlement.plan === 'trial' && entitlement.freeUntil < now) {
     // Auto-expire trial
     await prisma.appEntitlement.update({
       where: { id: entitlement.id },
       data: { plan: 'expired' },
     });
+    return {
+      ...entitlement,
+      plan: 'expired',
+    };
+  }
+
+  return entitlement;
+}
+
+export interface EntitlementStatus {
+  hasAccess: boolean;
+  plan: PlanType;
+  daysLeft: number;
+  freeUntil?: string;
+  hasReport?: boolean;
+  purchaseDate?: string | null;
+  shopifyOrderId?: string | null;
+}
+
+/**
+ * Check if user has active access to the aura app
+ */
+export async function hasActiveAccess(userId: number): Promise<boolean> {
+  const entitlementRecord = await normalizeEntitlement(
+    await prisma.appEntitlement.findUnique({
+      where: { userId },
+    })
+  );
+
+  if (!entitlementRecord) {
     return false;
   }
 
-  return entitlement.plan === 'trial' || entitlement.plan === 'active';
+  if (entitlementRecord.plan === 'canceled' || entitlementRecord.plan === 'expired') {
+    return false;
+  }
+
+  if (entitlementRecord.plan === 'trial') {
+    return calculateDaysLeft(entitlementRecord.freeUntil) > 0;
+  }
+
+  return entitlementRecord.plan === 'active';
 }
 
 /**
@@ -54,24 +93,39 @@ export async function getUserEntitlement(userId: number): Promise<AppEntitlement
     where: { userId },
   });
 
-  if (!entitlement) {
-    return null;
-  }
+  return normalizeEntitlement(entitlement);
+}
 
-  // Auto-expire if trial expired
-  const now = new Date();
-  if (entitlement.freeUntil < now && entitlement.plan === 'trial') {
-    await prisma.appEntitlement.update({
-      where: { id: entitlement.id },
-      data: { plan: 'expired' },
-    });
+/**
+ * Build a normalized entitlement status payload for API responses.
+ */
+export async function getEntitlementStatusForUser(
+  userId: number
+): Promise<EntitlementStatus> {
+  const entitlement = await getUserEntitlement(userId);
+
+  if (!entitlement) {
     return {
-      ...entitlement,
-      plan: 'expired' as PlanType,
+      hasAccess: false,
+      plan: 'expired',
+      daysLeft: 0,
     };
   }
 
-  return entitlement as AppEntitlement;
+  const daysLeft = calculateDaysLeft(entitlement.freeUntil);
+  const hasAccess =
+    entitlement.plan === 'active' ||
+    (entitlement.plan === 'trial' && daysLeft > 0);
+
+  return {
+    hasAccess,
+    plan: entitlement.plan,
+    daysLeft,
+    freeUntil: entitlement.freeUntil?.toISOString(),
+    hasReport: entitlement.hasReport,
+    purchaseDate: entitlement.purchaseDate?.toISOString() ?? null,
+    shopifyOrderId: entitlement.shopifyOrderId ?? null,
+  };
 }
 
 /**
@@ -139,5 +193,3 @@ export function calculateFreeUntil(): Date {
   date.setDate(date.getDate() + 30);
   return date;
 }
-
-

@@ -1,187 +1,161 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useUser } from "@/contexts/UserContext"
-import { Paywall } from "@/components/aura/paywall"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AuraShell } from "@/components/aura/AuraShell"
+import { PageHeader } from "@/components/aura/PageHeader"
+import { AuraCard } from "@/components/aura/AuraCard"
+import { PillBadge } from "@/components/aura/PillBadge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Heart, Briefcase, Sparkles, Moon } from "lucide-react"
-import { EntitlementData, WeeklyDataResponse, MonthlyDataResponse } from "@/types/api"
+import { Heart, Briefcase, Sparkles, Moon, Sun } from "lucide-react"
+import { WeeklyDataResponse, MonthlyDataResponse } from "@/types/api"
 import { logger } from "@/utils/logger"
 
 export default function WeeklyMonthlyPage() {
-  const { user, loading } = useUser()
+  return (
+    <AuraShell title="Outlook" activeTab="horoscope">
+      <WeeklyContent />
+    </AuraShell>
+  )
+}
+
+function WeeklyContent() {
   const [weeklyData, setWeeklyData] = useState<WeeklyDataResponse | null>(null)
   const [monthlyData, setMonthlyData] = useState<MonthlyDataResponse | null>(null)
-  const [entitlement, setEntitlement] = useState<EntitlementData | null>(null)
   const [loadingData, setLoadingData] = useState(true)
 
   useEffect(() => {
-    if (!loading && user) {
-      checkAccess()
-    }
-  }, [user, loading])
-
-  const checkAccess = async () => {
-    try {
-      const response = await fetch("/api/aura/entitlement")
-      if (response.ok) {
-        const data = await response.json()
-        if (data.hasAccess) {
-          setEntitlement(data.entitlement)
-          fetchData()
-        } else {
-          setLoadingData(false)
+    const fetchData = async () => {
+      try {
+        const [weeklyRes, monthlyRes] = await Promise.all([
+          fetch("/api/aura/weekly"),
+          fetch("/api/aura/monthly"),
+        ])
+        if (weeklyRes.ok) {
+          setWeeklyData(await weeklyRes.json())
         }
+        if (monthlyRes.ok) {
+          setMonthlyData(await monthlyRes.json())
+        }
+      } catch (error) {
+        logger.error("Failed to fetch weekly/monthly data", error)
+      } finally {
+        setLoadingData(false)
       }
-    } catch (error) {
-      logger.error("Failed to check access", error)
-      setLoadingData(false)
     }
-  }
 
-  const fetchData = async () => {
-    try {
-      const [weeklyRes, monthlyRes] = await Promise.all([
-        fetch("/api/aura/weekly"),
-        fetch("/api/aura/monthly"),
-      ])
-      if (weeklyRes.ok) {
-        setWeeklyData(await weeklyRes.json())
-      }
-      if (monthlyRes.ok) {
-        setMonthlyData(await monthlyRes.json())
-      }
-    } catch (error) {
-      logger.error("Failed to fetch weekly/monthly data", error)
-    } finally {
-      setLoadingData(false)
-    }
-  }
+    fetchData()
+  }, [])
 
-  if (loading || loadingData) {
+  if (loadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-2 border-slate-200 border-t-[#0d9488] animate-spin" />
       </div>
     )
   }
 
-  if (!user || !entitlement) {
-    return <Paywall />
-  }
-
   return (
-    <div className="px-4 mt-6 space-y-6 mb-24">
-      <h1 className="text-[28px] leading-[36px] font-bold text-white mb-6">Outlook</h1>
+    <div className="px-4 pb-10 space-y-6">
+      <PageHeader
+        title="Your week & month"
+        subtitle="Personalized rhythms, updated daily"
+        badge={<PillBadge tone="teal">Fresh</PillBadge>}
+      />
 
       <Tabs defaultValue="weekly" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8 rounded-apple-md bg-apple-gray-5 p-1">
-          <TabsTrigger value="weekly" className="rounded-apple-md data-[state=active]:bg-white data-[state=active]:shadow-apple-sm transition-all duration-150">This Week</TabsTrigger>
-          <TabsTrigger value="monthly" className="rounded-apple-md data-[state=active]:bg-white data-[state=active]:shadow-apple-sm transition-all duration-150">This Month</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 mb-4 rounded-full bg-slate-100 p-1">
+          <TabsTrigger
+            value="weekly"
+            className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm"
+          >
+            This week
+          </TabsTrigger>
+          <TabsTrigger
+            value="monthly"
+            className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm"
+          >
+            This month
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="weekly">
+        <TabsContent value="weekly" className="space-y-4">
           {weeklyData ? (
-            <div className="space-y-4">
-              <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-t-apple-lg px-6 py-5">
-                  <div className="flex items-center space-x-3">
-                    <Heart className="w-5 h-5 text-pink-500" />
-                    <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Emotions</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-6 py-6">
-                  <p className="text-[17px] leading-[24px] text-apple-gray-2">{weeklyData.emotions}</p>
-                </CardContent>
-              </Card>
+            <>
+              <AuraCard
+                title="Emotions"
+                eyebrow="Weekly"
+                action={<PillBadge tone="rose">Heart</PillBadge>}
+              >
+                <SectionRow icon={<Heart className="w-5 h-5 text-rose-500" />} text={weeklyData.emotions} />
+              </AuraCard>
 
-              <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-t-apple-lg px-6 py-5">
-                  <div className="flex items-center space-x-3">
-                    <Sparkles className="w-5 h-5 text-purple-500" />
-                    <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Relationships</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-6 py-6">
-                  <p className="text-[17px] leading-[24px] text-apple-gray-2">{weeklyData.relationships}</p>
-                </CardContent>
-              </Card>
+              <AuraCard
+                title="Relationships"
+                eyebrow="Weekly"
+                action={<PillBadge tone="teal">Connection</PillBadge>}
+              >
+                <SectionRow icon={<Sparkles className="w-5 h-5 text-purple-500" />} text={weeklyData.relationships} />
+              </AuraCard>
 
-              <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-apple-lg px-6 py-5">
-                  <div className="flex items-center space-x-3">
-                    <Briefcase className="w-5 h-5 text-green-500" />
-                    <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Money & Career</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-6 py-6">
-                  <p className="text-[17px] leading-[24px] text-apple-gray-2">{weeklyData.moneyCareer}</p>
-                </CardContent>
-              </Card>
+              <AuraCard
+                title="Money & career"
+                eyebrow="Weekly"
+                action={<PillBadge tone="blue">Momentum</PillBadge>}
+              >
+                <SectionRow icon={<Briefcase className="w-5 h-5 text-sky-500" />} text={weeklyData.moneyCareer} />
+              </AuraCard>
 
-              <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-t-apple-lg px-6 py-5">
-                  <div className="flex items-center space-x-3">
-                    <Moon className="w-5 h-5 text-indigo-500" />
-                    <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Spiritual Theme</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-6 py-6">
-                  <p className="text-[17px] leading-[24px] text-apple-gray-2">{weeklyData.spiritualTheme}</p>
-                </CardContent>
-              </Card>
-            </div>
+              <AuraCard
+                title="Spiritual theme"
+                eyebrow="Weekly"
+                action={<PillBadge tone="amber">Inner</PillBadge>}
+              >
+                <SectionRow icon={<Moon className="w-5 h-5 text-indigo-500" />} text={weeklyData.spiritualTheme} />
+              </AuraCard>
+            </>
           ) : (
-            <div className="text-center text-[17px] leading-[24px] text-apple-gray-2 py-12">Loading weekly forecast...</div>
+            <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500">
+              Weekly forecast not available right now.
+            </div>
           )}
         </TabsContent>
 
-               <TabsContent value="monthly">
-                 {monthlyData ? (
-                   <div className="space-y-6">
-                     <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                       <CardHeader className="px-6 py-5">
-                         <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Monthly Theme</CardTitle>
-                       </CardHeader>
-                       <CardContent className="px-6 py-6">
-                         <p className="text-[18px] leading-[24px] font-semibold text-apple-gray-1 mb-3">{monthlyData.overview}</p>
-                         <p className="text-[17px] leading-[24px] text-apple-gray-2">{monthlyData.overview}</p>
-                       </CardContent>
-                     </Card>
+        <TabsContent value="monthly" className="space-y-4">
+          {monthlyData ? (
+            <>
+              <AuraCard title="Monthly theme" eyebrow="Overview">
+                <SectionRow icon={<Sun className="w-5 h-5 text-amber-500" />} text={monthlyData.overview} />
+              </AuraCard>
 
-                     <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                       <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-t-apple-lg px-6 py-5">
-                         <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Opportunities</CardTitle>
-                       </CardHeader>
-                       <CardContent className="px-6 py-6">
-                         <ul className="space-y-3">
-                           {monthlyData.focusAreas.map((area, i) => (
-                             <li key={i} className="text-[15px] leading-[20px] text-apple-gray-2">• {area}</li>
-                           ))}
-                         </ul>
-                       </CardContent>
-                     </Card>
-
-                     <Card className="border-0 shadow-apple-md rounded-apple-lg bg-white hover:shadow-apple-lg transition-shadow duration-250 animate-spring">
-                       <CardHeader className="bg-gradient-to-r from-red-50 to-pink-50 rounded-t-apple-lg px-6 py-5">
-                         <CardTitle className="text-[20px] leading-[28px] font-semibold text-apple-gray-1">Challenges</CardTitle>
-                       </CardHeader>
-                       <CardContent className="px-6 py-6">
-                         <ul className="space-y-3">
-                           {monthlyData.keyDates.map((date, i) => (
-                             <li key={i} className="text-[15px] leading-[20px] text-apple-gray-2">• {date}</li>
-                           ))}
-                         </ul>
-                       </CardContent>
-                     </Card>
-                   </div>
-                 ) : (
-                   <div className="text-center text-[17px] leading-[24px] text-apple-gray-2 py-12">Loading monthly forecast...</div>
-                 )}
-               </TabsContent>
+              <AuraCard title="Opportunities" eyebrow="Focus areas">
+                <ul className="space-y-2 text-sm text-slate-700">
+                  {monthlyData.focusAreas.map((area, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="text-emerald-500">•</span>
+                      <span>{area}</span>
+                    </li>
+                  ))}
+                </ul>
+              </AuraCard>
+            </>
+          ) : (
+            <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500">
+              Monthly outlook not available right now.
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
     </div>
   )
 }
 
+function SectionRow({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <span className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
+        {icon}
+      </span>
+      <p className="text-sm leading-6 text-slate-700">{text}</p>
+    </div>
+  )
+}

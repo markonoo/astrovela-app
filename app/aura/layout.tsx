@@ -14,10 +14,9 @@ export default function AuraLayout({
 }) {
   return (
     <UserProvider>
-      <div className="min-h-screen bg-gradient-to-b from-[#050719] via-[#090b25] to-[#0b0e2e] text-white safe-area-inset-top">
+      <div className="min-h-screen bg-[#f5f7f9] text-slate-900">
         {children}
       </div>
     </UserProvider>
   )
 }
-

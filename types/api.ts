@@ -11,19 +11,17 @@ import { PlanType } from '@/lib/entitlements'
 
 export interface EntitlementResponse {
   hasAccess: boolean
-  entitlement: EntitlementData | null
+  plan: PlanType
+  daysLeft: number
+  freeUntil?: string
+  hasReport?: boolean
+  purchaseDate?: string | null
+  shopifyOrderId?: string | null
   error?: string
 }
 
-export interface EntitlementData {
-  id: string
-  plan: PlanType
-  freeUntil: string
-  hasReport: boolean
-  purchaseDate?: string | null
-  shopifyOrderId?: string | null
-  daysRemaining?: number
-}
+// Alias retained for components that still import EntitlementData
+export type EntitlementData = EntitlementResponse
 
 // ============================================
 // Report API Types
@@ -141,4 +139,3 @@ export interface ErrorResponse {
 export type ApiResponse<T> = 
   | { success: true; data: T }
   | { success: false; error: string; details?: Record<string, any> }
-

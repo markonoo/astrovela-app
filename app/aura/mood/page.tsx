@@ -1,56 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useUser } from "@/contexts/UserContext"
-import { Paywall } from "@/components/aura/paywall"
 import { AuraShell } from "@/components/aura/AuraShell"
+import { AuraCard } from "@/components/aura/AuraCard"
+import { PageHeader } from "@/components/aura/PageHeader"
+import { PillBadge } from "@/components/aura/PillBadge"
 import { Smile, TrendingUp } from "lucide-react"
-import { EntitlementData } from "@/types/api"
-import { logger } from "@/utils/logger"
 
 export default function MoodPage() {
-  const { user, loading } = useUser()
-  const [entitlement, setEntitlement] = useState<EntitlementData | null>(null)
-  const [loadingData, setLoadingData] = useState(true)
-
-  useEffect(() => {
-    if (!loading && user) {
-      checkAccess()
-    }
-  }, [user, loading])
-
-  const checkAccess = async () => {
-    try {
-      const response = await fetch("/api/aura/entitlement")
-      if (response.ok) {
-        const data = await response.json()
-        if (data.hasAccess) {
-          setEntitlement(data.entitlement)
-        } else {
-          setLoadingData(false)
-        }
-      }
-    } catch (error) {
-      logger.error("Failed to check access", error)
-      setLoadingData(false)
-    }
-  }
-
-  if (loading || loadingData) {
-    return (
-      <AuraShell title="Mood" activeTab="mood">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-white/20 border-t-white"></div>
-        </div>
-      </AuraShell>
-    )
-  }
-
-  if (!user || !entitlement) {
-    return <Paywall />
-  }
-
-  // Mock weekly mood data
+  // Mock weekly mood data (replace with API once ready)
   const weeklyMoods = [
     { day: "Mon", mood: 75, label: "Energetic" },
     { day: "Tue", mood: 82, label: "Optimistic" },
@@ -65,66 +22,65 @@ export default function MoodPage() {
 
   return (
     <AuraShell title="Mood" activeTab="mood">
-      <div className="px-4 mt-6 space-y-6 mb-24">
-        {/* Today's Mood Summary */}
-        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Smile className="w-6 h-6 text-yellow-400" />
-            <h2 className="text-[20px] leading-[28px] font-semibold text-white">Today's Mood</h2>
+      <div className="px-4 pb-10 space-y-5">
+        <PageHeader
+          title="Mood"
+          subtitle="Your emotional rhythm this week"
+          badge={<PillBadge tone="amber">Balanced</PillBadge>}
+        />
+
+        <AuraCard title="Today's mood" eyebrow="Now">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="h-12 w-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Smile className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-3xl font-semibold text-slate-900">{todayMood.mood}%</div>
+              <p className="text-sm text-slate-500">{todayMood.label}</p>
+            </div>
           </div>
-          <div className="text-center mb-4">
-            <div className="text-[64px] leading-[72px] font-bold text-white mb-2">{todayMood.mood}%</div>
-            <p className="text-[18px] leading-[24px] text-white/80">{todayMood.label}</p>
-          </div>
-          <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-[#7a5bff] to-[#ff4de1] rounded-full transition-all"
+          <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#0d9488] via-[#22c55e] to-[#86efac]"
               style={{ width: `${todayMood.mood}%` }}
             />
           </div>
-        </div>
+        </AuraCard>
 
-        {/* Weekly Mood Chart */}
-        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <TrendingUp className="w-6 h-6 text-blue-400" />
-            <h3 className="text-[20px] leading-[28px] font-semibold text-white">Weekly Mood</h3>
-          </div>
-          <div className="space-y-4">
+        <AuraCard title="Weekly mood">
+          <div className="space-y-3">
             {weeklyMoods.map((mood, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="w-12 text-[15px] leading-[20px] text-white/60">{mood.day}</div>
-                <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-[#7a5bff] to-[#ff4de1] rounded-full transition-all"
+              <div key={index} className="flex items-center gap-3">
+                <div className="w-12 text-sm text-slate-500">{mood.day}</div>
+                <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#0d9488] to-[#22d3ee]"
                     style={{ width: `${mood.mood}%` }}
                   />
                 </div>
-                <div className="w-16 text-right">
-                  <span className="text-[15px] leading-[20px] font-semibold text-white">{mood.mood}%</span>
-                </div>
+                <div className="w-12 text-right text-sm font-semibold text-slate-800">{mood.mood}%</div>
               </div>
             ))}
           </div>
-        </div>
+        </AuraCard>
 
-        {/* Mood Insights */}
-        <div className="rounded-[26px] bg-white/6 backdrop-blur-2xl shadow-[0_26px_70px_rgba(0,0,0,0.85)] p-6">
-          <h3 className="text-[20px] leading-[28px] font-semibold text-white mb-4">Mood Insights</h3>
-          <p className="text-[17px] leading-[24px] text-white/80 mb-4">
-            Your mood patterns show a generally positive trend this week. The cosmic energies are supporting your emotional well-being, 
-            with peaks of joy and optimism balanced by moments of calm reflection.
+        <AuraCard title="Insights" eyebrow="Guidance">
+          <p className="text-sm leading-6 text-slate-700 mb-3">
+            Your mood patterns show a positive trend this week. Peaks of joy and optimism are balanced by calm reflection—keep leaning into
+            routines that help you recharge.
           </p>
-          <div className="bg-white/8 rounded-xl p-4">
-            <p className="text-[15px] leading-[20px] text-white/80">
-              <span className="font-semibold text-white">Tip:</span> Maintain this positive energy by staying connected with loved ones 
-              and engaging in activities that bring you joy.
-            </p>
+          <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 flex items-start gap-3">
+            <div className="h-9 w-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-sm text-slate-600">
+                Tip: Stay connected with supportive people and schedule one energizing activity mid-week to keep momentum.
+              </p>
+            </div>
           </div>
-        </div>
+        </AuraCard>
       </div>
     </AuraShell>
   )
 }
-
-

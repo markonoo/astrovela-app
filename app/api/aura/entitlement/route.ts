@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabase } from "@/lib/supabaseClient"
-import { getUserEntitlement, hasActiveAccess } from "@/lib/entitlements"
+import { getEntitlementStatusForUser, hasActiveAccess } from "@/lib/entitlements"
 import { prisma } from "@/lib/prisma"
 import { EntitlementResponse } from "@/types/api"
 import { logger } from "@/utils/logger"
@@ -47,24 +47,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Check entitlement
-    const entitlement = await getUserEntitlement(dbUser.id)
+    const entitlementStatus = await getEntitlementStatusForUser(dbUser.id)
+
+    // Ensure hasAccess aligns with normalized status
     const hasAccess = await hasActiveAccess(dbUser.id)
 
     const response: EntitlementResponse = {
+      ...entitlementStatus,
       hasAccess,
-      entitlement: entitlement
-        ? {
-            id: entitlement.id,
-            plan: entitlement.plan,
-            freeUntil: entitlement.freeUntil.toISOString(),
-            hasReport: entitlement.hasReport,
-            purchaseDate: entitlement.purchaseDate?.toISOString() || null,
-            shopifyOrderId: entitlement.shopifyOrderId || null,
-            daysRemaining: Math.ceil(
-              (new Date(entitlement.freeUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-            ),
-          }
-        : null,
     }
 
     return NextResponse.json(response)
@@ -76,4 +66,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
