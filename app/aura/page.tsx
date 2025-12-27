@@ -121,7 +121,7 @@ function AuraTodayContent() {
 
       <AuraCard title="Love" action={<Link href="/aura/love" className="text-sm text-[#0d9488] font-medium">Open love</Link>}>
         <p className="text-base leading-relaxed text-slate-700 mb-3">{todayData.love.description}</p>
-        <PillBadge tone="rose">Best time: {todayData.love.bestTime}</PillBadge>
+        <PillBadge tone="amber">Best time: {todayData.love.bestTime}</PillBadge>
       </AuraCard>
 
       <AuraCard title="Career" action={<Link href="/aura/career" className="text-sm text-[#0d9488] font-medium">Open career</Link>}>
