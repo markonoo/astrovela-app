@@ -89,7 +89,7 @@ export default function LovePage() {
         <PageHeader
           title="Love compatibility"
           subtitle="Compare your sign with a partner"
-          badge={<PillBadge tone="rose">Live</PillBadge>}
+          badge={<PillBadge tone="amber">Live</PillBadge>}
         />
 
         <AuraCard title="Select signs" eyebrow="Inputs">
