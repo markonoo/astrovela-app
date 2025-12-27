@@ -268,6 +268,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // IMPORTANT: Apply automatic discount code for full bundle (3 items)
+    // When paperback + ebook + app are in cart, apply FULLBUNDLE discount code
+    // This gives €44.98 off, making total €49.99 instead of €94.97
+    if (body.lineItems.length >= 3) {
+      const separator = checkoutUrl.includes('?') ? '&' : '?';
+      checkoutUrl = `${checkoutUrl}${separator}discount=FULLBUNDLE`;
+    }
+
     // Get selling plan info from first variant for backward compatibility
     const firstVariant = variants[0];
     const sellingPlanGroups = firstVariant.product.sellingPlanGroups?.edges || [];
