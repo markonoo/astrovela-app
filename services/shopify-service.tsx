@@ -140,8 +140,8 @@ export async function getProductVariantId(
       );
     }
 
-    // For paperback, if colorVariant is provided, try to find matching variant
-    if (productType === "paperback" && colorVariant && product.variants.length > 1) {
+    // For paperback AND ebook, if colorVariant is provided, try to find matching variant
+    if ((productType === "paperback" || productType === "ebook") && colorVariant && product.variants.length > 1) {
       // Normalize color name for matching (e.g., "navy" or "Navy")
       const normalizedColor = colorVariant.toLowerCase();
       
@@ -203,15 +203,15 @@ export async function createShopifyCheckout({
         variantId: paperbackVariantId
       });
     } else if (selectedOptions.ebook && selectedOptions.app) {
-      // App + Ebook bundle: charge only ebook, app is free
-      const ebookVariantId = await getProductVariantId("ebook");
+      // App + Ebook bundle: charge only ebook (with color), app is free
+      const ebookVariantId = await getProductVariantId("ebook", quizState.coverColorScheme);
       chargedProducts.push({ 
         type: "ebook", 
         variantId: ebookVariantId
       });
     } else if (selectedOptions.ebook) {
-      // Only ebook selected
-      const ebookVariantId = await getProductVariantId("ebook");
+      // Only ebook selected (with color)
+      const ebookVariantId = await getProductVariantId("ebook", quizState.coverColorScheme);
       chargedProducts.push({ 
         type: "ebook", 
         variantId: ebookVariantId
